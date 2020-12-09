@@ -149,7 +149,7 @@
         <!-- Orthology Selection -->
         <div class="orthology-menu">
             <h4>Search for comparative data on human-mouse homologues.</h4>
-            <form class="form">
+            <form class="form" onsubmit="search();return false;">
                 <div class="input-group mb-3 mx-auto">
                     <input type="text" class="form-control" id="userSearchInput" autocomplete="off" placeholder="Phenotype Search (e.g. body fat)">
                     <div id="live-search" class="suggestions">
@@ -177,7 +177,7 @@
                 <div class="input-group-inline">
                     <button type="button" class="btn" id="search_btn">Search</button>
                 </div>
-
+            </form>
         </div>
         <div id="results-container" class="container">
             <div class="row">
