@@ -203,7 +203,7 @@
         <a class="btn btn-link" onclick="transition('.searchResultsContainer', true);">Back</a>
         <div class="phenotype-breakdown-container">
             <div class="row">
-                <h3 id="Selected-Phenotype" class="col">MP:12345 - Micro Peen</h3>
+                <h3 id="Selected-Phenotype" class="col">MP:12345 - Micro Foot</h3>
             </div>
             <!-- Mappings -->
             <div class="row center">
@@ -219,13 +219,13 @@
                     <span>Human Phenotype Term: </span>
                 </div>
                 <div class="col">
-                    <p id="HPO-Matched-Term">HP:12345 Microscopic Penis</p>
+                    <p id="HPO-Matched-Term">HP:12345 Microscopic Foot</p>
                 </div>
                 <div class="col">
                     <span>Mammalian Phenotype Term: </span>
                 </div>
                 <div class="col">
-                    <p id="MP-Matched-Term">MP:12345 Micro Peen</p>
+                    <p id="MP-Matched-Term">MP:12345 Micro Foot</p>
                 </div>
             </div>
             <!-- Synonyms -->
