@@ -8,11 +8,10 @@
     <link rel="stylesheet" href="bootstrap-4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="jquery-ui/jquery-ui.min.js"></script>
     <script src="bootstrap-4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="js/mouse_work.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 
 <body>
@@ -158,20 +157,36 @@
                 </div>
                 <div class="input-group form-inline mb-3 mx-auto">
                     <div class="input-group-prepend">
-                        <div class="input-group-text">P-value threshold:</div>
+                        <div class="input-group-text">Mouse P-value:</div>
                     </div>
-                    <select class="form-control" id="thresholdSelect">
-                        <option>-log P ≥ 0</option>
-                        <option>-log P ≥ 1</option>
-                        <option>-log P ≥ 2</option>
-                        <option>-log P ≥ 3</option>
-                        <option>-log P ≥ 4</option>
-                        <option>-log P ≥ 5</option>
-                        <option>-log P ≥ 6</option>
-                        <option>-log P ≥ 7</option>
-                        <option>-log P ≥ 8</option>
-                        <option>-log P ≥ 9</option>
-                        <option>-log P ≥ 10</option>
+                    <select class="form-control" id="thresholdSelect" onchange="setPVal(this.value);">
+                        <option value="0">-log P ≥ 0</option>
+                        <option value="1">-log P ≥ 1</option>
+                        <option value="2">-log P ≥ 2</option>
+                        <option value="3">-log P ≥ 3</option>
+                        <option value="4">-log P ≥ 4</option>
+                        <option value="5">-log P ≥ 5</option>
+                        <option value="6">-log P ≥ 6</option>
+                        <option value="7">-log P ≥ 7</option>
+                        <option value="8">-log P ≥ 8</option>
+                        <option value="9">-log P ≥ 9</option>
+                        <option value="10">-log P ≥ 10</option>
+                    </select>&nbsp
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">Human P-value:</div>
+                    </div>
+                    <select class="form-control" id="thresholdSelect" onchange="setPVal(this.value);">
+                        <option value="0">-log P ≥ 0</option>
+                        <option value="1">-log P ≥ 1</option>
+                        <option value="2">-log P ≥ 2</option>
+                        <option value="3">-log P ≥ 3</option>
+                        <option value="4">-log P ≥ 4</option>
+                        <option value="5">-log P ≥ 5</option>
+                        <option value="6">-log P ≥ 6</option>
+                        <option value="7">-log P ≥ 7</option>
+                        <option value="8">-log P ≥ 8</option>
+                        <option value="9">-log P ≥ 9</option>
+                        <option value="10">-log P ≥ 10</option>
                     </select>
                 </div>
                 <div class="input-group-inline">
@@ -282,10 +297,24 @@
                     <Span>Gene Knockouts</Span>
                 </div>
             </div>
-            <div id="homolog-studies-experiments">
-                
+            <div class="row">
+                <div id="gwas-study-list" class="col center">
+                    <ul>
+                        <li><a onclick="loadGenomeBrowser();">GWAS of Microscopic Feet</a></li>
+                    </ul>
+                </div>
+                <div id="gene-knockout-list" class="col center">
+                    <ul>
+                        <li><a onclick="loadGenomeBrowser();">Knockout experiment for Microscopic Foot</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="browser-iframe-container">
+        <a class="btn" onclick="closeGenomeBrowser();">Close</a>
+        <iframe id="genomeBrowser" class="browser-iframe">
+        </iframe>
     </div>
 </body>
 

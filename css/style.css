@@ -1,6 +1,7 @@
 html, body{
     background-color: rgb(255, 255, 255);
-    height:100%;
+	height:100%;
+	transition: background-color ease-in-out 500ms;
 }
 a.btn {
 	color:white;
@@ -253,7 +254,7 @@ a.btn:hover, .btn:hover{
 	border:none;
 }
 .orthology-menu > .form > .input-group{
-	width: 35%;
+	width: 50%;
 }
 .input-group-inline{
 	margin-top:2em;
@@ -332,9 +333,13 @@ table.info tr:nth-child(even){
 	position: absolute;
 	left:0;
 	right:0;
+	box-shadow: rgb(136, 136, 136) 10px 10px 8px;
+	padding: 1em;
+	border: 1px solid #cdcdcd;
 }
 #searchResults > tr:hover{
 	background-color: lightskyblue;
+	cursor:pointer;
 }
 .inner-container{
 	width:70%;
@@ -355,7 +360,7 @@ table.info tr:nth-child(even){
 }
 .phenotype-breakdown-container{
 	margin-top:1%;
-	border: solid 1px black;
+	background-color: white;
 }
 .phenotype-breakdown-container > .row:nth-child(n+3) > .col:nth-child(odd){
 	background-color: #C8D9EE;
@@ -376,4 +381,36 @@ table.info tr:nth-child(even){
 	position: absolute;
 	left:0;
 	right:0;
+}
+#gwas-study-list > ul, #gene-knockout-list > ul{
+	list-style: none;
+	padding:unset;
+	font-weight: normal;
+	text-decoration: underline;
+	color:blue;
+}
+#gwas-study-list a, #gene-knockout-list a {
+	cursor: pointer;
+}
+.browser-iframe-container{
+	width:80vw;
+	height:75%;
+	position: absolute;
+	z-index: 999;
+	margin-left: 10%;
+	margin-top: 2em;
+	display:none;
+	padding:1.5em;
+	background-color: #F4F9FF;
+}
+.browser-iframe-container > a{
+	float:right;
+	margin-bottom: 1em;
+}
+.browser-iframe{
+	width:100%;
+	height:95%;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
 }

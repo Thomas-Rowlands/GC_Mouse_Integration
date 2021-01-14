@@ -7,6 +7,7 @@ $(document).ready(function () {
 var page_num = 1;
 var offset = 20;
 var result_total = 0;
+var pval = 0;
 var current_div = ".searchResultsContainer";
 
 function show_loading_dialog() {
@@ -22,10 +23,26 @@ function search_click() {
     search();
 }
 
+function setPVal(pval_input) {
+    pval = parseInt(pval_input);
+}
+
+function loadGenomeBrowser(){
+    $(".browser-iframe-container").show({effect: "scale", duration: 500});
+    $("body").css("background-color", "grey");
+    $("#genomeBrowser").attr("src", "jbrowse/index.html?data=data");
+}
+
+function closeGenomeBrowser(){
+    $(".browser-iframe-container").hide({effect: "scale", duration: 500});
+    $("body").css("background-color", "white");
+    $("#genomeBrowser").attr("src", "");
+}
+
 function search() {
     show_loading_dialog();
     search_input = $("#userSearchInput").val();
-    url_string = document.URL + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset;
+    url_string = document.URL + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&pval=" + pval;
     $.ajax({
         type: "GET",
         url: url_string,

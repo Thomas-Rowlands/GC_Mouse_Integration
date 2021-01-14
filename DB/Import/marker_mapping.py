@@ -1,7 +1,6 @@
 import DB
 import config
-import requests
-import json
+from gtfparse import read_gtf
 from bs4 import BeautifulSoup
 
 class MarkerMapper:
@@ -19,20 +18,8 @@ class MarkerMapper:
 
     @staticmethod
     def __get_genes_for_markers(markers):
-        markers_string = ",".join([x.replace("rs", "") for x in [z for (y, z) in markers]]).replace(" ","")
-        api_query = F"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?fromDb=gene&db=snp&id={markers_string}&rettype=gene_table&retmode=xml"
-        result = F"[{requests.post(api_query).text.replace('}{', '},{')}]"
-        soup = BeautifulSoup(result, "xml")
-        genes = soup.find_all("")
-        for i in range(len(markers)):
-            id = markers[i][1].replace("rs", "")
-            genes = soup.select(F"DocumentSummary[uid='{id}']")
-            gene = ""
-            if result[i]["refsnp_id"] != id:
-                for d in result:
-                    if d["refsnp_id"] == id:
-                        gene = d["primary_snapshot_data"]["allele_annotations"][""]
-        print(result)
+        gene_df = read_gtf("../mouse_import/Homo_sapiens.GRCh38.102.chr.gtf")
+        print("stop")
 
     @staticmethod
     def __get_markers():
