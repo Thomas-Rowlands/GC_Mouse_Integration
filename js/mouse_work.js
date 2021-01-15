@@ -27,22 +27,39 @@ function setPVal(pval_input) {
     pval = parseInt(pval_input);
 }
 
-function loadGenomeBrowser(){
-    $(".browser-iframe-container").show({effect: "scale", duration: 500});
+function loadGenomeBrowser() {
+    $("#browser-iframe-container").show(
+        {
+            effect: "scale",
+            duration: 500,
+            complete: function () {
+                $("#genomeBrowser").attr("src", "jbrowse/index.html?data=data");
+            }
+        }
+    );
     $("body").css("background-color", "grey");
-    $("#genomeBrowser").attr("src", "jbrowse/index.html?data=data");
 }
 
-function closeGenomeBrowser(){
-    $(".browser-iframe-container").hide({effect: "scale", duration: 500});
-    $("body").css("background-color", "white");
+function closeGenomeBrowser() {
     $("#genomeBrowser").attr("src", "");
+    setTimeout(
+        function () {
+            $("#browser-iframe-container").hide(
+                {
+                    effect: "scale",
+                    duration: 500
+                }
+            );
+        },
+        300
+    );
+    $("body").css("background-color", "white");
 }
 
 function search() {
     show_loading_dialog();
-    search_input = $("#userSearchInput").val();
-    url_string = document.URL + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&pval=" + pval;
+    let search_input = $("#userSearchInput").val();
+    let url_string = document.URL + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&pval=" + pval;
     $.ajax({
         type: "GET",
         url: url_string,
@@ -150,24 +167,39 @@ function transition(ident, reverse = false) {
     current_div = ident;
 }
 
-function getPhenotypeStats(term) {
-    show_loading_dialog();
-    $.ajax({
+function populateGWASRecords(term) {
+    return $.ajax({
         type: "GET",
         url: document.URL + "/controller.php?homologSearch=true&term=" + encodeURIComponent(term),
         success: function (data) {
             $("#live-search").empty();
             if (data) {
                 data = JSON.parse(data);
-                if (data.length == 0) {
-                    
-                } else {
-                    
+                let result_total = data[1];
+                data = data[0];
+                let headings = Object.keys(data[0]);
+                let result = "<tr>";
+                headings.forEach(element => {
+                    result += "<th>" + element + "</th>";
+                });
+                result += "</tr>";
+                for (var i = 0; i < data.length; i++) {
+                    result += "<tr onclick=''>";
+                    headings.forEach(element => {
+                        result += "<td>" + data[i][element] + "</td>";
+                    });
+                    result += "</tr>";
                 }
-
+                $("#gene-knockout-list").html(result);
             }
-            hide_loading_dialog();
-            transition("#phenotypeResultsContainer");
         }
+    });
+}
+
+function getPhenotypeStats(term) {
+    show_loading_dialog();
+    $.when(populateGWASRecords(term)).done(function(gwas) {
+        hide_loading_dialog();
+        transition("#phenotypeResultsContainer");
     });
 }

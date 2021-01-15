@@ -9,7 +9,13 @@
             echo json_encode($result);
         else
             echo null;
-    } elseif (isset($_GET["homologSearch"]) && isset($_GET["term"])) { 
+    } elseif (isset($_GET["homologSearch"]) && isset($_GET["term"])) {
+        $pleb = new PhenoSearch();
+        $result = $pleb->homologSearch($_GET["term"]);
+        if ($result)
+            echo json_encode($result);
+        else
+            echo null;
     } else {
         echo "Invalid arguments";
     }
@@ -42,7 +48,18 @@
             } else {
                 return null;
             }
+        }
 
+        public function homologSearch($mpid) {
+            $mpid = $this->con->escape_input($mpid);
+            $results = $this->con->execute("CALL gc_mouse.get_mouse_knockout_by_term('{$mpid}');", "gc_mouse");
+            if ($results) {
+                $total = $results->num_rows;
+                $return_package = array(mysqli_fetch_all($results, MYSQLI_ASSOC), $total);
+                return $return_package;
+            } else {
+                return null;
+            }
         }
 
     }

@@ -230,13 +230,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col">
+                <div class="col highlight">
                     <span>Human Phenotype Term: </span>
                 </div>
                 <div class="col">
                     <p id="HPO-Matched-Term">HP:12345 Microscopic Foot</p>
                 </div>
-                <div class="col">
+                <div class="col highlight">
                     <span>Mammalian Phenotype Term: </span>
                 </div>
                 <div class="col">
@@ -245,7 +245,7 @@
             </div>
             <!-- Synonyms -->
             <div class="row">
-                <div class="col">
+                <div class="col highlight">
                     <span>Synonyms: </span>
                 </div>
                 <div class="col">
@@ -256,7 +256,7 @@
                         <li>test1</li>
                     </ul>
                 </div>
-                <div class="col">
+                <div class="col highlight">
                     <span>Synonyms: </span>
                 </div>
                 <div class="col">
@@ -270,13 +270,13 @@
             </div>
             <!-- Studies/Experiments -->
             <div class="row">
-                <div class="col">
+                <div class="col highlight">
                     <span>GWAS Studies: </span>
                 </div>
                 <div class="col">
                     <p>12</p>
                 </div>
-                <div class="col">
+                <div class="col highlight">
                     <span>Gene Knockouts: </span>
                 </div>
                 <div class="col">
@@ -285,33 +285,42 @@
             </div>
             <!-- Homolog Gene Studies/Experiments -->
             <div class="row">
-                <div class="col center">
+                <div class="col center highlight">
                     <span><span id="numHomologousGenes">5</span> Homologous Genes Identified</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col center">
+                    <ul>
+                        <li><a onclick="loadGenomeBrowser();">BRca2</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col center highlight">
                     <span>GWAS Studies</span>
                 </div>
-                <div class="col center">
-                    <Span>Gene Knockouts</Span>
+                <div class="col center highlight">
+                    <span>Gene Knockouts</span>
                 </div>
             </div>
             <div class="row">
                 <div id="gwas-study-list" class="col center">
                     <ul>
-                        <li><a onclick="loadGenomeBrowser();">GWAS of Microscopic Feet</a></li>
+                        <li><a>GWAS of Microscopic Feet</a></li>
                     </ul>
                 </div>
-                <div id="gene-knockout-list" class="col center">
-                    <ul>
-                        <li><a onclick="loadGenomeBrowser();">Knockout experiment for Microscopic Foot</a></li>
-                    </ul>
+                <div class="col center">
+                    <table class="info">
+                        <tbody id="gene-knockout-list">
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-    <div class="browser-iframe-container">
+    <div id="browser-iframe-container" class="modal-container">
         <a class="btn" onclick="closeGenomeBrowser();">Close</a>
         <iframe id="genomeBrowser" class="browser-iframe">
         </iframe>

@@ -337,6 +337,10 @@ table.info tr:nth-child(even){
 	padding: 1em;
 	border: 1px solid #cdcdcd;
 }
+#phenotypeResultsContainer ul{
+	list-style: none;
+	padding-left: 1em;
+}
 #searchResults > tr:hover{
 	background-color: lightskyblue;
 	cursor:pointer;
@@ -362,15 +366,15 @@ table.info tr:nth-child(even){
 	margin-top:1%;
 	background-color: white;
 }
-.phenotype-breakdown-container > .row:nth-child(n+3) > .col:nth-child(odd){
-	background-color: #C8D9EE;
-	font-weight: bold;
-}
+/*.phenotype-breakdown-container > .row:nth-child(n+3) > .col:nth-child(odd){*/
+/*	background-color: #C8D9EE;*/
+/*	font-weight: bold;*/
+/*}*/
 .col{
 	padding-left:1em;
 	margin-left:0;
 }
-.col.center{
+.highlight {
 	font-weight: bold;
 	background-color: #C8D9EE;
 }
@@ -382,17 +386,16 @@ table.info tr:nth-child(even){
 	left:0;
 	right:0;
 }
-#gwas-study-list > ul, #gene-knockout-list > ul{
+
+.phenotype-breakdown-container a{
 	list-style: none;
 	padding:unset;
 	font-weight: normal;
 	text-decoration: underline;
 	color:blue;
-}
-#gwas-study-list a, #gene-knockout-list a {
 	cursor: pointer;
 }
-.browser-iframe-container{
+.modal-container{
 	width:80vw;
 	height:75%;
 	position: absolute;
@@ -403,7 +406,7 @@ table.info tr:nth-child(even){
 	padding:1.5em;
 	background-color: #F4F9FF;
 }
-.browser-iframe-container > a{
+.modal-container > a{
 	float:right;
 	margin-bottom: 1em;
 }
