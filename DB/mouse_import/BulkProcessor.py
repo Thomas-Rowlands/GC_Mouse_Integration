@@ -5,6 +5,7 @@ import DB
 from pyliftover import LiftOver
 from gtfparse import read_gtf
 import json
+import csv
 
 
 def __get_gene_list():
@@ -30,6 +31,16 @@ def __get_genes_for_markers(genes, markers):
         marker_genes[marker[1]] = [x for x in genes[str(marker[2])] if
                                    x[2] <= marker[3] <= x[3] or x[2] <= marker[4] <= x[3]]
     return marker_genes
+
+
+def __export_lifted_markers(markers):
+    output = []
+    for marker in markers:
+        if marker:
+            output.append([marker[0], marker[3], marker[4]])
+    with open("lifted_markers_dump.csv", "a", newline="") as f_out:
+        writer = csv.writer(f_out)
+        writer.writerows(output)
 
 
 def __link_markers(markers, cursor):
@@ -64,5 +75,6 @@ def process_files(start, stop):
     for i in range(start, stop):
         print(F"Starting file markers{i}.json")
         markers = __get_markers(F"MarkerDump/markers{i}.json")
-        __link_markers(markers, cursor)
+        # __link_markers(markers, cursor)
+        __export_lifted_markers(markers)
         print(F"Finished file markers{i}.json")
