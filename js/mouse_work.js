@@ -61,7 +61,8 @@ function expandMenuItem(menuItem, url) {
             height: "82vh",
             width: "100vw",
             "max-width": "100vw",
-            margin: "0"
+            margin: "0",
+            left: "0"
         }, 500, function () {
             $(card).removeClass("menu-option");
             var test = $("#subdocument-iframe")[0];
@@ -78,7 +79,10 @@ function expandMenuItem(menuItem, url) {
         }, 500, function () {
 
         });
-        $(".menu > .row > .col[id!='" + menuItem + "']").stop().hide();
+        $(".menu > .row > .col[id!='" + menuItem + "']").stop().hide(0, function() {
+            $(card).css("position", "relative");
+            $("#subdocument-iframe").css("position", "absolute").css("left", "0");
+        });
         $(".menu").stop().animate({
             "margin-top": "0"
         }, 500);
@@ -87,13 +91,16 @@ function expandMenuItem(menuItem, url) {
 
 function shrinkMenuItem(menuItem) {
     var card = $(".menu > .row > #" + menuItem)[0];
+    $(card).css("position", "absolute");
     $(card).find("iframe").stop().hide("fade", transition_speed, function () {
         $(card).find("iframe").remove();
+        let left_positioning = (($(card).index() * 32) + 1).toString() + "vw";
         $(card).stop().animate({
             height: "70vh",
             width: "30vw",
             "max-width": "30vw",
-            margin: "0.25em 0.25em 0.25em 2em"
+            margin: "0.25em 0.25em 0.25em 2em",
+            left: left_positioning
         }, transition_speed, function () {
             $(card).addClass("menu-option");
             $(".menu > .row > .col > div").stop().show("fade", transition_speed);
