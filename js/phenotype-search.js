@@ -8,6 +8,7 @@ var page_num = 1;
 var offset = 20;
 var result_total = 0;
 var current_div = ".searchResultsContainer";
+var base_url = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
 
 function show_loading_dialog() {
     $(".loading-container").fadeIn(300);
@@ -56,7 +57,7 @@ function search() {
     let search_input = $("#userSearchInput").val();
     let human_pval = parseInt($("#human_pval_select").val());
     let mouse_pval = parseInt($("#mouse_pval_select").val());
-    let url_string = window.location.origin + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval;
+    let url_string = base_url + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval;
     $.ajax({
         type: "GET",
         url: url_string,
@@ -123,7 +124,7 @@ function retrieveLiveSearch() {
     if (input.length > 0) {
         $.ajax({
             type: "GET",
-            url: window.location.origin + "/livesearch.php?entry=" + encodeURIComponent(input),
+            url: base_url + "/livesearch.php?entry=" + encodeURIComponent(input),
             success: function (data) {
                 $("#live-search").empty();
                 if (data) {
@@ -167,7 +168,7 @@ function transition(ident, reverse = false) {
 function populateGWASRecords(term) {
     return $.ajax({
         type: "GET",
-        url: window.location.origin + "/controller.php?homologSearch=true&term=" + encodeURIComponent(term),
+        url: base_url + "/controller.php?homologSearch=true&term=" + encodeURIComponent(term),
         success: function (data) {
             $("#live-search").empty();
             if (data) {
