@@ -57,6 +57,7 @@ function expandMenuItem(menuItem, url) {
         opacity: 0,
         duration: 500
     }, 500, "linear", function () {
+        $(card).removeClass("menu-option");
         $(card).animate({
             height: "82vh",
             width: "100vw",
@@ -64,7 +65,7 @@ function expandMenuItem(menuItem, url) {
             margin: "0",
             left: "0"
         }, 500, function () {
-            $(card).removeClass("menu-option");
+
             var test = $("#subdocument-iframe")[0];
             if (!test) {
                 $(card).append(iframe);

@@ -7,7 +7,6 @@ $(document).ready(function () {
 var page_num = 1;
 var offset = 20;
 var result_total = 0;
-var pval = 0;
 var current_div = ".searchResultsContainer";
 
 function show_loading_dialog() {
@@ -21,10 +20,6 @@ function hide_loading_dialog() {
 function search_click() {
     page_num = 1;
     search();
-}
-
-function setPVal(pval_input) {
-    pval = parseInt(pval_input);
 }
 
 function loadGenomeBrowser() {
@@ -59,12 +54,14 @@ function closeGenomeBrowser() {
 function search() {
     show_loading_dialog();
     let search_input = $("#userSearchInput").val();
-    let url_string = window.location.origin + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&pval=" + pval;
+    let human_pval = parseInt($("#human_pval_select").val());
+    let mouse_pval = parseInt($("#mouse_pval_select").val());
+    let url_string = window.location.origin + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + page_num + "&offset=" + offset + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval;
     $.ajax({
         type: "GET",
         url: url_string,
         success: function (data) {
-            var result = "<tr>";
+            let result = "<tr>";
             if (data) {
                 data = JSON.parse(data);
                 result_total = data[1];
@@ -73,12 +70,12 @@ function search() {
                     $("#next_page_btn").removeClass("disabled");
                 else
                     $("#next_page_btn").addClass("disabled");
-                var headings = Object.keys(data[0]);
+                let headings = Object.keys(data[0]);
                 headings.forEach(element => {
                     result += "<th>" + element + "</th>";
                 });
                 result += "</tr>";
-                for (var i = 0; i < data.length; i++) {
+                for (let i = 0; i < data.length; i++) {
                     result += "<tr onclick='getPhenotypeStats(\"" + data[i]["Mammalian Phenotype Ontology ID"] + "\");'>";
                     headings.forEach(element => {
                         result += "<td>" + data[i][element] + "</td>";

@@ -8,11 +8,13 @@
         }
     }
 
-    function getOntologyJSON($ontologyName){
+    function getOntologyJSON($ontologyName, $path){
         if ($ontologyName) {
             try {
-                if (file_exists("../ontology_cache/{$ontologyName}.json")) {
-                    return json_decode(file_get_contents("../ontology_cache/{$ontologyName}.json"), $assoc=true);
+                if (!$path)
+                    $path = "../ontology_cache";
+                if (file_exists("{$path}/{$ontologyName}.json")) {
+                    return json_decode(file_get_contents("{$path}/{$ontologyName}.json"), $assoc=true);
                 } else {
                     die("Ontology file not found.");
                 }
@@ -24,17 +26,18 @@
         }
     }
 
-    function getMappingJSON($ontology, $ontology2) {
+    function getMappingJSON($ontology, $ontology2, $path) {
         if ($ontology && $ontology2) {
             try {
-                if (file_exists("../ontology_cache/{$ontology}_{$ontology2}_mappings.json")) {
-                    return json_decode(file_get_contents("../ontology_cache/{$ontology}_{$ontology2}_mappings.json"), $assoc=true);
-                } else if (file_exists("../ontology_cache/{$ontology2}_{$ontology}_mappings.json")) {
-                    return json_decode(file_get_contents("../ontology_cache/{$ontology2}_{$ontology}_mappings.json"), $assoc=true);
+                if (!$path)
+                    $path = "../ontology_cache";
+                if (file_exists("{$path}/{$ontology}_{$ontology2}_mappings.json")) {
+                    return json_decode(file_get_contents("{$path}/{$ontology}_{$ontology2}_mappings.json"), $assoc=true);
+                } else if (file_exists("{$path}/{$ontology2}_{$ontology}_mappings.json")) {
+                    return json_decode(file_get_contents("{$path}/{$ontology2}_{$ontology}_mappings.json"), $assoc=true);
                 } else {
                     die("Ontology mapping not found: {$ontology}_{$ontology2}");
                 }
-                
             } catch (Exception $ex) {
                 die("Exception occurred while decoding ontology mapping.");
             }
@@ -43,9 +46,9 @@
         }
     }
 
-    function search($searchTerm, $ontology, $ontology2) {
-        $json = getOntologyJSON($ontology);
-        $json2 = getOntologyJSON($ontology2);
+    function search($searchTerm, $ontology, $ontology2, $path=null) {
+        $json = getOntologyJSON($ontology, $path);
+        $json2 = getOntologyJSON($ontology2, $path);
 
         $result = ["name" => "{$ontology}", "children" => []];
         $ontTwoResult = ["name" => "{$ontology2}", "children" => []];
@@ -70,7 +73,7 @@
             }
             
             //Find matching term in second ontology if possible
-            $ontTwoMatchID = findMatch($termFound["ont_id"], getMappingJSON($ontology, $ontology2));
+            $ontTwoMatchID = findMatch($termFound["ont_id"], getMappingJSON($ontology, $ontology2, $path));
             if ($ontTwoMatchID) {
                 $ontTwoTerm = findNode($json2, $ontTwoMatchID, null);
                 $ontTwoParent = findNode($json2, $ontTwoTerm["parent"], null);
