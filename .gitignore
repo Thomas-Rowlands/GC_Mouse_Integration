@@ -6,3 +6,4 @@ DB/Import/
 .idea
 DB/mouse_import/__pycache__
 DB/mouse_import/Homo_sapiens.GRCh38.102.chr.gtf
+/node_modules/

@@ -1,0 +1,1927 @@
+<?xml version="1.0"?>
+
+<resultset statement="SELECT term_name FROM mp_phenotypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+	<field name="term_name">abnormal abdominal wall morphology</field>
+  
+
+  
+	<field name="term_name">abnormal adrenal gland morphology</field>
+  
+
+  
+	<field name="term_name">abnormal allantois morphology</field>
+  
+
+  
+	<field name="term_name">abnormal autopod morphology</field>
+  
+
+  
+	<field name="term_name">abnormal behavior</field>
+  
+
+  
+	<field name="term_name">abnormal behavioral response to light</field>
+  
+
+  
+	<field name="term_name">abnormal blood vessel morphology</field>
+  
+
+  
+	<field name="term_name">abnormal body wall morphology</field>
+  
+
+  
+	<field name="term_name">abnormal bone structure</field>
+  
+
+  
+	<field name="term_name">abnormal brain morphology</field>
+  
+
+  
+	<field name="term_name">abnormal cecum morphology</field>
+  
+
+  
+	<field name="term_name">abnormal chorioallantoic fusion</field>
+  
+
+  
+	<field name="term_name">abnormal clavicle morphology</field>
+  
+
+  
+	<field name="term_name">abnormal coat appearance</field>
+  
+
+  
+	<field name="term_name">abnormal coat/ hair morphology</field>
+  
+
+  
+	<field name="term_name">abnormal coat/hair pigmentation</field>
+  
+
+  
+	<field name="term_name">abnormal colon morphology</field>
+  
+
+  
+	<field name="term_name">abnormal cornea morphology</field>
+  
+
+  
+	<field name="term_name">abnormal craniofacial morphology</field>
+  
+
+  
+	<field name="term_name">abnormal cranium morphology</field>
+  
+
+  
+	<field name="term_name">abnormal digit morphology</field>
+  
+
+  
+	<field name="term_name">abnormal duodenum morphology</field>
+  
+
+  
+	<field name="term_name">abnormal ear morphology</field>
+  
+
+  
+	<field name="term_name">abnormal ear position</field>
+  
+
+  
+	<field name="term_name">abnormal embryo development</field>
+  
+
+  
+	<field name="term_name">abnormal embryo size</field>
+  
+
+  
+	<field name="term_name">abnormal embryo turning</field>
+  
+
+  
+	<field name="term_name">abnormal embryonic autopod plate morphology</field>
+  
+
+  
+	<field name="term_name">abnormal epididymis morphology</field>
+  
+
+  
+	<field name="term_name">abnormal esophagus morphology</field>
+  
+
+  
+	<field name="term_name">abnormal eye anterior chamber depth</field>
+  
+
+  
+	<field name="term_name">abnormal eye morphology</field>
+  
+
+  
+	<field name="term_name">abnormal eye posterior chamber depth</field>
+  
+
+  
+	<field name="term_name">abnormal eyelid fusion</field>
+  
+
+  
+	<field name="term_name">abnormal eyelid morphology</field>
+  
+
+  
+	<field name="term_name">abnormal facial morphology</field>
+  
+
+  
+	<field name="term_name">abnormal femur morphology</field>
+  
+
+  
+	<field name="term_name">abnormal fibula morphology</field>
+  
+
+  
+	<field name="term_name">abnormal forebrain development</field>
+  
+
+  
+	<field name="term_name">abnormal forebrain morphology</field>
+  
+
+  
+	<field name="term_name">abnormal forelimb morphology</field>
+  
+
+  
+	<field name="term_name">abnormal gait</field>
+  
+
+  
+	<field name="term_name">abnormal gallbladder morphology</field>
+  
+
+  
+	<field name="term_name">abnormal hair growth</field>
+  
+
+  
+	<field name="term_name">abnormal head morphology</field>
+  
+
+  
+	<field name="term_name">abnormal head shape</field>
+  
+
+  
+	<field name="term_name">abnormal head size</field>
+  
+
+  
+	<field name="term_name">abnormal heart left ventricle morphology</field>
+  
+
+  
+	<field name="term_name">abnormal heart looping</field>
+  
+
+  
+	<field name="term_name">abnormal heart morphology</field>
+  
+
+  
+	<field name="term_name">abnormal heart shape</field>
+  
+
+  
+	<field name="term_name">abnormal hindbrain development</field>
+  
+
+  
+	<field name="term_name">abnormal hindbrain morphology</field>
+  
+
+  
+	<field name="term_name">abnormal hindlimb morphology</field>
+  
+
+  
+	<field name="term_name">abnormal humerus morphology</field>
+  
+
+  
+	<field name="term_name">abnormal ileum morphology</field>
+  
+
+  
+	<field name="term_name">abnormal incisor color</field>
+  
+
+  
+	<field name="term_name">abnormal incisor morphology</field>
+  
+
+  
+	<field name="term_name">abnormal iris morphology</field>
+  
+
+  
+	<field name="term_name">abnormal iris pigmentation</field>
+  
+
+  
+	<field name="term_name">abnormal iris transillumination</field>
+  
+
+  
+	<field name="term_name">abnormal jejunum morphology</field>
+  
+
+  
+	<field name="term_name">abnormal joint morphology</field>
+  
+
+  
+	<field name="term_name">abnormal kidney morphology</field>
+  
+
+  
+	<field name="term_name">abnormal left-right axis patterning</field>
+  
+
+  
+	<field name="term_name">abnormal lens morphology</field>
+  
+
+  
+	<field name="term_name">abnormal limb bud morphology</field>
+  
+
+  
+	<field name="term_name">abnormal limb morphology</field>
+  
+
+  
+	<field name="term_name">abnormal limb position</field>
+  
+
+  
+	<field name="term_name">abnormal lip morphology</field>
+  
+
+  
+	<field name="term_name">abnormal liver morphology</field>
+  
+
+  
+	<field name="term_name">abnormal liver size</field>
+  
+
+  
+	<field name="term_name">abnormal locomotor activation</field>
+  
+
+  
+	<field name="term_name">abnormal locomotor behavior</field>
+  
+
+  
+	<field name="term_name">abnormal lung morphology</field>
+  
+
+  
+	<field name="term_name">abnormal lymph node morphology</field>
+  
+
+  
+	<field name="term_name">abnormal male genitalia morphology</field>
+  
+
+  
+	<field name="term_name">abnormal mandible morphology</field>
+  
+
+  
+	<field name="term_name">abnormal maxilla morphology</field>
+  
+
+  
+	<field name="term_name">abnormal midbrain development</field>
+  
+
+  
+	<field name="term_name">abnormal midbrain morphology</field>
+  
+
+  
+	<field name="term_name">abnormal motor capabilities/coordination/movement</field>
+  
+
+  
+	<field name="term_name">abnormal motor coordination/balance</field>
+  
+
+  
+	<field name="term_name">abnormal motor learning</field>
+  
+
+  
+	<field name="term_name">abnormal mouth morphology</field>
+  
+
+  
+	<field name="term_name">abnormal nail morphology</field>
+  
+
+  
+	<field name="term_name">abnormal neural tube closure</field>
+  
+
+  
+	<field name="term_name">abnormal neural tube morphology</field>
+  
+
+  
+	<field name="term_name">abnormal optic disk morphology</field>
+  
+
+  
+	<field name="term_name">abnormal optic vesicle formation</field>
+  
+
+  
+	<field name="term_name">abnormal otic vesicle morphology</field>
+  
+
+  
+	<field name="term_name">abnormal outer ear morphology</field>
+  
+
+  
+	<field name="term_name">abnormal ovary morphology</field>
+  
+
+  
+	<field name="term_name">abnormal pancreas morphology</field>
+  
+
+  
+	<field name="term_name">abnormal pelvic girdle bone morphology</field>
+  
+
+  
+	<field name="term_name">abnormal pericardium morphology</field>
+  
+
+  
+	<field name="term_name">abnormal pharyngeal arch morphology</field>
+  
+
+  
+	<field name="term_name">abnormal placement of pupils</field>
+  
+
+  
+	<field name="term_name">abnormal placenta development</field>
+  
+
+  
+	<field name="term_name">abnormal placenta morphology</field>
+  
+
+  
+	<field name="term_name">abnormal placenta size</field>
+  
+
+  
+	<field name="term_name">abnormal placenta vasculature</field>
+  
+
+  
+	<field name="term_name">abnormal QT variability</field>
+  
+
+  
+	<field name="term_name">abnormal radius morphology</field>
+  
+
+  
+	<field name="term_name">abnormal reproductive system morphology</field>
+  
+
+  
+	<field name="term_name">abnormal response to new environment</field>
+  
+
+  
+	<field name="term_name">abnormal retina morphology</field>
+  
+
+  
+	<field name="term_name">abnormal retinal blood vessel morphology</field>
+  
+
+  
+	<field name="term_name">abnormal retinal inner nuclear layer morphology</field>
+  
+
+  
+	<field name="term_name">abnormal retinal outer nuclear layer morphology</field>
+  
+
+  
+	<field name="term_name">abnormal retinal vasculature morphology</field>
+  
+
+  
+	<field name="term_name">abnormal rib morphology</field>
+  
+
+  
+	<field name="term_name">abnormal rostral-caudal axis patterning</field>
+  
+
+  
+	<field name="term_name">abnormal scapula morphology</field>
+  
+
+  
+	<field name="term_name">abnormal seminal vesicle morphology</field>
+  
+
+  
+	<field name="term_name">abnormal sensory capabilities/reflexes/nociception</field>
+  
+
+  
+	<field name="term_name">abnormal skin appearance</field>
+  
+
+  
+	<field name="term_name">abnormal skin coloration</field>
+  
+
+  
+	<field name="term_name">abnormal skin morphology</field>
+  
+
+  
+	<field name="term_name">abnormal sleep behavior</field>
+  
+
+  
+	<field name="term_name">abnormal snout morphology</field>
+  
+
+  
+	<field name="term_name">abnormal somite shape</field>
+  
+
+  
+	<field name="term_name">abnormal spinal cord morphology</field>
+  
+
+  
+	<field name="term_name">abnormal spine curvature</field>
+  
+
+  
+	<field name="term_name">abnormal spleen morphology</field>
+  
+
+  
+	<field name="term_name">abnormal sternum morphology</field>
+  
+
+  
+	<field name="term_name">abnormal stomach morphology</field>
+  
+
+  
+	<field name="term_name">abnormal tail bud morphology</field>
+  
+
+  
+	<field name="term_name">abnormal tail length</field>
+  
+
+  
+	<field name="term_name">abnormal tail morphology</field>
+  
+
+  
+	<field name="term_name">abnormal testis morphology</field>
+  
+
+  
+	<field name="term_name">abnormal thoracic cage shape</field>
+  
+
+  
+	<field name="term_name">abnormal thymus morphology</field>
+  
+
+  
+	<field name="term_name">abnormal thyroid gland morphology</field>
+  
+
+  
+	<field name="term_name">abnormal tibia morphology</field>
+  
+
+  
+	<field name="term_name">abnormal tooth morphology</field>
+  
+
+  
+	<field name="term_name">abnormal trachea morphology</field>
+  
+
+  
+	<field name="term_name">abnormal ulna morphology</field>
+  
+
+  
+	<field name="term_name">abnormal umbilical cord morphology</field>
+  
+
+  
+	<field name="term_name">abnormal urinary bladder morphology</field>
+  
+
+  
+	<field name="term_name">abnormal uterus morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vertebrae morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vertebral arch morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vibrissa morphology</field>
+  
+
+  
+	<field name="term_name">abnormal visceral yolk sac morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vitelline vasculature morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vitreous body morphology</field>
+  
+
+  
+	<field name="term_name">abnormal vocalization</field>
+  
+
+  
+	<field name="term_name">abnormal zygomatic bone morphology</field>
+  
+
+  
+	<field name="term_name">absent adrenal gland</field>
+  
+
+  
+	<field name="term_name">absent epididymis</field>
+  
+
+  
+	<field name="term_name">absent external male genitalia</field>
+  
+
+  
+	<field name="term_name">absent lymph nodes</field>
+  
+
+  
+	<field name="term_name">absent optic nerve</field>
+  
+
+  
+	<field name="term_name">absent ovary</field>
+  
+
+  
+	<field name="term_name">absent pancreas</field>
+  
+
+  
+	<field name="term_name">absent pinna reflex</field>
+  
+
+  
+	<field name="term_name">absent prostate gland</field>
+  
+
+  
+	<field name="term_name">absent seminal vesicle</field>
+  
+
+  
+	<field name="term_name">absent spleen</field>
+  
+
+  
+	<field name="term_name">absent startle reflex</field>
+  
+
+  
+	<field name="term_name">absent teeth</field>
+  
+
+  
+	<field name="term_name">absent testes</field>
+  
+
+  
+	<field name="term_name">absent urinary bladder</field>
+  
+
+  
+	<field name="term_name">absent uterus</field>
+  
+
+  
+	<field name="term_name">absent vibrissae</field>
+  
+
+  
+	<field name="term_name">adipose tissue phenotype</field>
+  
+
+  
+	<field name="term_name">anophthalmia</field>
+  
+
+  
+	<field name="term_name">aorta dilation</field>
+  
+
+  
+	<field name="term_name">aorta stenosis</field>
+  
+
+  
+	<field name="term_name">athymia</field>
+  
+
+  
+	<field name="term_name">behavior/neurological phenotype</field>
+  
+
+  
+	<field name="term_name">bleb</field>
+  
+
+  
+	<field name="term_name">brachydactyly</field>
+  
+
+  
+	<field name="term_name">cardiovascular system phenotype</field>
+  
+
+  
+	<field name="term_name">cataract</field>
+  
+
+  
+	<field name="term_name">cleft palate</field>
+  
+
+  
+	<field name="term_name">convulsive seizures</field>
+  
+
+  
+	<field name="term_name">cornea ulcer</field>
+  
+
+  
+	<field name="term_name">corneal deposits</field>
+  
+
+  
+	<field name="term_name">corneal opacity</field>
+  
+
+  
+	<field name="term_name">corneal vascularization</field>
+  
+
+  
+	<field name="term_name">craniofacial phenotype</field>
+  
+
+  
+	<field name="term_name">cyanosis</field>
+  
+
+  
+	<field name="term_name">cystolithiasis</field>
+  
+
+  
+	<field name="term_name">decreased anxiety-related response</field>
+  
+
+  
+	<field name="term_name">decreased basophil cell number</field>
+  
+
+  
+	<field name="term_name">decreased blood urea nitrogen level</field>
+  
+
+  
+	<field name="term_name">decreased body length</field>
+  
+
+  
+	<field name="term_name">decreased body temperature</field>
+  
+
+  
+	<field name="term_name">decreased body weight</field>
+  
+
+  
+	<field name="term_name">decreased bone mineral content</field>
+  
+
+  
+	<field name="term_name">decreased bone mineral density</field>
+  
+
+  
+	<field name="term_name">decreased bone trabecula number</field>
+  
+
+  
+	<field name="term_name">decreased brain size</field>
+  
+
+  
+	<field name="term_name">decreased cardiac muscle contractility</field>
+  
+
+  
+	<field name="term_name">decreased cardiac output</field>
+  
+
+  
+	<field name="term_name">decreased cardiac stroke volume</field>
+  
+
+  
+	<field name="term_name">decreased caudal vertebrae number</field>
+  
+
+  
+	<field name="term_name">decreased circulating alanine transaminase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating alkaline phosphatase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating amylase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating aspartate transaminase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating bilirubin level</field>
+  
+
+  
+	<field name="term_name">decreased circulating calcium level</field>
+  
+
+  
+	<field name="term_name">decreased circulating chloride level</field>
+  
+
+  
+	<field name="term_name">decreased circulating cholesterol level</field>
+  
+
+  
+	<field name="term_name">decreased circulating creatine kinase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating creatinine level</field>
+  
+
+  
+	<field name="term_name">decreased circulating free fatty acid level</field>
+  
+
+  
+	<field name="term_name">decreased circulating fructosamine level</field>
+  
+
+  
+	<field name="term_name">decreased circulating glucose level</field>
+  
+
+  
+	<field name="term_name">decreased circulating glycerol level</field>
+  
+
+  
+	<field name="term_name">decreased circulating HDL cholesterol level</field>
+  
+
+  
+	<field name="term_name">decreased circulating insulin level</field>
+  
+
+  
+	<field name="term_name">decreased circulating iron level</field>
+  
+
+  
+	<field name="term_name">decreased circulating LDL cholesterol level</field>
+  
+
+  
+	<field name="term_name">decreased circulating lipase level</field>
+  
+
+  
+	<field name="term_name">decreased circulating magnesium level</field>
+  
+
+  
+	<field name="term_name">decreased circulating phosphate level</field>
+  
+
+  
+	<field name="term_name">decreased circulating potassium level</field>
+  
+
+  
+	<field name="term_name">decreased circulating serum albumin level</field>
+  
+
+  
+	<field name="term_name">decreased circulating sodium level</field>
+  
+
+  
+	<field name="term_name">decreased circulating thyroxine level</field>
+  
+
+  
+	<field name="term_name">decreased circulating total protein level</field>
+  
+
+  
+	<field name="term_name">decreased circulating triglyceride level</field>
+  
+
+  
+	<field name="term_name">decreased circulating unsaturated transferrin level</field>
+  
+
+  
+	<field name="term_name">decreased coping response</field>
+  
+
+  
+	<field name="term_name">decreased cornea thickness</field>
+  
+
+  
+	<field name="term_name">decreased eosinophil cell number</field>
+  
+
+  
+	<field name="term_name">decreased erythrocyte cell number</field>
+  
+
+  
+	<field name="term_name">decreased exploration in new environment</field>
+  
+
+  
+	<field name="term_name">decreased fasted circulating glucose level</field>
+  
+
+  
+	<field name="term_name">decreased fluid intake</field>
+  
+
+  
+	<field name="term_name">decreased food intake</field>
+  
+
+  
+	<field name="term_name">decreased freezing behavior</field>
+  
+
+  
+	<field name="term_name">decreased glycosylated hemoglobin level</field>
+  
+
+  
+	<field name="term_name">decreased grip strength</field>
+  
+
+  
+	<field name="term_name">decreased heart left ventricle size</field>
+  
+
+  
+	<field name="term_name">decreased heart rate</field>
+  
+
+  
+	<field name="term_name">decreased heart rate variability</field>
+  
+
+  
+	<field name="term_name">decreased heart weight</field>
+  
+
+  
+	<field name="term_name">decreased hematocrit</field>
+  
+
+  
+	<field name="term_name">decreased hemoglobin content</field>
+  
+
+  
+	<field name="term_name">decreased kidney weight</field>
+  
+
+  
+	<field name="term_name">decreased large unstained cell number</field>
+  
+
+  
+	<field name="term_name">decreased lean body mass</field>
+  
+
+  
+	<field name="term_name">decreased leukocyte cell number</field>
+  
+
+  
+	<field name="term_name">decreased lymphocyte cell number</field>
+  
+
+  
+	<field name="term_name">decreased mean corpuscular hemoglobin</field>
+  
+
+  
+	<field name="term_name">decreased mean corpuscular hemoglobin concentration</field>
+  
+
+  
+	<field name="term_name">decreased mean corpuscular volume</field>
+  
+
+  
+	<field name="term_name">decreased mean platelet volume</field>
+  
+
+  
+	<field name="term_name">decreased monocyte cell number</field>
+  
+
+  
+	<field name="term_name">decreased neutrophil cell number</field>
+  
+
+  
+	<field name="term_name">decreased prepulse inhibition</field>
+  
+
+  
+	<field name="term_name">decreased pulmonary respiratory rate</field>
+  
+
+  
+	<field name="term_name">decreased red blood cell distribution width</field>
+  
+
+  
+	<field name="term_name">decreased respiratory quotient</field>
+  
+
+  
+	<field name="term_name">decreased spleen weight</field>
+  
+
+  
+	<field name="term_name">decreased startle reflex</field>
+  
+
+  
+	<field name="term_name">decreased threshold for auditory brainstem response</field>
+  
+
+  
+	<field name="term_name">decreased total body fat amount</field>
+  
+
+  
+	<field name="term_name">decreased total retina thickness</field>
+  
+
+  
+	<field name="term_name">decreased urine creatinine level</field>
+  
+
+  
+	<field name="term_name">decreased urine magnesium level</field>
+  
+
+  
+	<field name="term_name">decreased vertical activity</field>
+  
+
+  
+	<field name="term_name">digestive/alimentary phenotype</field>
+  
+
+  
+	<field name="term_name">dilated heart left ventricle</field>
+  
+
+  
+	<field name="term_name">distended jejunum</field>
+  
+
+  
+	<field name="term_name">edema</field>
+  
+
+  
+	<field name="term_name">embryo phenotype</field>
+  
+
+  
+	<field name="term_name">embryonic growth retardation</field>
+  
+
+  
+	<field name="term_name">embryonic lethality prior to organogenesis</field>
+  
+
+  
+	<field name="term_name">embryonic lethality prior to tooth bud stage</field>
+  
+
+  
+	<field name="term_name">endocrine/exocrine gland phenotype</field>
+  
+
+  
+	<field name="term_name">enlarged adrenal glands</field>
+  
+
+  
+	<field name="term_name">enlarged cecum</field>
+  
+
+  
+	<field name="term_name">enlarged duodenum</field>
+  
+
+  
+	<field name="term_name">enlarged epididymis</field>
+  
+
+  
+	<field name="term_name">enlarged gallbladder</field>
+  
+
+  
+	<field name="term_name">enlarged heart</field>
+  
+
+  
+	<field name="term_name">enlarged heart atrium</field>
+  
+
+  
+	<field name="term_name">enlarged ileum</field>
+  
+
+  
+	<field name="term_name">enlarged kidney</field>
+  
+
+  
+	<field name="term_name">enlarged liver</field>
+  
+
+  
+	<field name="term_name">enlarged lung</field>
+  
+
+  
+	<field name="term_name">enlarged lymph nodes</field>
+  
+
+  
+	<field name="term_name">enlarged ovary</field>
+  
+
+  
+	<field name="term_name">enlarged pancreas</field>
+  
+
+  
+	<field name="term_name">enlarged salivary gland</field>
+  
+
+  
+	<field name="term_name">enlarged seminal vesicle</field>
+  
+
+  
+	<field name="term_name">enlarged spleen</field>
+  
+
+  
+	<field name="term_name">enlarged stomach</field>
+  
+
+  
+	<field name="term_name">enlarged testis</field>
+  
+
+  
+	<field name="term_name">enlarged thymus</field>
+  
+
+  
+	<field name="term_name">enlarged urinary bladder</field>
+  
+
+  
+	<field name="term_name">enlarged uterus</field>
+  
+
+  
+	<field name="term_name">exencephaly</field>
+  
+
+  
+	<field name="term_name">eyelids fail to open</field>
+  
+
+  
+	<field name="term_name">facial cleft</field>
+  
+
+  
+	<field name="term_name">female infertility</field>
+  
+
+  
+	<field name="term_name">fused cornea and lens</field>
+  
+
+  
+	<field name="term_name">fused phalanges</field>
+  
+
+  
+	<field name="term_name">fusion of vertebral arches</field>
+  
+
+  
+	<field name="term_name">growth/size/body region phenotype</field>
+  
+
+  
+	<field name="term_name">head bobbing</field>
+  
+
+  
+	<field name="term_name">hearing/vestibular/ear phenotype</field>
+  
+
+  
+	<field name="term_name">hematopoietic system phenotype</field>
+  
+
+  
+	<field name="term_name">hemorrhage</field>
+  
+
+  
+	<field name="term_name">homeostasis/metabolism phenotype</field>
+  
+
+  
+	<field name="term_name">hydrocephaly</field>
+  
+
+  
+	<field name="term_name">hydrometra</field>
+  
+
+  
+	<field name="term_name">hyperactivity</field>
+  
+
+  
+	<field name="term_name">hypoactivity</field>
+  
+
+  
+	<field name="term_name">immune system phenotype</field>
+  
+
+  
+	<field name="term_name">impaired contextual conditioning behavior</field>
+  
+
+  
+	<field name="term_name">impaired cued conditioning behavior</field>
+  
+
+  
+	<field name="term_name">impaired glucose tolerance</field>
+  
+
+  
+	<field name="term_name">impaired pupillary reflex</field>
+  
+
+  
+	<field name="term_name">impaired righting response</field>
+  
+
+  
+	<field name="term_name">improved glucose tolerance</field>
+  
+
+  
+	<field name="term_name">increased aggression</field>
+  
+
+  
+	<field name="term_name">increased anxiety-related response</field>
+  
+
+  
+	<field name="term_name">increased basophil cell number</field>
+  
+
+  
+	<field name="term_name">increased blood urea nitrogen level</field>
+  
+
+  
+	<field name="term_name">increased body length</field>
+  
+
+  
+	<field name="term_name">increased body temperature</field>
+  
+
+  
+	<field name="term_name">increased bone mineral content</field>
+  
+
+  
+	<field name="term_name">increased bone mineral density</field>
+  
+
+  
+	<field name="term_name">increased cardiac muscle contractility</field>
+  
+
+  
+	<field name="term_name">increased cardiac output</field>
+  
+
+  
+	<field name="term_name">increased caudal vertebrae number</field>
+  
+
+  
+	<field name="term_name">increased circulating alanine transaminase level</field>
+  
+
+  
+	<field name="term_name">increased circulating alkaline phosphatase level</field>
+  
+
+  
+	<field name="term_name">increased circulating amylase level</field>
+  
+
+  
+	<field name="term_name">increased circulating aspartate transaminase level</field>
+  
+
+  
+	<field name="term_name">increased circulating bilirubin level</field>
+  
+
+  
+	<field name="term_name">increased circulating calcium level</field>
+  
+
+  
+	<field name="term_name">increased circulating chloride level</field>
+  
+
+  
+	<field name="term_name">increased circulating cholesterol level</field>
+  
+
+  
+	<field name="term_name">increased circulating creatine kinase level</field>
+  
+
+  
+	<field name="term_name">increased circulating creatinine level</field>
+  
+
+  
+	<field name="term_name">increased circulating free fatty acid level</field>
+  
+
+  
+	<field name="term_name">increased circulating fructosamine level</field>
+  
+
+  
+	<field name="term_name">increased circulating glucose level</field>
+  
+
+  
+	<field name="term_name">increased circulating glycerol level</field>
+  
+
+  
+	<field name="term_name">increased circulating HDL cholesterol level</field>
+  
+
+  
+	<field name="term_name">increased circulating insulin level</field>
+  
+
+  
+	<field name="term_name">increased circulating iron level</field>
+  
+
+  
+	<field name="term_name">increased circulating LDL cholesterol level</field>
+  
+
+  
+	<field name="term_name">increased circulating lipase level</field>
+  
+
+  
+	<field name="term_name">increased circulating magnesium level</field>
+  
+
+  
+	<field name="term_name">increased circulating phosphate level</field>
+  
+
+  
+	<field name="term_name">increased circulating potassium level</field>
+  
+
+  
+	<field name="term_name">increased circulating serum albumin level</field>
+  
+
+  
+	<field name="term_name">increased circulating sodium level</field>
+  
+
+  
+	<field name="term_name">increased circulating thyroxine level</field>
+  
+
+  
+	<field name="term_name">increased circulating total protein level</field>
+  
+
+  
+	<field name="term_name">increased circulating triglyceride level</field>
+  
+
+  
+	<field name="term_name">increased circulating unsaturated transferrin level</field>
+  
+
+  
+	<field name="term_name">increased coping response</field>
+  
+
+  
+	<field name="term_name">increased eosinophil cell number</field>
+  
+
+  
+	<field name="term_name">increased erythrocyte cell number</field>
+  
+
+  
+	<field name="term_name">increased exploration in new environment</field>
+  
+
+  
+	<field name="term_name">increased fasted circulating glucose level</field>
+  
+
+  
+	<field name="term_name">increased fluid intake</field>
+  
+
+  
+	<field name="term_name">increased food intake</field>
+  
+
+  
+	<field name="term_name">increased freezing behavior</field>
+  
+
+  
+	<field name="term_name">increased glycosylated hemoglobin level</field>
+  
+
+  
+	<field name="term_name">increased grip strength</field>
+  
+
+  
+	<field name="term_name">increased heart left ventricle size</field>
+  
+
+  
+	<field name="term_name">increased heart rate</field>
+  
+
+  
+	<field name="term_name">increased heart rate variability</field>
+  
+
+  
+	<field name="term_name">increased heart weight</field>
+  
+
+  
+	<field name="term_name">increased hematocrit</field>
+  
+
+  
+	<field name="term_name">increased hemoglobin content</field>
+  
+
+  
+	<field name="term_name">increased kidney weight</field>
+  
+
+  
+	<field name="term_name">increased large unstained cell number</field>
+  
+
+  
+	<field name="term_name">increased lean body mass</field>
+  
+
+  
+	<field name="term_name">increased leukocyte cell number</field>
+  
+
+  
+	<field name="term_name">increased lymphocyte cell number</field>
+  
+
+  
+	<field name="term_name">increased mean corpuscular hemoglobin</field>
+  
+
+  
+	<field name="term_name">increased mean corpuscular hemoglobin concentration</field>
+  
+
+  
+	<field name="term_name">increased mean corpuscular volume</field>
+  
+
+  
+	<field name="term_name">increased mean platelet volume</field>
+  
+
+  
+	<field name="term_name">increased monocyte cell number</field>
+  
+
+  
+	<field name="term_name">increased neutrophil cell number</field>
+  
+
+  
+	<field name="term_name">increased or absent threshold for auditory brainstem response</field>
+  
+
+  
+	<field name="term_name">increased prepulse inhibition</field>
+  
+
+  
+	<field name="term_name">increased pulmonary respiratory rate</field>
+  
+
+  
+	<field name="term_name">increased red blood cell distribution width</field>
+  
+
+  
+	<field name="term_name">increased respiratory quotient</field>
+  
+
+  
+	<field name="term_name">increased spleen weight</field>
+  
+
+  
+	<field name="term_name">increased startle reflex</field>
+  
+
+  
+	<field name="term_name">increased total body fat amount</field>
+  
+
+  
+	<field name="term_name">increased total retina thickness</field>
+  
+
+  
+	<field name="term_name">increased urine magnesium level</field>
+  
+
+  
+	<field name="term_name">increased urine microalbumin level</field>
+  
+
+  
+	<field name="term_name">increased vertical activity</field>
+  
+
+  
+	<field name="term_name">integument phenotype</field>
+  
+
+  
+	<field name="term_name">iris synechia</field>
+  
+
+  
+	<field name="term_name">irregularly shaped pupil</field>
+  
+
+  
+	<field name="term_name">kyphosis</field>
+  
+
+  
+	<field name="term_name">limb grasping</field>
+  
+
+  
+	<field name="term_name">limbs/digits/tail phenotype</field>
+  
+
+  
+	<field name="term_name">liver/biliary system phenotype</field>
+  
+
+  
+	<field name="term_name">long tibia</field>
+  
+
+  
+	<field name="term_name">lordosis</field>
+  
+
+  
+	<field name="term_name">male infertility</field>
+  
+
+  
+	<field name="term_name">megacolon</field>
+  
+
+  
+	<field name="term_name">microphthalmia</field>
+  
+
+  
+	<field name="term_name">mortality/aging</field>
+  
+
+  
+	<field name="term_name">muscle phenotype</field>
+  
+
+  
+	<field name="term_name">mydriasis</field>
+  
+
+  
+	<field name="term_name">narrow eye opening</field>
+  
+
+  
+	<field name="term_name">nervous system phenotype</field>
+  
+
+  
+	<field name="term_name">pale liver</field>
+  
+
+  
+	<field name="term_name">pale yolk sac</field>
+  
+
+  
+	<field name="term_name">pallor</field>
+  
+
+  
+	<field name="term_name">persistence of hyaloid vascular system</field>
+  
+
+  
+	<field name="term_name">pigmentation phenotype</field>
+  
+
+  
+	<field name="term_name">polycystic kidney</field>
+  
+
+  
+	<field name="term_name">polydactyly</field>
+  
+
+  
+	<field name="term_name">premature death</field>
+  
+
+  
+	<field name="term_name">prenatal lethality</field>
+  
+
+  
+	<field name="term_name">prenatal lethality prior to heart atrial septation</field>
+  
+
+  
+	<field name="term_name">preweaning lethality, complete penetrance</field>
+  
+
+  
+	<field name="term_name">preweaning lethality, incomplete penetrance</field>
+  
+
+  
+	<field name="term_name">prolonged PQ interval</field>
+  
+
+  
+	<field name="term_name">prolonged PR interval</field>
+  
+
+  
+	<field name="term_name">prolonged QRS complex duration</field>
+  
+
+  
+	<field name="term_name">prolonged QT interval</field>
+  
+
+  
+	<field name="term_name">prolonged RR interval</field>
+  
+
+  
+	<field name="term_name">prolonged ST segment</field>
+  
+
+  
+	<field name="term_name">protruding tongue</field>
+  
+
+  
+	<field name="term_name">renal/urinary system phenotype</field>
+  
+
+  
+	<field name="term_name">reproductive system phenotype</field>
+  
+
+  
+	<field name="term_name">respiratory system phenotype</field>
+  
+
+  
+	<field name="term_name">scaly skin</field>
+  
+
+  
+	<field name="term_name">sclerocornea</field>
+  
+
+  
+	<field name="term_name">scoliosis</field>
+  
+
+  
+	<field name="term_name">short tibia</field>
+  
+
+  
+	<field name="term_name">shortened PQ interval</field>
+  
+
+  
+	<field name="term_name">shortened PR interval</field>
+  
+
+  
+	<field name="term_name">shortened QRS complex duration</field>
+  
+
+  
+	<field name="term_name">shortened QT interval</field>
+  
+
+  
+	<field name="term_name">shortened RR interval</field>
+  
+
+  
+	<field name="term_name">shortened ST segment</field>
+  
+
+  
+	<field name="term_name">single kidney</field>
+  
+
+  
+	<field name="term_name">skeleton phenotype</field>
+  
+
+  
+	<field name="term_name">small adrenal glands</field>
+  
+
+  
+	<field name="term_name">small epididymis</field>
+  
+
+  
+	<field name="term_name">small heart</field>
+  
+
+  
+	<field name="term_name">small kidney</field>
+  
+
+  
+	<field name="term_name">small liver</field>
+  
+
+  
+	<field name="term_name">small lung</field>
+  
+
+  
+	<field name="term_name">small lymph nodes</field>
+  
+
+  
+	<field name="term_name">small pancreas</field>
+  
+
+  
+	<field name="term_name">small seminal vesicle</field>
+  
+
+  
+	<field name="term_name">small spleen</field>
+  
+
+  
+	<field name="term_name">small stomach</field>
+  
+
+  
+	<field name="term_name">small superior vagus ganglion</field>
+  
+
+  
+	<field name="term_name">small testis</field>
+  
+
+  
+	<field name="term_name">small thymus</field>
+  
+
+  
+	<field name="term_name">small uterus</field>
+  
+
+  
+	<field name="term_name">spina bifida</field>
+  
+
+  
+	<field name="term_name">stereotypic behavior</field>
+  
+
+  
+	<field name="term_name">syndactyly</field>
+  
+
+  
+	<field name="term_name">thick skin</field>
+  
+
+  
+	<field name="term_name">thick ventricular wall</field>
+  
+
+  
+	<field name="term_name">thin skin</field>
+  
+
+  
+	<field name="term_name">thin ventricular wall</field>
+  
+
+  
+	<field name="term_name">thrombocytopenia</field>
+  
+
+  
+	<field name="term_name">thrombocytosis</field>
+  
+
+  
+	<field name="term_name">tremors</field>
+  
+
+  
+	<field name="term_name">trunk curl</field>
+  
+
+  
+	<field name="term_name">urinary bladder obstruction</field>
+  
+
+  
+	<field name="term_name">vertebral fusion</field>
+  
+
+  
+	<field name="term_name">vertebral transformation</field>
+  
+
+  
+	<field name="term_name">vision/eye phenotype</field>
+  
+</resultset>
