@@ -1,4 +1,5 @@
 <?php
+// ini_set('display_errors', '0');
     // error_reporting(E_ERROR | E_PARSE);
     define("ini_data", parse_ini_file("config.ini")); //relative to controller.php
     require_once 'vendor/autoload.php';

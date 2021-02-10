@@ -3,67 +3,90 @@ import './PhenotypeResultBreakdown.css';
 import ResultTable from "../../UtilityComponents/ResultTable";
 import $ from "jquery";
 import axios from "axios";
+import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
 
 class PhenotypeResultBreakdown extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {selectedPhenotype: "", GWASData: null, backBtnClick: null};
+        this.state = {selectedPhenotype: "", breakdownData: null, backBtnClick: null, loading:true};
     }
 
-    populateGWASRecords() {
-        let url_string = "http://gcmouseapi/controller.php?homologSearch=true&term=" + encodeURIComponent(this.state.selectedPhenotype);
+    componentDidMount() {
+        this.getBreakdownData();
+    }
+
+    getBreakdownData() {
+        let url_string = "http://gcmouseapi/controller.php?phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
         axios.get(url_string)
-                .then((response) => {
-                    if (response.status === 200) {
-                        if (response.data.length > 0) {
-                            $("#live-search").hide();
-                        } else {
-                            this.setState({liveSearchResults: response.data});
-                            $("#live-search").show();
-                        }
+            .then((response) => {
+                if (response.status === 200) {
+                    if (response.data) {
+                        this.setState({breakdownData: response.data, loading: false});
+                    } else {
+
                     }
-                })
-                .catch((error) => {
-                    console.log("An error occurred retrieving live search results.");
-                });
-
-
-
-        return $.ajax({
-            type: "GET",
-            url: "http://gcmouseapi/controller.php?homologSearch=true&term=" + encodeURIComponent(this.state.selectedPhenotype),
-            success: function (data) {
-                $("#live-search").empty();
-                if (data) {
-                    data = JSON.parse(data);
-                    let result_total = data[1];
-                    data = data[0];
-                    let headings = Object.keys(data[0]);
-                    let result = "<tr>";
-                    headings.forEach(element => {
-                        result += "<th>" + element + "</th>";
-                    });
-                    result += "</tr>";
-                    for (var i = 0; i < data.length; i++) {
-                        result += "<tr onclick=''>";
-                        headings.forEach(element => {
-                            result += "<td>" + data[i][element] + "</td>";
-                        });
-                        result += "</tr>";
-                    }
-                    $("#gene-knockout-list").html(result);
                 }
+            })
+            .catch((error) => {
+                console.log("An error occurred retrieving phenotype data.");
+            });
+    }
+
+    getHumanTerm(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["Mappings"].length > 0) {
+                if (breakdownData["Mappings"][0]["sourceID"].includes("HP"))
+                    return breakdownData["Mappings"][0]["sourceID"] + " " + breakdownData["Mappings"][0]["sourceLabel"];
+                else
+                    return breakdownData["Mappings"][0]["mappedID"] + " " + breakdownData["Mappings"][0]["mappedLabel"];
+            } else {
+                return "No mapping found";
             }
-        });
+        }
+    }
+
+    getMouseTerm(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["Mappings"].length > 0) {
+                if (breakdownData["Mappings"][0]["sourceID"].includes("MP"))
+                    return breakdownData["Mappings"][0]["sourceID"] + " " + breakdownData["Mappings"][0]["sourceLabel"];
+                else
+                    return breakdownData["Mappings"][0]["mappedID"] + " " + breakdownData["Mappings"][0]["mappedLabel"];
+            } else {
+                return "No mapping found";
+            }
+        }
+    }
+
+    getGWASStudies(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["GWAS Studies"].length > 0) {
+
+            } else {
+                return "0";
+            }
+        }
+    }
+
+    getGeneKnockouts(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["Gene Knockouts"].length > 0) {
+
+            } else {
+                return "0";
+            }
+        }
     }
 
     render() {
+        const {breakdownData, loading} = this.state;
         return (
             <div id="phenotypeResultsContainer" className="container">
+                <LoadingSpinner loading={loading} />
                 <a className="btn btn-link" onClick={this.props.backBtnClick}>Back</a>
                 <div className="phenotype-breakdown-container">
                     <div className="row">
-                        <h3 id="Selected-Phenotype" className="col">{}</h3>
+                        <h3 id="Selected-Phenotype" className="col">{this.props.selectedPhenotype}</h3>
                     </div>
                     {/* Mappings */}
                     <div className="row center">
@@ -79,13 +102,13 @@ class PhenotypeResultBreakdown extends React.Component {
                             <span>Human Phenotype Term: </span>
                         </div>
                         <div className="col">
-                            <p id="HPO-Matched-Term">HP:12345 Microscopic Foot</p>
+                            <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
                         </div>
                         <div className="col highlight">
                             <span>Mammalian Phenotype Term: </span>
                         </div>
                         <div className="col">
-                            <p id="MP-Matched-Term">MP:12345 Micro Foot</p>
+                            <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
                         </div>
                     </div>
                     {/* Synonyms */}
@@ -95,10 +118,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                <li>test1</li>
-                                <li>test1</li>
-                                <li>test1</li>
-                                <li>test1</li>
+                                <li>None</li>
                             </ul>
                         </div>
                         <div className="col highlight">
@@ -106,10 +126,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                <li>test1</li>
-                                <li>test1</li>
-                                <li>test1</li>
-                                <li>test1</li>
+                                <li>None</li>
                             </ul>
                         </div>
                     </div>
@@ -119,13 +136,13 @@ class PhenotypeResultBreakdown extends React.Component {
                             <span>GWAS Studies: </span>
                         </div>
                         <div className="col">
-                            <p>12</p>
+                            <p>{this.getGWASStudies(breakdownData)}</p>
                         </div>
                         <div className="col highlight">
                             <span>Gene Knockouts: </span>
                         </div>
                         <div className="col">
-                            <p>23</p>
+                            <p>{this.getGeneKnockouts(breakdownData)}</p>
                         </div>
                     </div>
                     {/* Homolog Gene Studies/Experiments */}
@@ -155,9 +172,9 @@ class PhenotypeResultBreakdown extends React.Component {
                                 <li><a>GWAS of Microscopic Feet</a></li>
                             </ul>
                         </div>
-                        <div className="col center">
-                            <ResultTable tableData={this.props.GwasData}/>
-                        </div>
+                        {/*<div className="col center">*/}
+                        {/*    <ResultTable tableData={breakdownData["GWAS Studies"]}/>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>
