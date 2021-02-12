@@ -45,7 +45,7 @@ class ResultTable extends React.Component {
                                 {this.props.tableData.map((row, index) => {
                                     return (<tr data-id={row["ID"]} key={index} onClick={this.props.onRowClick}>
                                         {Object.keys(row).map((key) => {
-                                            return (<td data-id={row["ID"]}>{row[key]}</td>)
+                                            return (<td data-id={row["MP ID"]}>{row[key]}</td>)
                                         })}
                                     </tr>)
                                 })}

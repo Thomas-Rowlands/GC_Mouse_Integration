@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Home/App.css';
+import './App.css';
 import MainMenuItem from "./Components/MainMenuItem";
 import {Link} from 'react-router-dom';
 // @ts-ignore

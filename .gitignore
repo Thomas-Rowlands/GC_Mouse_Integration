@@ -4,6 +4,7 @@ DB/mouse_import/MarkerDump/
 DB/mouse_import/config.py
 DB/Import/
 .idea
+build/
 DB/mouse_import/__pycache__
 DB/mouse_import/Homo_sapiens.GRCh38.102.chr.gtf
 /node_modules/

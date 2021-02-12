@@ -4,10 +4,14 @@ import ResultTable from "../../UtilityComponents/ResultTable";
 import $ from "jquery";
 import axios from "axios";
 import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
+import configData from "../../Config/config.json";
+import {forEach} from "react-bootstrap/ElementChildren";
 
 class PhenotypeResultBreakdown extends React.Component {
     constructor(props) {
         super(props);
+        this.gwasStudyClicked = this.gwasStudyClicked.bind(this);
+        this.experimentClicked = this.experimentClicked.bind(this);
         this.state = {selectedPhenotype: "", breakdownData: null, backBtnClick: null, loading:true};
     }
 
@@ -15,8 +19,19 @@ class PhenotypeResultBreakdown extends React.Component {
         this.getBreakdownData();
     }
 
+    gwasStudyClicked(row) {
+        let studyID = $(row.currentTarget).attr("data-id");
+        var win = window.open("https://www.gwascentral.org/study/" + studyID, "_blank");
+        if (win)
+            win.focus();
+    }
+
+    experimentClicked(row) {
+        let selection = $(row.target).attr("data-id");
+    }
+
     getBreakdownData() {
-        let url_string = "http://gcmouseapi/controller.php?phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
+        let url_string = configData.api_server + "controller.php?phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -78,6 +93,28 @@ class PhenotypeResultBreakdown extends React.Component {
         }
     }
 
+    getMappedSynonyms(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["Mappings"][0]["mappedSynonyms"].length > 0) {
+                return breakdownData["Mappings"][0]["mappedSynonyms"].map((synonym, index) =>
+                <li>{synonym}</li>);
+            } else {
+                return <li>None</li>;
+            }
+        }
+    }
+
+    getSourceSynonyms(breakdownData) {
+        if (breakdownData) {
+            if (breakdownData["Mappings"][0]["sourceSynonyms"].length > 0) {
+                return breakdownData["Mappings"][0]["sourceSynonyms"].map((synonym, index) =>
+                <li>{synonym}</li>);
+            } else {
+                return <li>None</li>;
+            }
+        }
+    }
+
     render() {
         const {breakdownData, loading} = this.state;
         return (
@@ -118,7 +155,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                <li>None</li>
+                                {this.getMappedSynonyms(breakdownData)}
                             </ul>
                         </div>
                         <div className="col highlight">
@@ -126,7 +163,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                <li>None</li>
+                                {this.getSourceSynonyms(breakdownData)}
                             </ul>
                         </div>
                     </div>
@@ -136,25 +173,25 @@ class PhenotypeResultBreakdown extends React.Component {
                             <span>GWAS Studies: </span>
                         </div>
                         <div className="col">
-                            <p>{this.getGWASStudies(breakdownData)}</p>
+                            <p>{breakdownData ? breakdownData["GWAS Studies"].length: 0}</p>
                         </div>
                         <div className="col highlight">
                             <span>Gene Knockouts: </span>
                         </div>
                         <div className="col">
-                            <p>{this.getGeneKnockouts(breakdownData)}</p>
+                            <p>{breakdownData ? breakdownData["Gene Knockouts"].length: 0}</p>
                         </div>
                     </div>
                     {/* Homolog Gene Studies/Experiments */}
                     <div className="row">
                         <div className="col center highlight">
-                            <span><span id="numHomologousGenes">5</span> Homologous Genes Identified</span>
+                            <span><span id="numHomologousGenes"></span> Homologous Genes Identified</span>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col center">
                             <ul>
-                                <li><a onClick="loadGenomeBrowser();">BRca2</a></li>
+
                             </ul>
                         </div>
                     </div>
@@ -167,14 +204,12 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                     </div>
                     <div className="row">
-                        <div id="gwas-study-list" className="col center">
-                            <ul>
-                                <li><a>GWAS of Microscopic Feet</a></li>
-                            </ul>
+                        <div className="col center">
+                            {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]} onRowClick={this.gwasStudyClicked}/>: null}
                         </div>
-                        {/*<div className="col center">*/}
-                        {/*    <ResultTable tableData={breakdownData["GWAS Studies"]}/>*/}
-                        {/*</div>*/}
+                        <div className="col center">
+                            {breakdownData ? <ResultTable tableData={breakdownData["Gene Knockouts"]} onRowClick={this.experimentClicked}/>: null}
+                        </div>
                     </div>
                 </div>
             </div>

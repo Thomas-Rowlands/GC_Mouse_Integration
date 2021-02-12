@@ -6,6 +6,7 @@ import ResultTable from "../UtilityComponents/ResultTable";
 import PhenotypeResultBreakdown from "./Components/PhenotypeResultBreakdown";
 import axios from "axios";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
+import configData from '../Config/config.json';
 
 class PhenotypeSearch extends React.Component {
 
@@ -83,7 +84,7 @@ class PhenotypeSearch extends React.Component {
             $("#live-search").hide();
             return;
         }
-        let url_string = "http://gcmouseapi/livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + this.state.selectedSpecies;
+        let url_string = configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + this.state.selectedSpecies;
         if (input.length > 0) {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
@@ -108,7 +109,7 @@ class PhenotypeSearch extends React.Component {
         let human_pval = parseInt($("#human_pval_select").val());
         let mouse_pval = parseInt($("#mouse_pval_select").val());
 
-        let url_string = "http://gcmouseapi/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
+        let url_string = configData.api_server + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
