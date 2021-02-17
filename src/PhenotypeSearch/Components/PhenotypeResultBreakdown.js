@@ -31,7 +31,7 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     getBreakdownData() {
-        let url_string = configData.api_server + "controller.php?phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
+        let url_string = configData.api_server + "controller.php?type=study&phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {

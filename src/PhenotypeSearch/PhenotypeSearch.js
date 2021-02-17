@@ -109,7 +109,7 @@ class PhenotypeSearch extends React.Component {
         let human_pval = parseInt($("#human_pval_select").val());
         let mouse_pval = parseInt($("#mouse_pval_select").val());
 
-        let url_string = configData.api_server + "/controller.php?search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
+        let url_string = configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {

@@ -24,8 +24,8 @@ class Home extends React.Component {
 
                 </div>
                 <div className="col">
-                    <Link to="/Ontology">
-                        <MainMenuItem url="/Ontology" image="images/bootstrap-icons-1.3.0/bezier2.svg"
+                    <Link to="/OntologyHierarchy">
+                        <MainMenuItem url="/OntologyHierarchy" image="images/bootstrap-icons-1.3.0/bezier2.svg"
                                       alt="image of a bezier curve between two points."
                                       heading="Phenotype Ontology Hierarchy"
                                       body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
