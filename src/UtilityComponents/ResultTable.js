@@ -1,6 +1,13 @@
 import React, {useCallback} from 'react';
-import '../PhenotypeSearch/PhenotypeSearch.css';
+import './ResultTable.css';
 import $ from 'jquery';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 class ResultTable extends React.Component {
     constructor(props) {
@@ -33,25 +40,28 @@ class ResultTable extends React.Component {
                 return (<div className="container">
                         {this.getPageControls(this.props.tableData.length)}
                         <br/>
-                        <div className="info" id="searchResults">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    {Object.keys(this.props.tableData[0]).map((header, index) => {
-                                        return (<th key={index}>{header}</th>)
-                                    })}
-                                </tr>
-
-                                {this.props.tableData.map((row, index) => {
-                                    return (<tr data-id={row["ID"]} key={index} onClick={this.props.onRowClick}>
-                                        {Object.keys(row).map((key) => {
-                                            return (<td data-id={row["MP ID"]}>{row[key]}</td>)
+                        <TableContainer component={Paper} className="info" id="searchResults">
+                            <Table size="small" aria-label="a dense table">
+                                <TableHead>
+                                    <TableRow>
+                                        {Object.keys(this.props.tableData[0]).map((header, index) => {
+                                            return (<TableCell align="center" key={index}>{header}</TableCell>)
                                         })}
-                                    </tr>)
-                                })}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.props.tableData.map((row, index) => {
+                                        return (
+                                            <TableRow data-id={row["ID"]} key={index} onClick={this.props.onRowClick}>
+                                                {Object.keys(row).map((key) => {
+                                                    return (<TableCell align="left"
+                                                                       data-id={row["MP ID"]}>{row[key]}</TableCell>)
+                                                })}
+                                            </TableRow>)
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </div>
                 );
             } else {

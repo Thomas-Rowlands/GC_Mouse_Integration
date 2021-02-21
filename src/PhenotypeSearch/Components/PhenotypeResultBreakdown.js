@@ -120,7 +120,7 @@ class PhenotypeResultBreakdown extends React.Component {
         return (
             <div id="phenotypeResultsContainer" className="container">
                 <LoadingSpinner loading={loading} />
-                <a className="btn btn-link" onClick={this.props.backBtnClick}>Back</a>
+                {this.props.backBtnClick ? <a className="btn btn-link" onClick={this.props.backBtnClick}>Back</a>: null}
                 <div className="phenotype-breakdown-container">
                     <div className="row">
                         <h3 id="Selected-Phenotype" className="col">{this.props.selectedPhenotype}</h3>
@@ -128,10 +128,10 @@ class PhenotypeResultBreakdown extends React.Component {
                     {/* Mappings */}
                     <div className="row center">
                         <div className="col">
-                            <h3>Homo Sapiens</h3>
+                            <h4>Homo Sapiens</h4>
                         </div>
                         <div className="col">
-                            <h3>Mus Musculus</h3>
+                            <h4>Mus Musculus</h4>
                         </div>
                     </div>
                     <div className="row">
@@ -180,19 +180,6 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <p>{breakdownData ? breakdownData["Gene Knockouts"].length: 0}</p>
-                        </div>
-                    </div>
-                    {/* Homolog Gene Studies/Experiments */}
-                    <div className="row">
-                        <div className="col center highlight">
-                            <span><span id="numHomologousGenes"></span> Homologous Genes Identified</span>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col center">
-                            <ul>
-
-                            </ul>
                         </div>
                     </div>
                     <div className="row">

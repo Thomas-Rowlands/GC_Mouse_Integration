@@ -17,17 +17,20 @@
             $mappings = $ont->get_ontology_mappings($termID);
             $return_package["Mappings"] = $mappings;
             // Get GWAS Studies
-            if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
-                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["mappedID"]);
-            } else {
-                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["sourceID"]);
+            if ($mappings) {
+                if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
+                    $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["mappedID"]);
+                } else {
+                    $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["sourceID"]);
+                }
+                // Get Knockouts
+                if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
+                    $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["sourceID"]);
+                } else {
+                    $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["mappedID"]);
+                }
             }
-            // Get Knockouts
-            if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
-                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["sourceID"]);
-            } else {
-                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["mappedID"]);
-            }
+
             return $return_package;
         }
 

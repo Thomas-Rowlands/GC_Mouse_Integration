@@ -1,14 +1,22 @@
 #phenotypeResultsContainer {
-    margin-top: 5%;
-    position: absolute;
     left: 0;
     right: 0;
-    box-shadow: rgb(136, 136, 136) 10px 10px 8px;
-    padding: 1em;
+    padding: 0.25em;
     border: 1px solid #cdcdcd;
 }
 
 #phenotypeResultsContainer ul {
     list-style: none;
     padding-left: 1em;
+}
+
+span{
+    font-size: 0.8em;
+}
+
+p, ul > *{
+    font-size: 0.8em;
+}
+li{
+    list-style-type: disc;
 }

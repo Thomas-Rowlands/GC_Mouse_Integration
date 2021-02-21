@@ -28,36 +28,12 @@
         } else if ($_GET['type'] == "ontology") {
             if (parameters_present(array("ontologySearch", "term", "ontology"))) {
                 $ont = new Ontology();
-                //search for closest matching term ID
-                if ($_GET["ontology"] == "MP") {
-                    $termID = $ont->search_mouse_term($_GET["term"]);
-                    if ($termID)
-                        $termID = $termID[0]["Mouse_ID"];
-                    
-                } else {
-                    $termID = $ont->search_human_term($_GET["term"]);
-                    if ($termID)
-                        $termID = $termID[0]["Human_ID"];
-                }
-                    
-                if ($termID) {
-                    $result = ["sourceTree" => [], "mappedTree" => [], "mappedID" => "", "isExactMatch" => False];
-                    $result["sourceTree"] = $ont->get_ontology_hierarchy($termID, $_GET["ontology"]);
-                    
-                    $mapped_term = $ont->get_ontology_mappings($termID);             
-                    
-                    if ($mapped_term) {
-                        $result["mappedTree"] = $ont->get_ontology_hierarchy($mapped_term[0]["mappedID"], $mapped_term[0]["mappedOnt"]);
-                        $result["mappedID"] = $mapped_term[0]["mappedID"];
-                        $result["isExactMatch"] = $mapped_term[0]["isExactMatch"];
-                    }
-
-                    if ($result["sourceTree"])
-                        echo json_encode($result);
-                    else
-                        echo null;
-                }
-                echo null;
+                $result = null;
+                $result = $ont->get_ontology_trees($_GET["term"], $_GET["ontology"]);
+                if ($result)
+                    echo json_encode($result);
+                else
+                    echo null;
             }
         }
     }

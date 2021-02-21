@@ -224,7 +224,7 @@ text.selected {
 
 .orthology-menu {
     text-align: center;
-    width: 60%;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2%;
@@ -251,10 +251,6 @@ a.btn:hover, .btn:hover {
     margin-top: 1%;
     margin-bottom: 0.5%;
     border: none;
-}
-
-.orthology-menu > .form > .input-group {
-    width: 50%;
 }
 
 .input-group-inline {
@@ -290,79 +286,10 @@ h4 {
     margin-bottom: 0.5%;
 }
 
-.table-prev {
-    float:left;
-}
-
-.page-counter {
-    display: block;
-    text-align: center;
-}
-
-.table-next{
-    float:right;
-}
-
-#searchResults > table{
-    width: 100%;
-}
-#searchResults tr:nth-child(even) {
-    background-color: white !important;
-}
-#searchResults tr:nth-child(odd) {
-    background-color: #F4F9FF !important;
-}
-#searchResults tr:hover{
-    background-color:blue !important;
-    color:white !important;
-}
-#searchResults tr:first-child{
-    background-color:#2664C7 !important;
-    color:white;
-    font-weight: bold;
-}
-#searchResults tr:first-child:hover{
-    cursor:unset;
-}
-#searchResults tr:first-child th{
-    text-align: center !important;
-}
-#searchResults tr td{
-    text-align: center !important;
-}
-
-.suggestions {
-    background-color: white;
-    border-top: none;
-    border-bottom: lightskyblue solid 1px;
-    border-left: lightskyblue solid 1px;
-    border-right: lightskyblue solid 1px;
-    display: none;
-    position: absolute;
-    margin-top: 2.2em;
-    width: 100%;
-    z-index: 100;
-}
-
-.suggestions > a {
-    width: 100%;
-    display: block;
-}
-
-.suggestions > a:hover {
-    background-color: lightskyblue;
-    cursor: default;
-}
-
 .form-control:focus {
     box-shadow: none;
     border-color: lightskyblue;
 }
-#searchResults tr:hover {
-    background-color: lightskyblue;
-    cursor: pointer;
-}
-
 .inner-container {
     width: 70%;
     margin-left: auto;
