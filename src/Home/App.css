@@ -2,6 +2,7 @@ html, body, .App{
     background-color: rgb(255, 255, 255);
     height: 100%;
     transition: background-color ease-in-out 500ms;
+    font-family: "Trebuchet MS", serif;
 }
 
 #subdocument-iframe {

@@ -1,17 +1,14 @@
 import {Paper, withStyles} from "@material-ui/core";
 import {fade} from "@material-ui/core/styles";
-import TreeItem from "@material-ui/lab/TreeItem";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import {animated, useSpring} from "react-spring/web.cjs";
 import Collapse from "@material-ui/core/Collapse";
 import PropTypes from "prop-types";
 import React from "react";
 import $ from "jquery";
-import configData from "../../Config/config.json";
+import configData from "../../../Config/config.json";
 import axios from "axios";
 import TreeView from "@material-ui/lab/TreeView";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import StyledTreeItem from "./Components/StyledTreeItem";
 
 const useStyles = theme => ({
     formControl: {

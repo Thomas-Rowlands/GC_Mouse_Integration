@@ -26,10 +26,18 @@
                 echo null;
             }
         } else if ($_GET['type'] == "ontology") {
-            if (parameters_present(array("ontologySearch", "term", "ontology"))) {
+            if (parameters_present(array("search", "term", "ontology"))) {
                 $ont = new Ontology();
                 $result = null;
                 $result = $ont->get_ontology_trees($_GET["term"], $_GET["ontology"]);
+                if ($result)
+                    echo json_encode($result);
+                else
+                    echo null;
+            } else if (parameters_present(array("childSearch", "term", "ontology"))) {
+                $ont = new Ontology();
+                $result = null;
+                $result = $ont->get_term_children($_GET["term"], $_GET["ontology"]);
                 if ($result)
                     echo json_encode($result);
                 else

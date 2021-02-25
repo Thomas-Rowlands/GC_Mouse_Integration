@@ -1,5 +1,3 @@
-@import '~bootstrap/dist/css/bootstrap.min.css';
-
 html, body {
     background-color: rgb(255, 255, 255);
     height: 100%;
@@ -208,7 +206,7 @@ a.btn {
 }
 
 svg {
-    background-color: rgb(255, 255, 255);
+    background-color: transparent;
     width: 100%;
     height: 100%;
 }

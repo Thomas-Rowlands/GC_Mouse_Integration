@@ -30,10 +30,10 @@
         }
 
         public function get_ontology_mappings($termID) {
-            $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE N.id = \"{$termID}\" RETURN N.id as sourceID, N.FSN as sourceLabel, N.ontology as sourceOnt, M.is_exact_match as isExactMatch, H.id as mappedID, H.FSN as mappedLabel, H.ontology as mappedOnt");
+            $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE N.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             $mappings = [];
             foreach ($result as $row) {
-                $parsed = ["sourceID"=> $row->value("sourceID"), "sourceSynonyms"=>$this->get_term_synonyms($row->value("sourceID"), $row->value("sourceOnt")), "sourceLabel"=> $row->value("sourceLabel"), "sourceOnt"=> $row->value("sourceOnt"), "isExactMatch"=> $row->value("isExactMatch"), "mappedID"=> $row->value("mappedID"), "mappedSynonyms"=>$this->get_term_synonyms($row->value("mappedID"), $row->value("mappedOnt")),"mappedLabel"=> $row->value("mappedLabel"), "mappedOnt"=> $row->value("mappedOnt")];
+                $parsed = ["mouseID"=> $row->value("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->value("mouseID"), $row->value("mouseOnt")), "mouseLabel"=> $row->value("mouseLabel"), "mouseOnt"=> $row->value("mouseOnt"), "isExactMatch"=> $row->value("isExactMatch"), "humanID"=> $row->value("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->value("humanID"), $row->value("humanOnt")),"humanLabel"=> $row->value("humanLabel"), "humanOnt"=> $row->value("humanOnt")];
                 array_push($mappings, $parsed);
             }
             return $mappings;
@@ -70,28 +70,30 @@
                     }
                 }
                 if ($termID) {
-                    $result = ["sourceTree" => [], "mappedTree" => [], "sourceID" => "", "sourceLabel" => "", "mappedID" => "", "mappedLabel" => "", "isExactMatch" => False];
-                    $result["sourceTree"] = $this->search_ontology_hierarchy($termID, $ontology);
-                    $result["sourceID"] = $termID;
-                    $result["sourceLabel"] = $termLabel;
-                    $mapped_term = $this->get_ontology_mappings($termID);             
-                    if ($mapped_term) {
-                        $result["mappedTree"] = $this->search_ontology_hierarchy($mapped_term[0]["mappedID"], $mapped_term[0]["mappedOnt"]);
-                        $result["mappedID"] = $mapped_term[0]["mappedID"];
-                        $result["mappedLabel"] = $mapped_term[0]["mappedLabel"];
-                        $result["isExactMatch"] = $mapped_term[0]["isExactMatch"];
+                    $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
+                    $result["mouseTree"] = $this->search_ontology_hierarchy($termID, $ontology);
+                    $result["mouseID"] = $termID;
+                    $result["mouseLabel"] = $termLabel;
+                    $human_term = $this->get_ontology_mappings($termID);             
+                    if ($human_term) {
+                        $result["humanTree"] = $this->search_ontology_hierarchy($human_term[0]["humanID"], $human_term[0]["humanOnt"]);
+                        $result["humanID"] = $human_term[0]["humanID"];
+                        $result["humanLabel"] = $human_term[0]["humanLabel"];
+                        $result["isExactMatch"] = $human_term[0]["isExactMatch"];
                     }
 
-                    if ($result["sourceTree"])
+                    if ($result["mouseTree"])
                         return $result;
                     else
                         return null;
                 }
             } else {
-                $result = ["sourceTree" => [], "mappedTree" => [], "sourceID" => "", "mappedID" => "", "isExactMatch" => False];
-                $result["sourceTree"] = $this->get_term_children($term, $ontology);
-                $result["sourceID"] = $result["sourceTree"]["id"];
-                if ($result["sourceTree"])
+                $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
+                $result["mouseTree"] = $this->get_term_children($term, "MP");
+                $result["humanTree"] = $this->get_term_children($term, "HPO");
+                $result["mouseID"] = $result["mouseTree"]["id"];
+                $result["humanID"] = $result["humanTree"]["id"];
+                if ($result["mouseTree"])
                     return $result;
                 else
                     return null;
@@ -104,8 +106,14 @@
         private function search_ontology_hierarchy($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = null;
-            $result = $this->neo->execute(" MATCH p=(root:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"}) WITH COLLECT(p) AS ps CALL apoc.convert.toTree(ps) yield value RETURN value AS tree;");
-            
+            $cmd = "MATCH (root:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"}) 
+            WITH root, child
+            ORDER BY root.FSN, child.FSN
+            MATCH p=(root:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"}) 
+            WITH COLLECT(p) AS ps 
+            CALL apoc.convert.toTree(ps) yield value 
+            RETURN value AS tree;";
+            $result = $this->neo->execute($cmd);
             $return_package = [];
             if (count($result) > 0)
                 $return_package = $result[0]->value("tree");
@@ -118,9 +126,18 @@
             $root_terms = ["MP"=>"MP:0000001", "HPO"=>"HP:0000001", "MESH"=>""];
             if ($termID == "GET_ROOT")
                 $termID = $root_terms[$ontology];
-            $result = $this->neo->execute("MATCH p=(root:{$ontology} {id:\"{$termID}\"})<-[:ISA]-(child) WITH COLLECT(p) AS ps CALL apoc.convert.toTree(ps) yield value RETURN value AS tree;");
-            if (count($result) > 0)
+            $cmd = "MATCH (root:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child) 
+            WITH root, child
+            ORDER BY root.FSN, child.FSN
+            MATCH p=(root:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child) 
+            WITH COLLECT(p) AS ps  
+            CALL apoc.convert.toTree(ps) yield value 
+            RETURN value AS tree;";
+            $result = $this->neo->execute($cmd);
+            if (count($result) > 0) {
                 $return_package = $result[0]->value("tree");
+            }
+                
             return $return_package;
         }
 
