@@ -1,5 +1,5 @@
 <?php
-    // ini_set('display_errors', '0');
+    ini_set('display_errors', '0');
     include_once "studies.php";
     if (isset($_GET['type'])) {
         if ($_GET['type'] == "study") {

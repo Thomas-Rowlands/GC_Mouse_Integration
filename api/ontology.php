@@ -116,7 +116,7 @@
             $result = $this->neo->execute($cmd);
             $return_package = [];
             if (count($result) > 0)
-                $return_package = $result[0]->value("tree");
+                $return_package = end($result)->value("tree");
             return $return_package;
         }
 
