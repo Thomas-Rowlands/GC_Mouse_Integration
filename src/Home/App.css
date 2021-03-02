@@ -17,24 +17,9 @@ svg {
     width: 100%;
     height: 100%;
 }
-
-.row {
-    margin-left: unset;
-    margin-right: unset;
-    margin-top: 0.25em;
-}
-
-.col {
-    padding-left: 1em;
-    margin-left: 0;
-}
-
 .center {
     text-align: center;
 }
-
-
-
 .wrapper {
     display: flex;
     position: absolute;
@@ -45,81 +30,4 @@ svg {
     justify-content: center;
     align-items: center;
     background: coral;
-}
-
-.menu {
-    text-align: center;
-    position: absolute;
-    margin-top: 1em;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
-
-.menu > .row .loader {
-    width: 10em;
-    height: 5em;
-    margin-top: 20%;
-}
-
-.menu-option {
-    padding: 0 0 5%;
-    background-color: white;
-    margin: 0.25em 0.25em 0.25em 2em;
-    /*transition: all 500ms;*/
-    max-width: 30vw;
-    max-height: 70%;
-    height: 70vh;
-    padding-bottom: 70vh;
-    position: absolute;
-}
-.menu-option:nth-child(1) {
-    margin-left: 0;
-}
-
-.menu-option p {
-    margin-top: 9em;
-    color:black;
-}
-
-.expanded-col {
-    transition: all 1000ms;
-    background-color: white;
-    height: 82vh;
-    max-height: 82vh;
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
-    border-radius: 0px;
-    box-shadow: none;
-}
-
-.menu img {
-    display: block;
-    width: 14em;
-    height: 8em;
-    margin: 5em auto 4em;
-}
-
-.menu span {
-    font-size: 2em;
-}
-
-.menu-option {
-    box-shadow: 0 0 10px 5px rgb(33, 104, 173);
-    border-radius: 0.5em;
-}
-
-.menu-option:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px 5px rgb(55, 155, 255);
-}
-
-.menu-option > div > p {
-    width: 70%;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-
 }

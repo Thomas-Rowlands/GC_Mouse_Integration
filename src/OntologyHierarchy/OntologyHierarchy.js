@@ -9,15 +9,11 @@ import configData from '../Config/config.json';
 import './OntologyHierarchy.css';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {useSpring, animated} from 'react-spring/web.cjs';
-import Collapse from '@material-ui/core/Collapse';
-import PropTypes from 'prop-types';
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SearchIcon from '@material-ui/icons/Search';
 import Divider from '@material-ui/core/Divider';
 import ErrorBoundary from "../UtilityComponents/ErrorBoundary";
 import OntologyTree from "./Components/OntologyTree/OntologyTree";
+import _ from "lodash";
 
 const useStyles = theme => ({
     formControl: {
@@ -57,8 +53,6 @@ class OntologyHierarchy extends React.Component {
             isMappingPresent: false,
             conErrorStatus: false,
         };
-        this.getRootTree = this.getRootTree.bind(this);
-        this.getMappingData = this.getMappingData.bind(this);
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
     }
@@ -96,51 +90,63 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
-    getRootTree = () => {
-        this.setState({loading: true});
-        let url_string = configData.api_server + "controller.php?type=ontology&search&term=GET_ROOT&ontology=mp";
-        axios.get(url_string)
-            .then((response) => {
-                if (response.status === 200) {
-                    if (response.data) {
-                        let expandedMouseNodes = [];
-                        expandedMouseNodes.push(response.data.mouseID);
-                        this.setState({
-                            treeData: response.data,
-                            loading: false,
-                            expandedMouseNodes: expandedMouseNodes
-                        });
-                    } else {
-
-                    }
+    appendSearchResult = (objValue, srcValue) => {
+        if (_.isArray(objValue)) {
+            for (var i = 0; i < objValue.length; i++) {
+                if (objValue[i].FSN === srcValue[0].FSN) {
+                    objValue[i] = _.merge(objValue[i], srcValue[0]);
+                    return objValue;
                 }
-            })
-            .catch((error) => {
-                console.log("An error occurred retrieving root tree data.");
-                this.setState({conErrorStatus: true, loading: false});
-            });
+            }
+        }
     }
 
-    search = () => {
+    findPath = (a, obj) => {
+        for (var key in obj) {                                         // for each key in the object obj
+            if (obj.hasOwnProperty(key)) {                             // if it's an owned key
+                if (a === obj[key]) return key;                        // if the item beign searched is at this key then return this key as the path
+                else if (obj[key] && typeof obj[key] === "object") {   // otherwise if the item at this key is also an object
+                    var path = this.findPath(a, obj[key]);                 // search for the item a in that object
+                    if (path) return key + "." + path;                 // if found then the path is this key followed by the result of the search
+                }
+            }
+        }
+    }
+
+    pathToIdArray = (path, tree) => {
+        var result = [];
+        for (var i = 1; i < path.length; i += 2) {
+            result.push(tree.isa[path[i]].id);
+            tree = tree.isa[path[i]];
+        }
+        return result;
+    }
+
+    search = (searchInput, ontology) => {
         this.setState({loading: true});
-        let search_input = this.state.searchInput;
-        if (search_input === undefined || search_input === "") {
+        if (searchInput === undefined || searchInput === "") {
             this.getRootTree();
             return;
         }
-        let url_string = configData.api_server + "/controller.php?type=ontology&search&term=" + search_input + "&ontology=mp";
+        let url_string = configData.api_server + "/controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
                         let tree = this.state.treeData;
+                        let expandedMouseNodes = [];
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
+                        tree["mouseTree"] = _.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
+                        expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
+                        expandedMouseNodes.unshift("MP:0000001");
                         this.setState({
                             treeData: tree,
                             loading: false,
                             isMappingPresent: true,
+                            expandedMouseNodes: expandedMouseNodes,
+                            selectedMouseNodes: tree["mouseID"],
                         });
                     } else {
                         this.setState({loading: false, isMappingPresent: false});
@@ -161,6 +167,33 @@ class OntologyHierarchy extends React.Component {
             return obj.isa.some(this.updateTree(id, isa));
     }
 
+    getRootTree = () => {
+        this.setState({loading: true});
+        let url_string = configData.api_server + "controller.php?type=ontology&search&term=GET_ROOT&ontology=mp";
+        axios.get(url_string)
+            .then((response) => {
+                if (response.status === 200) {
+                    if (response.data) {
+                        let expandedMouseNodes = [];
+                        let expandedHumanNodes = [];
+                        expandedMouseNodes.push(response.data.mouseID);
+                        expandedHumanNodes.push(response.data.humanID);
+                        this.setState({
+                            treeData: response.data,
+                            loading: false,
+                            expandedMouseNodes: expandedMouseNodes,
+                            expandedHumanNodes: expandedHumanNodes,
+                        });
+                    } else {
+
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log("An error occurred retrieving root tree data.");
+                this.setState({conErrorStatus: true, loading: false});
+            });
+    }
     getTermChildren = (e, tree, ont) => {
         let url_string = configData.api_server + "/controller.php?type=ontology&childSearch&term=" + e + "&ontology=" + ont;
         axios.get(url_string)
@@ -192,23 +225,13 @@ class OntologyHierarchy extends React.Component {
     }
 
     mouseSearchBtnClick = (e) => {
-        this.setState({searchInput: document.getElementById("mouseSearchInput").value});
-        this.search();
+        let input = typeof e === "string" ? e : document.getElementById("mouseSearchInput").value;
+        this.search(input, "mp");
     }
 
-    getTreeNodes = (nodes) => {
-        const {classes} = this.props;
-        const btn = <Button size="small" onClick={() => this.termSearchBtnClick(nodes.FSN)} color="primary"
-                            variant="outlined" id={nodes.id}
-        ><SearchIcon fontSize="small"/></Button>;
-        const tempChildNode = ("hasChildren" in nodes) && !("isa" in nodes) ?
-            <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
-        return (
-            <StyledTreeItem onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
-                            labelText={nodes.FSN} labelIcon={btn}>
-                {Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
-            </StyledTreeItem>
-        );
+    humanSearchBtnClick = (e) => {
+        let input = typeof e === "string" ? e : document.getElementById("humanSearchInput").value;
+        this.search(input, "hpo");
     }
 
     setexpandedMouseNodes = (nodes, ids) => {
@@ -226,12 +249,21 @@ class OntologyHierarchy extends React.Component {
         return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setexpandedHumanNodes(node, ids)) : ids;
     }
 
-    getMappingData = () => {
-
+    isLoadingRequired = (id, obj) => {
+        if (obj.id === id && !obj.isa) {
+            return true;
+        } else if (obj.isa) {
+            for (var i = 0; i < obj.isa.length; i++) {
+                if (this.isLoadingRequired(id, obj.isa[i]))
+                    return true;
+            }
+        }
     }
 
     handleMouseToggle = (event, nodeIds) => {
-        if (!this.state.expandedMouseNodes.includes(nodeIds[0])) {
+        let tree = this.state.treeData.mouseTree;
+        var loadingRequired = this.isLoadingRequired(nodeIds[0], tree);
+        if (loadingRequired) {
             this.getTermChildren(nodeIds[0], "mouse", "mp");
         }
         this.setState({expandedMouseNodes: nodeIds});
@@ -242,7 +274,9 @@ class OntologyHierarchy extends React.Component {
     }
 
     handleHumanToggle = (event, nodeIds) => {
-        if (!this.state.expandedHumanNodes.includes(nodeIds[0])) {
+        let tree = this.state.treeData.humanTree;
+        var loadingRequired = this.isLoadingRequired(nodeIds[0], tree);
+        if (loadingRequired) {
             this.getTermChildren(nodeIds[0], "human", "hpo");
         }
         this.setState({expandedHumanNodes: nodeIds});
@@ -267,14 +301,8 @@ class OntologyHierarchy extends React.Component {
             expandedMouseNodes,
             expandedHumanNodes,
         } = this.state;
-        let mouseTree = null;
-        let humanTree = null;
-        if (loading === false) {
-            if (treeData) {
-                mouseTree = treeData.mouseTree;
-                humanTree = treeData.humanTree;
-            }
-        }
+        const mouseTree = treeData ? treeData.mouseTree : null;
+        const humanTree = treeData ? treeData.humanTree : null;
         return <div>
             <ErrorBoundary>
                 <Grid container spacing={3}>
@@ -310,8 +338,10 @@ class OntologyHierarchy extends React.Component {
                                         onClick={this.mouseSearchBtnClick}>Search</Button>
                             </div>
                             <LoadingSpinner loading={loading}/>
-                            {loading ? null : <OntologyTree expanded={expandedMouseNodes} selected={selectedMouseNodes} onSelect={this.handleMouseSelect} onToggle={this.handleMouseToggle} treeData={mouseTree}/>}
-
+                            {!mouseTree ? null :
+                                <OntologyTree onBtnClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
+                                              selected={selectedMouseNodes} onSelect={this.handleMouseSelect}
+                                              onToggle={this.handleMouseToggle} treeData={mouseTree}/>}
                         </Paper>
                     </Grid>
                     <Grid item xs>
@@ -319,8 +349,6 @@ class OntologyHierarchy extends React.Component {
                             this.state.isMappingPresent ?
                                 <Paper id="mappingInfoWrapper" style={{marginTop: '50%'}} className={classes.paper}>
                                     <Typography gutterBottom variant="h5">Mapping Result Found!</Typography>
-                                    <Typography variant="body2">A mapping has been found using an automated mapping
-                                        algorithm.</Typography>
                                     <Divider variant="middle"/>
                                     <Grid container spacing={2}>
                                         <Grid item xs>
@@ -369,7 +397,10 @@ class OntologyHierarchy extends React.Component {
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.search}>Search</Button>
                             {
-                                loading ? null : <OntologyTree expanded={expandedHumanNodes} selected={selectedHumanNodes} onSelect={this.handleHumanSelect} onToggle={this.handleHumanToggle} treeData={humanTree}/>
+                                !humanTree ? null :
+                                    <OntologyTree onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
+                                                  selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
+                                                  onToggle={this.handleHumanToggle} treeData={humanTree}/>
                             }
 
                         </Paper>

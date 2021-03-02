@@ -7,18 +7,20 @@ import React from "react";
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import SearchIcon from "@material-ui/icons/Search";
+import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import StyledTreeItem from "./Components/StyledTreeItem";
 
 const useStyles = theme => ({
     root: {
-        flexGrow: 1,
         marginTop: 20,
         marginLeft: 5,
     },
     highlight: {
         backgroundColor: "#a6a6ff",
+    },
+    btn: {
+        marginRight: 20,
     }
 });
 
@@ -53,15 +55,18 @@ class OntologyTree extends React.Component {
             selectedSpecies: "Mouse",
             onToggle: null,
             onSelect: null,
+            onBtnClick: null,
         };
         this.tempExpandedIds = [];
     }
 
     getTreeNodes = (nodes) => {
         const {classes} = this.props;
-        const btn = <Button size="small" onClick={() => this.termSearchBtnClick(nodes.FSN)} color="primary"
-                            variant="outlined" id={nodes.id}
-        ><SearchIcon fontSize="small"/></Button>;
+        const btn = "loom_mapping" in nodes ?
+            <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.FSN)}
+                    color="primary"
+                    variant="outlined" id={nodes.id}
+            ><LinearScaleIcon fontSize="small"/></Button> : null;
         const tempChildNode = ("hasChildren" in nodes) && !("isa" in nodes) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         return (
@@ -80,6 +85,7 @@ class OntologyTree extends React.Component {
         return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setExpandedSourceNodes(node, ids)) : ids;
     }
 
+
     render() {
         const {classes} = this.props;
         const {
@@ -89,8 +95,8 @@ class OntologyTree extends React.Component {
             throw new Error('No ontology data received.');
         }
         return (
-            <TreeView className={classes.root} expanded={this.props.expandedNodes}
-                      selected={this.props.selectedNodes}
+            <TreeView className={classes.root} expanded={this.props.expanded}
+                      selected={this.props.selected}
                       defaultCollapseIcon={<ArrowDropDownIcon/>} defaultExpandIcon={<ArrowRightIcon/>}
                       defaultEndIcon={<div style={{width: 24}}/>} onNodeToggle={this.props.onToggle}
                       onNodeSelect={this.props.onSelect}>

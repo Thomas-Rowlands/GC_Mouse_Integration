@@ -106,10 +106,10 @@
         private function search_ontology_hierarchy($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = null;
-            $cmd = "MATCH (root:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"}) 
-            WITH root, child
-            ORDER BY root.FSN, child.FSN
-            MATCH p=(root:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"}) 
+            $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+            WITH parent, child
+            ORDER BY parent.FSN, child.FSN
+            MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
             WITH COLLECT(p) AS ps 
             CALL apoc.convert.toTree(ps) yield value 
             RETURN value AS tree;";
@@ -126,10 +126,10 @@
             $root_terms = ["MP"=>"MP:0000001", "HPO"=>"HP:0000001", "MESH"=>""];
             if ($termID == "GET_ROOT")
                 $termID = $root_terms[$ontology];
-            $cmd = "MATCH (root:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child) 
-            WITH root, child
-            ORDER BY root.FSN, child.FSN
-            MATCH p=(root:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child) 
+            $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)-[:LOOM_MAPPING*0..]->(targetMapping) 
+            WITH parent, child
+            ORDER BY parent.FSN, child.FSN
+            MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)-[:LOOM_MAPPING*0..]->(targetMapping) 
             WITH COLLECT(p) AS ps  
             CALL apoc.convert.toTree(ps) yield value 
             RETURN value AS tree;";

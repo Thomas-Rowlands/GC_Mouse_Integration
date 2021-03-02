@@ -5,6 +5,14 @@ import {Link} from 'react-router-dom';
 // @ts-ignore
 import $ from 'jquery';
 import 'jqueryui';
+import {Grid, withStyles} from "@material-ui/core";
+
+const useStyles = theme => ({
+    root: {
+        flexGrow: 1,
+        marginTop: 50,
+    },
+});
 
 class Home extends React.Component {
     componentDidMount() {
@@ -12,38 +20,37 @@ class Home extends React.Component {
     }
 
     render() {
-        return (<div className="menu">
-            <div className="row">
-                <div className="col">
-                    <Link to="/PhenotypeSearch">
-                        <MainMenuItem url="/PhenotypeSearch" image="images/bootstrap-icons-1.3.0/search.svg"
-                                      alt="image of magnifying glass."
-                                      heading="Phenotype Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
+        const {classes} = this.props;
+        return (<Grid className={classes.root} container spacing={3}>
+            <Grid item xs>
+                <Link to="/PhenotypeSearch">
+                    <MainMenuItem url="/PhenotypeSearch" image="images/bootstrap-icons-1.3.0/search.svg"
+                                  alt="image of magnifying glass."
+                                  heading="Phenotype Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
                         showing homology data."/>
-                    </Link>
+                </Link>
 
-                </div>
-                <div className="col">
-                    <Link to="/OntologyHierarchy">
-                        <MainMenuItem url="/OntologyHierarchy" image="images/bootstrap-icons-1.3.0/bezier2.svg"
-                                      alt="image of a bezier curve between two points."
-                                      heading="Phenotype Ontology Hierarchy"
-                                      body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
+            </Grid>
+            <Grid item xs>
+                <Link to="/OntologyHierarchy">
+                    <MainMenuItem url="/OntologyHierarchy" image="images/bootstrap-icons-1.3.0/bezier2.svg"
+                                  alt="image of a bezier curve between two points."
+                                  heading="Phenotype Ontology Hierarchy"
+                                  body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
                         showing homology data."/>
-                    </Link>
-                </div>
+                </Link>
+            </Grid>
 
-                <div className="col">
-                    <Link to="/Genome">
-                        <MainMenuItem url="/Genome" image="images/bootstrap-icons-1.3.0/dna-strand.svg"
-                                      alt="image of a DNA double helix."
-                                      heading="Genome Browser/Gene Symbol Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
+            <Grid item xs>
+                <Link to="/Genome">
+                    <MainMenuItem url="/Genome" image="images/bootstrap-icons-1.3.0/dna-strand.svg"
+                                  alt="image of a DNA double helix."
+                                  heading="Genome Browser/Gene Symbol Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
                         showing homology data."/>
-                    </Link>
+                </Link>
 
-                </div>
-            </div>
-        </div>);
+            </Grid>
+        </Grid>);
     }
 }
 
@@ -55,4 +62,4 @@ $(document).ready(function () {
     });
 });
 
-export default Home;
+export default withStyles(useStyles)(Home);
