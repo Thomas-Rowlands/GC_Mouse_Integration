@@ -106,7 +106,7 @@
         private function search_ontology_hierarchy($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = null;
-            $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+            $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
             WITH parent, child
             ORDER BY parent.FSN, child.FSN
             MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
