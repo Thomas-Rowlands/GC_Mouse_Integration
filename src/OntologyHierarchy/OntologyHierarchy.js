@@ -135,18 +135,26 @@ class OntologyHierarchy extends React.Component {
                     if (response.data) {
                         let tree = this.state.treeData;
                         let expandedMouseNodes = [];
+                        let expandedHumanNodes = [];
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
                         tree["mouseTree"] = _.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
+                        expandedMouseNodes.pop();
+                        tree["humanTree"] = _.mergeWith(tree["humanTree"], response.data.humanTree, this.appendSearchResult);
+                        expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
+                        expandedHumanNodes.unshift("HP:0000001");
+                        expandedHumanNodes.pop();
                         this.setState({
                             treeData: tree,
                             loading: false,
                             isMappingPresent: true,
                             expandedMouseNodes: expandedMouseNodes,
                             selectedMouseNodes: tree["mouseID"],
+                            expandedHumanNodes: expandedHumanNodes,
+                            selectedHumanNodes: tree["humanID"],
                         });
                     } else {
                         this.setState({loading: false, isMappingPresent: false});
@@ -355,13 +363,13 @@ class OntologyHierarchy extends React.Component {
                                             <Typography gutterBottom variant="h6">Mouse</Typography>
                                             <Divider variant="middle"/>
                                             <Typography gutterBottom
-                                                        variant="body">{this.state.treeData.mouseID}</Typography>
+                                                        variant="body1">{this.state.treeData.mouseID}</Typography>
                                         </Grid>
                                         <Grid item xs>
                                             <Typography gutterBottom variant="h6">Human</Typography>
                                             <Divider variant="middle"/>
                                             <Typography gutterBottom
-                                                        variant="body">{this.state.treeData.humanID}</Typography>
+                                                        variant="body1">{this.state.treeData.humanID}</Typography>
                                         </Grid>
                                     </Grid>
                                 </Paper>

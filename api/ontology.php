@@ -20,7 +20,7 @@
         }
 
         public function search_human_term($search) {
-            $result = $this->neo->execute("MATCH (N)-[r:LOOM_MAPPING]->(H) WHERE (H:HPO OR H:MESH) AND N:MP AND H.FSN =~ '(?i).*{$search}.*' RETURN H.FSN AS Human_Label, H.id as Human_ID, N.FSN AS Mouse_Label, N.id AS Mouse_ID");
+            $result = $this->neo->execute("MATCH (N:MP)-[r:LOOM_MAPPING]->(H) WHERE H.FSN =~ '(?i).*{$search}.*' RETURN N.FSN AS Mouse_Label, N.id as Mouse_ID, H.FSN AS Human_Label, H.id AS Human_ID");
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["Mouse_ID"=>$row->value("Mouse_ID"), "Mouse_Label"=>$row->value("Mouse_Label"), "Human_ID"=>$row->value("Human_ID"), "Human_Label"=>$row->value("Human_Label")];
@@ -106,13 +106,27 @@
         private function search_ontology_hierarchy($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = null;
-            $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
-            WITH parent, child
-            ORDER BY parent.FSN, child.FSN
-            MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
-            WITH COLLECT(p) AS ps 
-            CALL apoc.convert.toTree(ps) yield value 
-            RETURN value AS tree;";
+            $cmd = "";
+            if (strtolower($ontology) == "mp") {
+                $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+                WITH parent, child
+                ORDER BY parent.FSN, child.FSN
+                MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+                WHERE \"mammalian phenotype\" in parent.FSN
+                WITH COLLECT(p) AS ps 
+                CALL apoc.convert.toTree(ps) yield value 
+                RETURN value AS tree;";
+            } else {
+                $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+                WITH parent, child
+                ORDER BY parent.FSN, child.FSN
+                MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*0..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
+                WHERE \"All\" in parent.FSN
+                WITH COLLECT(p) AS ps 
+                CALL apoc.convert.toTree(ps) yield value 
+                RETURN value AS tree;";
+            }
+
             $result = $this->neo->execute($cmd);
             $return_package = [];
             if (count($result) > 0)

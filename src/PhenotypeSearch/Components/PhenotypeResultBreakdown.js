@@ -50,10 +50,7 @@ class PhenotypeResultBreakdown extends React.Component {
     getHumanTerm(breakdownData) {
         if (breakdownData) {
             if (breakdownData["Mappings"].length > 0) {
-                if (breakdownData["Mappings"][0]["sourceID"].includes("HP"))
-                    return breakdownData["Mappings"][0]["sourceID"] + " " + breakdownData["Mappings"][0]["sourceLabel"];
-                else
-                    return breakdownData["Mappings"][0]["mappedID"] + " " + breakdownData["Mappings"][0]["mappedLabel"];
+                return breakdownData["Mappings"][0]["humanID"] + " " + breakdownData["Mappings"][0]["humanLabel"];
             } else {
                 return "No mapping found";
             }
@@ -63,10 +60,7 @@ class PhenotypeResultBreakdown extends React.Component {
     getMouseTerm(breakdownData) {
         if (breakdownData) {
             if (breakdownData["Mappings"].length > 0) {
-                if (breakdownData["Mappings"][0]["sourceID"].includes("MP"))
-                    return breakdownData["Mappings"][0]["sourceID"] + " " + breakdownData["Mappings"][0]["sourceLabel"];
-                else
-                    return breakdownData["Mappings"][0]["mappedID"] + " " + breakdownData["Mappings"][0]["mappedLabel"];
+                return breakdownData["Mappings"][0]["mouseID"] + " " + breakdownData["Mappings"][0]["mouseLabel"];
             } else {
                 return "No mapping found";
             }
@@ -93,10 +87,10 @@ class PhenotypeResultBreakdown extends React.Component {
         }
     }
 
-    getMappedSynonyms(breakdownData) {
+    getHumanSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"][0]["mappedSynonyms"].length > 0) {
-                return breakdownData["Mappings"][0]["mappedSynonyms"].map((synonym, index) =>
+            if (breakdownData["Mappings"][0]["humanSynonyms"].length > 0) {
+                return breakdownData["Mappings"][0]["humanSynonyms"].map((synonym, index) =>
                 <li>{synonym}</li>);
             } else {
                 return <li>None</li>;
@@ -104,10 +98,10 @@ class PhenotypeResultBreakdown extends React.Component {
         }
     }
 
-    getSourceSynonyms(breakdownData) {
+    getMouseSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"][0]["sourceSynonyms"].length > 0) {
-                return breakdownData["Mappings"][0]["sourceSynonyms"].map((synonym, index) =>
+            if (breakdownData["Mappings"][0]["mouseSynonyms"].length > 0) {
+                return breakdownData["Mappings"][0]["mouseSynonyms"].map((synonym, index) =>
                 <li>{synonym}</li>);
             } else {
                 return <li>None</li>;
@@ -155,7 +149,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                {this.getMappedSynonyms(breakdownData)}
+                                {this.getHumanSynonyms(breakdownData)}
                             </ul>
                         </div>
                         <div className="col highlight">
@@ -163,7 +157,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         </div>
                         <div className="col">
                             <ul>
-                                {this.getSourceSynonyms(breakdownData)}
+                                {this.getMouseSynonyms(breakdownData)}
                             </ul>
                         </div>
                     </div>
