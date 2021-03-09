@@ -45,6 +45,8 @@ class OntologyHierarchy extends React.Component {
             treeData: null,
             mouseLiveSearchResults: [],
             humanLiveSearchResults: [],
+            mouseLiveLoading: false,
+            humanLiveLoading: false,
             expandedMouseNodes: [''],
             expandedHumanNodes: [''],
             selectedMouseNodes: [''],
@@ -63,13 +65,22 @@ class OntologyHierarchy extends React.Component {
 
     retrieveLiveSearch = (e, x) => {
         let input = x;
-        let species = e.target.id === "mouseSearchBtn" ? "mouse" : "human";
-        this.setState({searchInput: input});
+        let species = e.target.id === "mouseSearchInput" ? "mouse" : "human";
         if (input.length < 1) {
             $("#live-search").hide();
+            if (species === "mouse")
+                this.setState({mouseLiveLoading: false});
+            else
+                this.setState({humanLiveLoading: false});
             return;
         }
-        this.setState({liveLoading: true});
+        if (species === "mouse")
+            this.setState({mouseLiveLoading: true});
+        else
+            this.setState({humanLiveLoading: true});
+        this.setState({searchInput: input});
+
+
         let url_string = configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + species;
         if (input.length > 0) {
             axios.get(url_string)
@@ -78,9 +89,9 @@ class OntologyHierarchy extends React.Component {
                         if (response.data.length == 0) {
                         } else {
                             if (species === "mouse")
-                                this.setState({mouseLiveSearchResults: response.data, liveLoading: false});
+                                this.setState({mouseLiveSearchResults: response.data, mouseLiveLoading: false});
                             else
-                                this.setState({humanLiveSearchResults: response.data, liveLoading: false});
+                                this.setState({humanLiveSearchResults: response.data, humanLiveLoading: false});
                         }
                     }
                 })
@@ -298,7 +309,8 @@ class OntologyHierarchy extends React.Component {
     render() {
         const {classes} = this.props;
         const {
-            liveLoading,
+            mouseLiveLoading,
+            humanLiveLoading,
             loading,
             mouseLiveSearchResults,
             humanLiveSearchResults,
@@ -332,7 +344,7 @@ class OntologyHierarchy extends React.Component {
                                                 ...params.InputProps,
                                                 endAdornment: (
                                                     <React.Fragment>
-                                                        {liveLoading ?
+                                                        {mouseLiveLoading ?
                                                             <CircularProgress color="inherit" size={20}/> : null}
                                                         {params.InputProps.endAdornment}
                                                     </React.Fragment>
@@ -392,7 +404,7 @@ class OntologyHierarchy extends React.Component {
                                             ...params.InputProps,
                                             endAdornment: (
                                                 <React.Fragment>
-                                                    {liveLoading ?
+                                                    {humanLiveLoading ?
                                                         <CircularProgress color="inherit" size={20}/> : null}
                                                     {params.InputProps.endAdornment}
                                                 </React.Fragment>

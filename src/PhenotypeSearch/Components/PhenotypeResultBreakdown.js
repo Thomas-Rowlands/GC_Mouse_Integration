@@ -5,7 +5,7 @@ import $ from "jquery";
 import axios from "axios";
 import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import configData from "../../Config/config.json";
-import {forEach} from "react-bootstrap/ElementChildren";
+import {Button, Grid, Paper} from "@material-ui/core";
 
 class PhenotypeResultBreakdown extends React.Component {
     constructor(props) {
@@ -112,88 +112,88 @@ class PhenotypeResultBreakdown extends React.Component {
     render() {
         const {breakdownData, loading} = this.state;
         return (
-            <div id="phenotypeResultsContainer" className="container">
+            <Paper id="phenotypeResultsContainer" className="container">
                 <LoadingSpinner loading={loading} />
-                {this.props.backBtnClick ? <a className="btn btn-link" onClick={this.props.backBtnClick}>Back</a>: null}
+                {this.props.backBtnClick ? <Button variant="contained" color="primary" onClick={this.props.backBtnClick}>Back</Button>: null}
                 <div className="phenotype-breakdown-container">
-                    <div className="row">
+                    <div>
                         <h3 id="Selected-Phenotype" className="col">{this.props.selectedPhenotype}</h3>
                     </div>
                     {/* Mappings */}
-                    <div className="row center">
-                        <div className="col">
+                    <Grid container>
+                        <Grid item xs>
                             <h4>Homo Sapiens</h4>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs>
                             <h4>Mus Musculus</h4>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col highlight">
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={3} className="col highlight">
                             <span>Human Phenotype Term: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3}>
                             <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
-                        </div>
-                        <div className="col highlight">
+                        </Grid>
+                        <Grid item xs={3} className="col highlight">
                             <span>Mammalian Phenotype Term: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3}>
                             <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
-                        </div>
-                    </div>
+                        </Grid>
+                    </Grid>
                     {/* Synonyms */}
-                    <div className="row">
-                        <div className="col highlight">
+                    <Grid container>
+                        <Grid item xs={3} className="col highlight">
                             <span>Synonyms: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3} className="col">
                             <ul>
                                 {this.getHumanSynonyms(breakdownData)}
                             </ul>
-                        </div>
-                        <div className="col highlight">
+                        </Grid>
+                        <Grid item xs={3} className="col highlight">
                             <span>Synonyms: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3} className="col">
                             <ul>
                                 {this.getMouseSynonyms(breakdownData)}
                             </ul>
-                        </div>
-                    </div>
+                        </Grid>
+                    </Grid>
                     {/*Studies/Experiments*/}
-                    <div className="row">
-                        <div className="col highlight">
+                    <Grid container className="row">
+                        <Grid item xs={3} className="col highlight">
                             <span>GWAS Studies: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3} className="col">
                             <p>{breakdownData ? breakdownData["GWAS Studies"].length: 0}</p>
-                        </div>
-                        <div className="col highlight">
+                        </Grid>
+                        <Grid item xs={3} className="col highlight">
                             <span>Gene Knockouts: </span>
-                        </div>
-                        <div className="col">
+                        </Grid>
+                        <Grid item xs={3} className="col">
                             <p>{breakdownData ? breakdownData["Gene Knockouts"].length: 0}</p>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col center highlight">
+                        </Grid>
+                    </Grid>
+                    <Grid container className="row">
+                        <Grid item xs className="col center highlight">
                             <span>GWAS Studies</span>
-                        </div>
-                        <div className="col center highlight">
+                        </Grid>
+                        <Grid item xs className="col center highlight">
                             <span>Gene Knockouts</span>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col center">
+                        </Grid>
+                    </Grid>
+                    <Grid container className="row">
+                        <Grid item xs className="col center">
                             {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]} onRowClick={this.gwasStudyClicked}/>: null}
-                        </div>
-                        <div className="col center">
+                        </Grid>
+                        <Grid item xs className="col center">
                             {breakdownData ? <ResultTable tableData={breakdownData["Gene Knockouts"]} onRowClick={this.experimentClicked}/>: null}
-                        </div>
-                    </div>
+                        </Grid>
+                    </Grid>
                 </div>
-            </div>
+            </Paper>
         );
     }
 }

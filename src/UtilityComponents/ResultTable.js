@@ -8,37 +8,26 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import {TablePagination} from "@material-ui/core";
 
 class ResultTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {tableData: {}, onRowClick: null};
+        this.state = {tableData: {}, onRowClick: null, rowsPerPage:5, page:0};
     }
 
-    getPageControls(dataLength) {
-        if (dataLength > 0) {
-            return (
-                <div className="row">
-                    <div className="col">
-                        <a className="table-prev btn btn-link disabled" id="prev_page_btn">&lt;- Previous Page</a>
-                    </div>
-                    <div className="col">
-                        <span className="page-counter" id="pageNum">Page 1</span>
-                    </div>
-                    <div className="col">
-                        <a className="table-next btn btn-link disabled" id="next_page_btn">Next Page -&gt;</a>
-                    </div>
-                </div>
-            );
-        }
+    handleChangePage = (event, newPage) => {
+        this.setState({page: newPage});
     }
 
+    handleChangeRowsPerPage = (event) => {
+        this.setState({rowsPerPage: parseInt(event.target.value, 10), page: 1});
+    }
 
     render() {
         if (typeof this.props.tableData != "undefined" && this.props.tableData !== null)
             if (this.props.tableData.length > 0) {
                 return (<div className="container">
-                        {this.getPageControls(this.props.tableData.length)}
                         <br/>
                         <TableContainer component={Paper} className="info" id="searchResults">
                             <Table size="small" aria-label="a dense table">
@@ -62,15 +51,20 @@ class ResultTable extends React.Component {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={this.props.tableData.length}
+                            rowsPerPage={this.state.rowsPerPage}
+                            page={this.state.page}
+                            onChangePage={this.handleChangePage}
+                            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        />
                     </div>
                 );
             } else {
                 return (
-                    <div>
-                        <br/>
-                        <br/>
-                        <p className="center">No results found.</p>
-                    </div>
+                    <span className="center">No results found.</span>
                 );
             }
         else

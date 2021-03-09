@@ -18,19 +18,9 @@
             $return_package["Mappings"] = $mappings;
             // Get GWAS Studies
             if ($mappings) {
-                if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
-                    $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["mappedID"]);
-                } else {
-                    $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["sourceID"]);
-                }
-                // Get Knockouts
-                if (strtoupper($mappings[0]["sourceOnt"]) == "MP") {
-                    $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["sourceID"]);
-                } else {
-                    $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["mappedID"]);
-                }
+                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["humanID"]);
+                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["mouseID"]);
             }
-
             return $return_package;
         }
 

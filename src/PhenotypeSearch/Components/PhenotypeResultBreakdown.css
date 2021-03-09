@@ -20,3 +20,13 @@ p, ul > *{
 li{
     list-style-type: disc;
 }
+
+.col {
+    padding-left: 1em;
+    margin-left: 0;
+}
+
+.highlight {
+    font-weight: bold;
+    background-color: #C8D9EE;
+}
