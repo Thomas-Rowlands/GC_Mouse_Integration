@@ -1,5 +1,8 @@
 {
     "require": {
-        "graphaware/neo4j-php-client":"^4.0"
+        "laudis/neo4j-php-client": "^1.3",
+        "nyholm/psr7": "^1.4",
+        "nyholm/psr7-server": "^1.0",
+        "kriswallsmith/buzz": "^1.2"
     }
 }

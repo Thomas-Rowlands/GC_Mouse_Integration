@@ -13,7 +13,7 @@
             $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H) WHERE N.FSN =~ '(?i).*{$search}.*' RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {
-                $parsed = ["mouseID"=> $row->value("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->value("mouseID"), $row->value("mouseOnt")), "mouseLabel"=> $row->value("mouseLabel"), "mouseOnt"=> $row->value("mouseOnt"), "isExactMatch"=> $row->value("isExactMatch"), "humanID"=> $row->value("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->value("humanID"), $row->value("humanOnt")),"humanLabel"=> $row->value("humanLabel"), "humanOnt"=> $row->value("humanOnt")];
+                $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
                 array_push($matches, $parsed);
             }
             return $matches;
@@ -23,7 +23,7 @@
             $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H) WHERE H.FSN =~ '(?i).*{$search}.*' RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {
-                $parsed = ["mouseID"=> $row->value("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->value("mouseID"), $row->value("mouseOnt")), "mouseLabel"=> $row->value("mouseLabel"), "mouseOnt"=> $row->value("mouseOnt"), "isExactMatch"=> $row->value("isExactMatch"), "humanID"=> $row->value("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->value("humanID"), $row->value("humanOnt")),"humanLabel"=> $row->value("humanLabel"), "humanOnt"=> $row->value("humanOnt")];
+                $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
                 array_push($matches, $parsed);
             }
             return $matches;
@@ -37,7 +37,7 @@
                 $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE H.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             $mappings = [];
             foreach ($result as $row) {
-                $parsed = ["mouseID"=> $row->value("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->value("mouseID"), $row->value("mouseOnt")), "mouseLabel"=> $row->value("mouseLabel"), "mouseOnt"=> $row->value("mouseOnt"), "isExactMatch"=> $row->value("isExactMatch"), "humanID"=> $row->value("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->value("humanID"), $row->value("humanOnt")),"humanLabel"=> $row->value("humanLabel"), "humanOnt"=> $row->value("humanOnt")];
+                $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
                 array_push($mappings, $parsed);
             }
             return $mappings;
@@ -48,7 +48,7 @@
             $result = $this->neo->execute("MATCH (N:{$ontology})-[r:HAS_SYNONYM]-(S) WHERE N.id = \"{$termID}\" RETURN S.FSN AS Synonym;");
             $synonyms = [];
             foreach ($result as $row) {
-                array_push($synonyms, $row->value("Synonym"));
+                array_push($synonyms, $row->get("Synonym"));
             }
             return $synonyms;
         }
@@ -74,7 +74,7 @@
                     $humanLabel = $match[0]["humanLabel"];
 
                     $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
-
+                    
                     if ($mouseID)
                         $result["mouseTree"] = $this->search_ontology_hierarchy($mouseID, "MP");
 
@@ -86,7 +86,6 @@
                     $result["humanID"] = $humanID;
                     $result["humanLabel"] = $humanLabel;
                     $result["isExactMatch"] = $match[0]["isExactMatch"];
-      
 
 
                     if ($result["mouseTree"] || $result["humanTree"])
@@ -136,8 +135,9 @@
             
             $result = $this->neo->execute($cmd);
             $return_package = [];
-            if (count($result) > 0)
-                $return_package = end($result)->value("tree");
+            if (count($result) > 0) {
+                $return_package = $result[0]->get("tree");
+            }
             return $return_package;
         }
 
@@ -164,10 +164,9 @@
                 CALL apoc.convert.toTree(ps) yield value 
                 RETURN value AS tree;";
             }
-
             $result = $this->neo->execute($cmd);
             if (count($result) > 0) {
-                $return_package = $result[0]->value("tree");
+                $return_package = $result[0]->get("tree");
             }
                 
             return $return_package;

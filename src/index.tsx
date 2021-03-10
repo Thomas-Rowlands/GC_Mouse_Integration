@@ -4,11 +4,14 @@ import App from './Home/App';
 import reportWebVitals from './reportWebVitals';
 // @ts-ignore
 import {BrowserRouter} from "react-router-dom";
+import ErrorBoundary from "./UtilityComponents/ErrorBoundary";
 
 ReactDOM.render(
   <React.StrictMode>
       <BrowserRouter>
-          <App />
+          <ErrorBoundary>
+              <App />
+          </ErrorBoundary>
       </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

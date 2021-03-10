@@ -1,20 +1,19 @@
 <?php
 // ini_set('display_errors', '0');
     // error_reporting(E_ERROR | E_PARSE);
-    define("ini_data", parse_ini_file("config.ini")); //relative to controller.php
     require_once 'vendor/autoload.php';
-    use GraphAware\Neo4j\Client\ClientBuilder;
 
     class GC_Connection {
         
         private $con = null;
-
+        private $ini_array = null;
         public function __construct($dataset){
+            $this->ini_array = parse_ini_file("../config/config.ini");
             $this->open($dataset);
         }
 
         private function open($dataset) {
-            $this->con = new mysqli(constant("ini_data")["server"], constant("ini_data")["username"], constant("ini_data")["password"], $dataset);
+            $this->con = new mysqli($this->ini_array["server"], $this->ini_array["username"], $this->ini_array["password"], $dataset, 3306);
             if ($this->con->connect_errno) {
                 exit("Failed to connect to MySQL");
             } else {
@@ -43,14 +42,21 @@
     }
 
     class Neo_Connection {
-        private $client = null;
+        private $client;
 
         public function __construct(){
             $this->open();
         }
 
         private function open() {
-            $this->client = ClientBuilder::create()->addConnection('bolt', 'bolt://neo4j:12345@localhost:7687')->build();
+            try {
+                $this->client = Laudis\Neo4j\ClientBuilder::create()
+                ->addBoltConnection('default', 'bolt://neo4j:12345@localhost')
+                ->setDefaultConnection('default')
+                ->build();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
         }
 
         private function close() {
@@ -63,7 +69,7 @@
 
         public function execute($query) {
             $result = $this->client->run($query);
-            return $result->getRecords();
+            return $result;
         }
 
     }

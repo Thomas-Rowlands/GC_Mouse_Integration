@@ -139,7 +139,7 @@ class OntologyHierarchy extends React.Component {
             this.getRootTree();
             return;
         }
-        let url_string = configData.api_server + "/controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
+        let url_string = configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -323,6 +323,8 @@ class OntologyHierarchy extends React.Component {
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
+        if (conErrorStatus)
+            throw new Error("A connection error occurred retrieving ontology trees.");
         return <div>
             <ErrorBoundary>
                 <Grid container spacing={3}>

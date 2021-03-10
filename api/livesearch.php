@@ -14,7 +14,7 @@ if (isset($_GET["entry"]) && isset($_GET["species"])) {
     $result = $neo->execute($cmd);
     $matches = [];
     foreach ($result as $row) {
-        $parsed = ["FSN"=> $row->value("FSN"), "ontology"=> $row->value("ontology")];
+        $parsed = ["FSN"=> $row->get("FSN"), "ontology"=> $row->get("ontology")];
         array_push($matches, $parsed);
     }
     echo json_encode($matches);
