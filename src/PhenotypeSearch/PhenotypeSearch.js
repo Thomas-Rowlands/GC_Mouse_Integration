@@ -102,6 +102,7 @@ class PhenotypeSearch extends React.Component {
         this.setState({searchInput: input});
         if (input.length < 1) {
             $("#live-search").hide();
+            this.setState({liveLoading: false});
             return;
         }
         this.setState({liveLoading: true});
@@ -133,7 +134,7 @@ class PhenotypeSearch extends React.Component {
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
-                        result_total = response.data[1];
+                        var result_total = response.data[1];
                         if (result_total > 0) {
                             this.setState({tableData: response.data[0], loading: false, searchOpen: true});
                         } else {
@@ -250,11 +251,6 @@ class PhenotypeSearch extends React.Component {
                 </div>
                 {/*Phenotype selection results drill down*/
                 }
-                <div id="browser-iframe-container" className="modal-container">
-                    <a className="btn" onClick={closeGenomeBrowser}>Close</a>
-                    <iframe id="genomeBrowser" className="browser-iframe">
-                    </iframe>
-                </div>
             </div>)
                 ;
         else
@@ -264,39 +260,6 @@ class PhenotypeSearch extends React.Component {
                                           backBtnClick={this.resultBreakdownBackClicked}/>
             );
     }
-}
-
-var offset = 20;
-var result_total = 0;
-var current_div = ".searchResultsContainer";
-
-function loadGenomeBrowser() {
-    $("#browser-iframe-container").show(
-        {
-            effect: "scale",
-            duration: 500,
-            complete: function () {
-                $("#genomeBrowser").attr("src", "jbrowse/index.html?data=data");
-            }
-        }
-    );
-    $("body").css("background-color", "grey");
-}
-
-function closeGenomeBrowser() {
-    $("#genomeBrowser").attr("src", "");
-    setTimeout(
-        function () {
-            $("#browser-iframe-container").hide(
-                {
-                    effect: "scale",
-                    duration: 500
-                }
-            );
-        },
-        300
-    );
-    $("body").css("background-color", "white");
 }
 
 export default withStyles(useStyles)(PhenotypeSearch);

@@ -48,7 +48,6 @@ class Home extends React.Component {
                                   heading="Genome Browser/Gene Symbol Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
                         showing homology data."/>
                 </Link>
-
             </Grid>
         </Grid>);
     }
