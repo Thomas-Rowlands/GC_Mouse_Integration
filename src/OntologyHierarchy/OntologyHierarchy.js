@@ -106,7 +106,7 @@ class OntologyHierarchy extends React.Component {
             for (var i = 0; i < objValue.length; i++) {
                 if (objValue[i].FSN === srcValue[0].FSN) {
                     objValue[i] = _.merge(objValue[i], srcValue[0]);
-                    return objValue;
+                    // return objValue;
                 }
             }
         }
