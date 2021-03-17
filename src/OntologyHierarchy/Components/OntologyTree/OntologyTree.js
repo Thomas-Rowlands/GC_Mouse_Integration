@@ -69,10 +69,12 @@ class OntologyTree extends React.Component {
             ><LinearScaleIcon fontSize="small"/></Button> : null;
         const tempChildNode = ("hasChildren" in nodes) && !("isa" in nodes) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
+        // let siblings = (nodes.hassibling) ? nodes.hassibling.map((node) => this.getTreeNodes(node)) : null;
         return (
             <StyledTreeItem onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
                             labelText={nodes.FSN} labelIcon={btn}>
                 {Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
+                {/*{siblings}*/}
             </StyledTreeItem>
         );
     }

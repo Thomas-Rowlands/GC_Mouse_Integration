@@ -106,10 +106,34 @@ class OntologyHierarchy extends React.Component {
             for (var i = 0; i < objValue.length; i++) {
                 if (objValue[i].FSN === srcValue[0].FSN) {
                     objValue[i] = _.merge(objValue[i], srcValue[0]);
-                    // return objValue;
+                    return objValue;
                 }
             }
         }
+    }
+
+    expandSiblings = (tree) => {
+        if (tree.hassibling) {
+            let newTree = tree.hassibling;
+            delete tree.hassibling;
+            newTree.push(tree);
+            tree = newTree;
+        }
+        if (_.isArray(tree)) {
+            if (tree.length > 0) {
+                for (var i = 0; i < tree.length; i++) {
+                    if (tree[i].isa) {
+                        tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node))[0];
+                    }
+                }
+            } else if (tree[0].isa) {
+                tree.isa = tree.isa.map((node) => this.expandSiblings(node))[0];
+            }
+        } else if (tree.isa) {
+            tree.isa = tree.isa.map((node) => this.expandSiblings(node))[0];
+        }
+
+        return tree;
     }
 
     findPath = (a, obj) => {
@@ -133,6 +157,37 @@ class OntologyHierarchy extends React.Component {
         return result;
     }
 
+    /**
+     * Simple object check.
+     * @param item
+     * @returns {boolean}
+     */
+    isObject = (item) => {
+        return (item && typeof item === 'object' && !Array.isArray(item));
+    }
+
+    /**
+     * Deep merge two objects.
+     * @param target
+     * @param ...sources
+     */
+    mergeDeep = (target, ...sources) => {
+        if (!sources.length) return target;
+        const source = sources.shift();
+
+        if (this.isObject(target) && this.isObject(source)) {
+            for (const key in source) {
+                if (this.isObject(source[key])) {
+                    if (!target[key]) Object.assign(target, {[key]: {}});
+                    this.mergeDeep(target[key], source[key]);
+                } else {
+                    Object.assign(target, {[key]: source[key]});
+                }
+            }
+        }
+        return this.mergeDeep(target, ...sources);
+    }
+
     search = (searchInput, ontology) => {
         this.setState({loading: true});
         if (searchInput === undefined || searchInput === "") {
@@ -147,14 +202,16 @@ class OntologyHierarchy extends React.Component {
                         let tree = this.state.treeData;
                         let expandedMouseNodes = [];
                         let expandedHumanNodes = [];
+                        response.data.mouseTree = this.expandSiblings(response.data.mouseTree);
+                        response.data.humanTree = this.expandSiblings(response.data.humanTree);
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
-                        tree["mouseTree"] = _.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
+                        tree["mouseTree"] = this.mergeDeep(tree["mouseTree"], response.data.mouseTree);//_.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
-                        tree["humanTree"] = _.mergeWith(tree["humanTree"], response.data.humanTree, this.appendSearchResult);
+                        tree["humanTree"] = this.mergeDeep(tree["humanTree"], response.data.humanTree);//_.mergeWith(response.data.humanTree,tree["humanTree"], this.appendSearchResult);
                         expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
                         expandedHumanNodes.unshift("HP:0000001");
                         expandedHumanNodes.pop();

@@ -13,3 +13,4 @@ api/vendor
 .eslintcache
 package-lock.json
 package-lock.json
+src/Genome/data/

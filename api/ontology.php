@@ -122,28 +122,15 @@
                 // WITH COLLECT(p) AS ps 
                 // CALL apoc.convert.toTree(ps) yield value 
                 // RETURN value AS tree;";
-                $cmd = "CALL apoc.cypher.run(\"
-                MATCH (endNode:MP{id: '{$termID}'})
-                MATCH (startNode:MP{id: 'MP:0000001'})
-                WITH COLLECT(endNode) AS m, startNode AS n
-                CALL apoc.path.spanningTree(n, {relationshipFilter:'<ISA', endNodes:m}) YIELD path
-                WITH nodes(path) AS nodeList
-                MATCH p=(f)<-[:ISA]-(sibling)
-                WHERE f IN nodeList AND 'mammalian phenotype' = f.FSN
-                WITH sibling, nodeList, f, p
-                ORDER BY sibling.FSN
-                RETURN p
-                UNION
-                MATCH (f)<-[:ISA]-(target{id: '{$termID}'})
-                WITH f
-                MATCH p=(f)<-[:ISA]-(sibs)
-                WITH p, f, sibs
-                ORDER BY f.FSN, sibs.FSN
-                RETURN p\", {}
-            ) YIELD value
-            WITH COLLECT(value.p) as p
-            CALL apoc.convert.toTree(p) YIELD value AS tree
-            RETURN tree;";
+                $cmd = "MATCH a=(endNode:MP{id: \"$termID\"})-[:ISA*1..]->(startNode:MP{id: 'MP:0000001'})
+                WITH NODES(a) AS aNodes, startNode
+                MATCH b=(startNode)<-[:ISA*1..]-(test)-[:hasSibling*0..1]->(sibs)
+                WHERE test in aNodes
+                WITH b, test, sibs
+                ORDER BY test.FSN, sibs.FSN
+                WITH COLLECT(b) AS paths
+                CALL apoc.convert.toTree(paths) YIELD value AS tree
+                RETURN tree";
             } else {
                 // $cmd = "MATCH (mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})<-[:LOOM_MAPPING*0..]-(targetMapping)
                 // WITH parent, child
@@ -153,28 +140,15 @@
                 // WITH COLLECT(p) AS ps 
                 // CALL apoc.convert.toTree(ps) yield value 
                 // RETURN value AS tree;";
-                $cmd = "CALL apoc.cypher.run(\"
-                MATCH (endNode:HPO{id: '{$termID}'})
-                MATCH (startNode:HPO{id: 'HP:0000001'})
-                WITH COLLECT(endNode) AS m, startNode AS n
-                CALL apoc.path.spanningTree(n, {relationshipFilter:'<ISA', endNodes:m}) YIELD path
-                WITH nodes(path) AS nodeList
-                MATCH p=(f)<-[:ISA]-(sibling)
-                WHERE f IN nodeList AND 'All' = f.FSN
-                WITH sibling, nodeList, f, p
-                ORDER BY sibling.FSN
-                RETURN p
-                UNION
-                MATCH (f)<-[:ISA]-(target{id: '{$termID}'})
-                WITH f
-                MATCH p=(f)<-[:ISA]-(sibs)
-                WITH p, f, sibs
-                ORDER BY f.FSN, sibs.FSN
-                RETURN p\", {}
-            ) YIELD value
-            WITH COLLECT(value.p) as p
-            CALL apoc.convert.toTree(p) YIELD value AS tree
-            RETURN tree;";
+                $cmd = "MATCH a=(endNode:HPO{id: \"$termID\"})-[:ISA*1..]->(startNode:HPO{id: 'HP:0000001'})
+                WITH NODES(a) AS aNodes, startNode
+                MATCH b=(startNode)<-[:ISA*1..]-(test)-[:hasSibling*0..1]->(sibs)
+                WHERE test in aNodes
+                WITH b, test, sibs
+                ORDER BY test.FSN, sibs.FSN
+                WITH COLLECT(b) AS paths
+                CALL apoc.convert.toTree(paths) YIELD value AS tree
+                RETURN tree";
             }
             
             $result = $this->neo->execute($cmd);
