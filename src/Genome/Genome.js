@@ -15,9 +15,17 @@ const assembly = {
     trackId: 'GRCh38-ReferenceSequenceTrack',
     adapter: {
       type: 'BgzipFastaAdapter',
+      fastaLocation: {
+        uri:
+          "JBrowseData/seq/chr.fa.gz",
+      },
       faiLocation: {
         uri:
-          "./data/chromFa/chr.fa.fai",
+          "JBrowseData/seq/chr.fa.gz.fai",
+      },
+              gziLocation: {
+        uri:
+          "JBrowseData/seq/chr.fa.gz.gzi",
       },
     },
   },
@@ -44,7 +52,7 @@ const tracks = [
       type: 'Gff3TabixAdapter',
       gffGzLocation: {
         uri:
-          'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz',
+          'JBrowseData/chromFa/tracks.conf',
       },
       index: {
         location: {
