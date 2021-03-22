@@ -17,7 +17,7 @@ const assembly = {
       type: 'BgzipFastaAdapter',
       fastaLocation: {
         uri:
-          "JBrowseData/seq/chr.fa.gz",
+          "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz",
       },
       faiLocation: {
         uri:

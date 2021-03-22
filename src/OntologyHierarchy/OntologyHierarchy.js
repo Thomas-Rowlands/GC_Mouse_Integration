@@ -14,6 +14,7 @@ import Divider from '@material-ui/core/Divider';
 import ErrorBoundary from "../UtilityComponents/ErrorBoundary";
 import OntologyTree from "./Components/OntologyTree/OntologyTree";
 import _ from "lodash";
+import {array} from "prop-types";
 
 const useStyles = theme => ({
     formControl: {
@@ -87,16 +88,27 @@ class OntologyHierarchy extends React.Component {
                 .then((response) => {
                     if (response.status === 200) {
                         if (response.data.length == 0) {
+                            if (species === "mouse") {
+                                this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
+                            } else {
+                                this.setState({humanLiveSearchResults: [], humanLiveLoading: false});
+                            }
                         } else {
-                            if (species === "mouse")
+                            if (species === "mouse") {
                                 this.setState({mouseLiveSearchResults: response.data, mouseLiveLoading: false});
-                            else
+                            } else {
                                 this.setState({humanLiveSearchResults: response.data, humanLiveLoading: false});
+                            }
                         }
                     }
                 })
                 .catch((error) => {
                     console.log("An error occurred retrieving live search results.");
+                    if (species === "mouse") {
+                        this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
+                    } else {
+                        this.setState({humanLiveSearchResults: [], humanLiveLoading: false});
+                    }
                 });
         }
     }
@@ -112,27 +124,64 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
+    isNodeDuplicate = (source, newItem) => {
+        for (var i = 0; i < source.length; i++) {
+            if (source[i].id === newItem.id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     expandSiblings = (tree) => {
         if (tree.hassibling) {
             let newTree = tree.hassibling;
+            newTree.filter((node) => !this.isNodeDuplicate(tree, node));
             delete tree.hassibling;
             newTree.push(tree);
             tree = newTree;
+            tree = _.sortBy(tree, o => o.FSN);
         }
         if (_.isArray(tree)) {
             if (tree.length > 0) {
+                var test = [];
                 for (var i = 0; i < tree.length; i++) {
                     if (tree[i].isa) {
-                        tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node))[0];
+                        tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node));
+                        if (Array.isArray(tree[i].isa[0]))
+                            tree[i].isa = tree[i].isa[0];
+                        tree[i].isa = _.sortBy(tree[i].isa, o => o.FSN);
+                    }
+                    if (tree[i].hassibling) {
+                        let newTree = tree[i].hassibling;
+                        newTree.filter((node) => !this.isNodeDuplicate(tree, node));
+                        delete tree[i].hassibling;
+                        tree.push(newTree);
                     }
                 }
-            } else if (tree[0].isa) {
-                tree.isa = tree.isa.map((node) => this.expandSiblings(node))[0];
+                tree = _.sortBy(tree, o => o.FSN);
+            } else {
+                if (tree[0].isa) {
+                    tree[0].isa = tree[0].isa.map((node) => this.expandSiblings(node));
+                    if (Array.isArray(tree[0].isa[0]))
+                        tree[0].isa = tree[0].isa[0];
+                    tree[0].isa = _.sortBy(tree.isa[0], o => o.FSN);
+                }
+                if (tree[0].hassibling) {
+                    let newTree = tree[0].hassibling;
+                    newTree.filter((node) => !this.isNodeDuplicate(tree, node));
+                    delete tree[0].hassibling;
+                    newTree.push(tree[0]);
+                    tree.push(newTree);
+                    tree = _.sortBy(tree, o => o.FSN);
+                }
             }
         } else if (tree.isa) {
-            tree.isa = tree.isa.map((node) => this.expandSiblings(node))[0];
+            tree.isa = tree.isa.map((node) => this.expandSiblings(node));
+            if (Array.isArray(tree.isa[0]))
+                tree.isa = tree.isa[0];
+            tree.isa = _.sortBy(tree.isa, o => o.FSN);
         }
-
         return tree;
     }
 
@@ -208,6 +257,7 @@ class OntologyHierarchy extends React.Component {
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
                         tree["mouseTree"] = this.mergeDeep(tree["mouseTree"], response.data.mouseTree);//_.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
+                        var test = this.findPath(tree["mouseID"], tree["mouseTree"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
@@ -420,7 +470,8 @@ class OntologyHierarchy extends React.Component {
                             {!mouseTree ? null :
                                 <OntologyTree onBtnClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
                                               selected={selectedMouseNodes} onSelect={this.handleMouseSelect}
-                                              onToggle={this.handleMouseToggle} treeData={mouseTree}/>}
+                                              onToggle={this.handleMouseToggle} treeData={mouseTree}
+                                              sourceOntology="MP" mappingOntology="HPO"/>}
                         </Paper>
                     </Grid>
                     <Grid item xs>
@@ -479,7 +530,8 @@ class OntologyHierarchy extends React.Component {
                                 !humanTree ? null :
                                     <OntologyTree onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
                                                   selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
-                                                  onToggle={this.handleHumanToggle} treeData={humanTree}/>
+                                                  onToggle={this.handleHumanToggle} treeData={humanTree}
+                                                  sourceOntology="HPO" mappingOntology="MP"/>
                             }
 
                         </Paper>
