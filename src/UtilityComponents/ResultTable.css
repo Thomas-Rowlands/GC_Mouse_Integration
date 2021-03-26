@@ -8,6 +8,13 @@ tr:hover{
     background-color: #f4f9ff;
     cursor:pointer;
 }
+tr{
+    overflow-x: scroll;
+    font-size: small;
+}
 .MuiTableCell-head{
     font-weight:bold !important;
+}
+.MuiTableCell{
+    font-size: 0.7rem;
 }

@@ -15,6 +15,7 @@ import ErrorBoundary from "../UtilityComponents/ErrorBoundary";
 import OntologyTree from "./Components/OntologyTree/OntologyTree";
 import _ from "lodash";
 import {array} from "prop-types";
+import PhenotypeResultBreakdown from "../PhenotypeSearch/Components/PhenotypeResultBreakdown";
 
 const useStyles = theme => ({
     formControl: {
@@ -238,7 +239,7 @@ class OntologyHierarchy extends React.Component {
     }
 
     search = (searchInput, ontology) => {
-        this.setState({loading: true});
+        this.setState({loading: true, isMappingPresent: false});
         if (searchInput === undefined || searchInput === "") {
             this.getRootTree();
             return;
@@ -256,12 +257,12 @@ class OntologyHierarchy extends React.Component {
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
-                        tree["mouseTree"] = this.mergeDeep(tree["mouseTree"], response.data.mouseTree);//_.mergeWith(tree["mouseTree"], response.data.mouseTree, this.appendSearchResult);
+                        tree["mouseTree"] = _.mergeWith(response.data.mouseTree,tree["mouseTree"],  this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
                         var test = this.findPath(tree["mouseID"], tree["mouseTree"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
-                        tree["humanTree"] = this.mergeDeep(tree["humanTree"], response.data.humanTree);//_.mergeWith(response.data.humanTree,tree["humanTree"], this.appendSearchResult);
+                        tree["humanTree"] = _.mergeWith(response.data.humanTree,tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
                         expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
                         expandedHumanNodes.unshift("HP:0000001");
                         expandedHumanNodes.pop();
@@ -477,24 +478,25 @@ class OntologyHierarchy extends React.Component {
                     <Grid item xs>
                         {
                             this.state.isMappingPresent ?
-                                <Paper id="mappingInfoWrapper" style={{marginTop: '50%'}} className={classes.paper}>
-                                    <Typography gutterBottom variant="h5">Mapping Result Found!</Typography>
-                                    <Divider variant="middle"/>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs>
-                                            <Typography gutterBottom variant="h6">Mouse</Typography>
-                                            <Divider variant="middle"/>
-                                            <Typography gutterBottom
-                                                        variant="body1">{this.state.treeData.mouseID}</Typography>
-                                        </Grid>
-                                        <Grid item xs>
-                                            <Typography gutterBottom variant="h6">Human</Typography>
-                                            <Divider variant="middle"/>
-                                            <Typography gutterBottom
-                                                        variant="body1">{this.state.treeData.humanID}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Paper>
+                                <PhenotypeResultBreakdown selectedPhenotype={this.state.treeData.mouseID}/>
+                                // <Paper id="mappingInfoWrapper" style={{marginTop: '50%'}} className={classes.paper}>
+                                //     <Typography gutterBottom variant="h5">Mapping Result Found!</Typography>
+                                //     <Divider variant="middle"/>
+                                //     <Grid container spacing={2}>
+                                //         <Grid item xs>
+                                //             <Typography gutterBottom variant="h6">Mouse</Typography>
+                                //             <Divider variant="middle"/>
+                                //             <Typography gutterBottom
+                                //                         variant="body1">{this.state.treeData.mouseID}</Typography>
+                                //         </Grid>
+                                //         <Grid item xs>
+                                //             <Typography gutterBottom variant="h6">Human</Typography>
+                                //             <Divider variant="middle"/>
+                                //             <Typography gutterBottom
+                                //                         variant="body1">{this.state.treeData.humanID}</Typography>
+                                //         </Grid>
+                                //     </Grid>
+                                // </Paper>
                                 : null
                         }
                     </Grid>

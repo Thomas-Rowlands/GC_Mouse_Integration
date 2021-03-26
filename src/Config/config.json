@@ -1,3 +1,5 @@
 {
+  "dev_api_server": "https://www569.lamp.le.ac.uk/gc_mouse_api/",
+  "prod_api_server": "https://www570.lamp.le.ac.uk/gc_mouse_api/",
   "api_server": "http://gcmouseapi/"
 }

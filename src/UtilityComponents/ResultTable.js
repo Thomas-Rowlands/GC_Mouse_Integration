@@ -28,7 +28,6 @@ class ResultTable extends React.Component {
         if (typeof this.props.tableData != "undefined" && this.props.tableData !== null)
             if (this.props.tableData.length > 0) {
                 return (<div className="container">
-                        <br/>
                         <TableContainer component={Paper} className="info" id="searchResults">
                             <Table size="small" aria-label="a dense table">
                                 <TableHead>

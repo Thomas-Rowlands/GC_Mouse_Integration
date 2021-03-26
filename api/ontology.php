@@ -32,9 +32,9 @@
         public function get_ontology_mappings($termID, $isMouse=true) {
             $result = null;
             if ($isMouse)
-                $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE N.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
+                $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE N.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, M.is_synonym_match as isSynonymMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             else
-                $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE H.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
+                $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE H.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, M.is_synonym_match as isSynonymMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
             $mappings = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
