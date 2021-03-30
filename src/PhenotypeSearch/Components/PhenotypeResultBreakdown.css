@@ -1,32 +1,27 @@
-#phenotypeResultsContainer {
-    left: 0;
-    right: 0;
-    padding: 0.25em;
-    border: 1px solid #cdcdcd;
-}
-
-#phenotypeResultsContainer ul {
-    list-style: none;
-    padding-left: 1em;
-}
-
-span{
-    font-size: 0.8em;
-}
-
 p, ul > *{
     font-size: 0.8em;
 }
+
+p {
+    margin-left: 1em;
+}
+
 li{
     list-style-type: disc;
 }
 
 .col {
-    padding-left: 1em;
     margin-left: 0;
+    padding: 0;
 }
 
 .highlight {
     font-weight: bold;
-    background-color: #C8D9EE;
+    color: white;
+    background-color: #303f9f;
+    margin: 0.1em;
+    text-align: center;
+}
+.highlight > p{
+    margin-left: 1em;
 }

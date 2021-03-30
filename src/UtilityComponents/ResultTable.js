@@ -38,7 +38,8 @@ class ResultTable extends React.Component {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {this.props.tableData.map((row, index) => {
+                                    {this.props.tableData.slice(this.state.page * this.state.rowsPerPage,
+                                        this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((row, index) => {
                                         return (
                                             <TableRow data-id={row["ID"]} key={index} onClick={this.props.onRowClick}>
                                                 {Object.keys(row).map((key) => {

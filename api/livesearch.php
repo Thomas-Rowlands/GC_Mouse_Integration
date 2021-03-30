@@ -10,7 +10,7 @@ if (isset($_GET["entry"]) && isset($_GET["species"])) {
         WHERE toLower(n.FSN) STARTS WITH '" . strtolower($_GET["entry"]) . "' AND (n:MP) AND n.isObsolete = \"false\" 
         RETURN DISTINCT reverse(COLLECT(f.FSN)), n.FSN as FSN, n.ontology as ontology LIMIT 5;";
     } else if (strtolower($_GET["species"]) == "human") {
-        $cmd = "MATCH p=(a)<-[:LOOM_MAPPING]-(n)-[:ISA]-(f)-[:ISA*0..]->(e{id: \"HP:0000001\"})
+        $cmd = "MATCH p=(a)-[:LOOM_MAPPING]->(n)-[:ISA]-(f)-[:ISA*0..]->(e{id: \"HP:0000001\"})
         WHERE toLower(n.FSN) STARTS WITH '" . strtolower($_GET["entry"]) . "' AND (n:HPO) AND n.isObsolete = \"false\" 
         RETURN DISTINCT reverse(COLLECT(f.FSN)), n.FSN as FSN, n.ontology as ontology LIMIT 5;";
     }

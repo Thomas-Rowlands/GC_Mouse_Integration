@@ -2,20 +2,15 @@ import React from 'react';
 import $ from 'jquery';
 import axios from "axios";
 import {Button, Grid, Paper, TextField, withStyles} from '@material-ui/core';
-import StyledTreeItem from './Components/OntologyTree/Components/StyledTreeItem';
-import Typography from '@material-ui/core/Typography';
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
-import configData from '../Config/config.json';
 import './OntologyHierarchy.css';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import SearchIcon from '@material-ui/icons/Search';
-import Divider from '@material-ui/core/Divider';
 import ErrorBoundary from "../UtilityComponents/ErrorBoundary";
 import OntologyTree from "./Components/OntologyTree/OntologyTree";
 import _ from "lodash";
-import {array} from "prop-types";
 import PhenotypeResultBreakdown from "../PhenotypeSearch/Components/PhenotypeResultBreakdown";
+import api_server from "../UtilityComponents/ConfigData";
 
 const useStyles = theme => ({
     formControl: {
@@ -56,9 +51,11 @@ class OntologyHierarchy extends React.Component {
             selectedSpecies: "Mouse",
             isMappingPresent: false,
             conErrorStatus: false,
+            configData: api_server,
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
+        this.liveCancelToken = null;
     }
 
     componentDidMount() {
@@ -68,24 +65,27 @@ class OntologyHierarchy extends React.Component {
     retrieveLiveSearch = (e, x) => {
         let input = x;
         let species = e.target.id === "mouseSearchInput" ? "mouse" : "human";
+        if (this.liveCancelToken)
+            this.liveCancelToken.cancel();
         if (input.length < 1) {
             $("#live-search").hide();
             if (species === "mouse")
-                this.setState({mouseLiveLoading: false});
+                this.setState({mouseLiveLoading: false, mouseLiveSearchResults: []});
             else
-                this.setState({humanLiveLoading: false});
+                this.setState({humanLiveLoading: false, humanLiveSearchResults: []});
             return;
         }
         if (species === "mouse")
             this.setState({mouseLiveLoading: true});
         else
             this.setState({humanLiveLoading: true});
+
         this.setState({searchInput: input});
+        this.liveCancelToken = axios.CancelToken.source();
+        let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + species;
 
-
-        let url_string = configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + species;
         if (input.length > 0) {
-            axios.get(url_string)
+            axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
                         if (response.data.length == 0) {
@@ -244,7 +244,7 @@ class OntologyHierarchy extends React.Component {
             this.getRootTree();
             return;
         }
-        let url_string = configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -257,12 +257,12 @@ class OntologyHierarchy extends React.Component {
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
-                        tree["mouseTree"] = _.mergeWith(response.data.mouseTree,tree["mouseTree"],  this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
+                        tree["mouseTree"] = _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
                         var test = this.findPath(tree["mouseID"], tree["mouseTree"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
-                        tree["humanTree"] = _.mergeWith(response.data.humanTree,tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
+                        tree["humanTree"] = _.mergeWith(response.data.humanTree, tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
                         expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
                         expandedHumanNodes.unshift("HP:0000001");
                         expandedHumanNodes.pop();
@@ -296,7 +296,7 @@ class OntologyHierarchy extends React.Component {
 
     getRootTree = () => {
         this.setState({loading: true});
-        let url_string = configData.api_server + "controller.php?type=ontology&search&term=GET_ROOT&ontology=mp";
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=GET_ROOT&ontology=mp";
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -322,7 +322,7 @@ class OntologyHierarchy extends React.Component {
             });
     }
     getTermChildren = (e, tree, ont) => {
-        let url_string = configData.api_server + "/controller.php?type=ontology&childSearch&term=" + e + "&ontology=" + ont;
+        let url_string = this.state.configData.api_server + "/controller.php?type=ontology&childSearch&term=" + e + "&ontology=" + ont;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -505,6 +505,7 @@ class OntologyHierarchy extends React.Component {
                             <h3>Human Phenotype</h3>
                             <Autocomplete
                                 freeSolo
+                                id="humanSearchInput"
                                 className={classes.autoComplete}
                                 onInputChange={this.retrieveLiveSearch}
                                 renderInput={(params) => (
@@ -527,7 +528,7 @@ class OntologyHierarchy extends React.Component {
                                 options={humanLiveSearchResults.map((option) => option.FSN)}/>
 
                             <Button size="large" color="primary" variant="contained" id="search_btn"
-                                    onClick={this.search}>Search</Button>
+                                    onClick={this.humanSearchBtnClick}>Search</Button>
                             {
                                 !humanTree ? null :
                                     <OntologyTree onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}

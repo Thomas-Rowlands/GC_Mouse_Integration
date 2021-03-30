@@ -10,7 +10,16 @@
         }
 
         public function search_mouse_term($search) {
-            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H) WHERE N.FSN =~ '(?i).*{$search}.*' RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
+            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+            WHERE N.FSN =~ '(?i).*{$search}.*'
+            WITH N, M, H
+            OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+            WHERE (H:Synonym)
+            WITH N, M, H, T
+            OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+            WHERE (N:Synonym)
+            WITH N, M, H, T, MT
+            RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
@@ -20,7 +29,16 @@
         }
 
         public function search_human_term($search) {
-            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H) WHERE H.FSN =~ '(?i).*{$search}.*' RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
+            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+            WHERE H.FSN =~ '(?i).*{$search}.*'
+            WITH N, M, H
+            OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+            WHERE (H:Synonym)
+            WITH N, M, H, T
+            OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+            WHERE (N:Synonym)
+            WITH N, M, H, T, MT
+            RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];

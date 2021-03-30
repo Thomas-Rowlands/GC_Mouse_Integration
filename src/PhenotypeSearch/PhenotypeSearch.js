@@ -19,8 +19,7 @@ import ResultTable from "../UtilityComponents/ResultTable";
 import PhenotypeResultBreakdown from "./Components/PhenotypeResultBreakdown";
 import axios from "axios";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
-import configData from '../Config/config.json';
-
+import api_server from "../UtilityComponents/ConfigData";
 
 const useStyles = theme => ({
     formControl: {
@@ -59,13 +58,14 @@ class PhenotypeSearch extends React.Component {
             humanPval: 0,
             mousePval: 0,
             searchInput: "",
+            configData: api_server,
         };
         this.page_num = 1;
-        this.liveCancelToken = axios.CancelToken.source();
-
+        this.liveCancelToken = null;
     }
 
     componentDidMount() {
+
     }
 
     getPreviousResults = () => {
@@ -99,19 +99,23 @@ class PhenotypeSearch extends React.Component {
 
     retrieveLiveSearch = (e, x) => {
         let input = x;
+        if (this.liveCancelToken)
+            this.liveCancelToken.cancel();
         this.setState({searchInput: input});
         if (input.length < 1) {
             $("#live-search").hide();
-            this.setState({liveLoading: false});
+            this.setState({liveLoading: false, liveSearchResults: []});
             return;
         }
+        this.liveCancelToken = axios.CancelToken.source();
         this.setState({liveLoading: true});
-        let url_string = configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + this.state.selectedSpecies;
+        let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + this.state.selectedSpecies;
         if (input.length > 0) {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
                         if (response.data.length == 0) {
+                            this.setState({liveSearchResults: [], liveLoading: false});
                         } else {
                             this.setState({liveSearchResults: response.data, liveLoading: false});
                         }
@@ -129,7 +133,7 @@ class PhenotypeSearch extends React.Component {
         let human_pval = this.state.humanPval;
         let mouse_pval = this.state.mousePval;
 
-        let url_string = configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
+        let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -246,7 +250,10 @@ class PhenotypeSearch extends React.Component {
                         </div>
                         <LoadingSpinner loading={loading}/>
                     </div>
-                    {tableData ? this.displayTable(tableData) : null}
+                    <div className="table-container">
+                        {tableData ? this.displayTable(tableData) : null}
+                    </div>
+
 
                 </div>
                 {/*Phenotype selection results drill down*/
@@ -255,9 +262,12 @@ class PhenotypeSearch extends React.Component {
                 ;
         else
             return (
-                <PhenotypeResultBreakdown selectedPhenotype={this.state.selectedPhenotype}
-                                          breakdownData={this.state.breakdownData}
-                                          backBtnClick={this.resultBreakdownBackClicked}/>
+                <div className="table-container">
+                    <PhenotypeResultBreakdown selectedPhenotype={this.state.selectedPhenotype}
+                          breakdownData={this.state.breakdownData}
+                          backBtnClick={this.resultBreakdownBackClicked}/>
+                </div>
+
             );
     }
 }

@@ -30,7 +30,7 @@ const useTreeItemStyles = theme => ({
   },
   group: {
     '& $content': {
-      paddingLeft: theme.spacing(2),
+      // paddingLeft: theme.spacing(2),
     },
   },
   expanded: {},

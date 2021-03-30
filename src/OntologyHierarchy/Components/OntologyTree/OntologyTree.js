@@ -67,7 +67,7 @@ class OntologyTree extends React.Component {
         const mappingProperty = "has" + this.props.mappingOntology + "Mapping";
         const btn = mappingProperty in nodes ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.FSN)}
-                    color="primary" variant="outlined" id={nodes.id}
+                   style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
             ><LinearScaleIcon fontSize="small"/></Button> : null;
         const tempChildNode = ("hasChildren" in nodes) && !("isa" in nodes) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;

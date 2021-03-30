@@ -50,10 +50,7 @@
 
         private function open() {
             try {
-                $this->client = Laudis\Neo4j\ClientBuilder::create()
-                ->addBoltConnection('default', 'bolt://neo4j:12345@localhost')
-                ->setDefaultConnection('default')
-                ->build();
+                $this->client = GraphAware\Neo4j\Client\ClientBuilder::create()->addConnection('bolt', 'bolt://neo4j:12345@localhost:7687')->build();
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
@@ -69,7 +66,7 @@
 
         public function execute($query) {
             $result = $this->client->run($query);
-            return $result;
+            return $result->getRecords();
         }
 
     }
