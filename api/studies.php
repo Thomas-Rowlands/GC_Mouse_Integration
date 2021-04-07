@@ -15,11 +15,12 @@
             // Get mappings & synonyms for the chosen phenotype.
             $ont = new Ontology();
             $mappings = $ont->get_ontology_mappings($termID);
+
             $return_package["Mappings"] = $mappings;
             // Get GWAS Studies
             if ($mappings) {
-                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings[0]["humanID"]);
-                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings[0]["mouseID"]);
+                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($mappings["humanID"]);
+                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings["mouseID"]);
             }
             return $return_package;
         }

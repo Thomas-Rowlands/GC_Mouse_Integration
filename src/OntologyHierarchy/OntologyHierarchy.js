@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import $ from 'jquery';
 import axios from "axios";
 import {Button, Grid, Paper, TextField, withStyles} from '@material-ui/core';
@@ -258,7 +258,6 @@ class OntologyHierarchy extends React.Component {
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
                         tree["mouseTree"] = _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
-                        var test = this.findPath(tree["mouseID"], tree["mouseTree"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
@@ -274,7 +273,9 @@ class OntologyHierarchy extends React.Component {
                             selectedMouseNodes: tree["mouseID"],
                             expandedHumanNodes: expandedHumanNodes,
                             selectedHumanNodes: tree["humanID"],
-                        });
+                            mappedMousePhenotype: response.data.mouseLabel,
+                            mappedHumanPhenotype: response.data.humanLabel
+                        }, () => this.scrollTrees());
                     } else {
                         this.setState({loading: false, isMappingPresent: false});
                     }
@@ -311,6 +312,7 @@ class OntologyHierarchy extends React.Component {
                             expandedMouseNodes: expandedMouseNodes,
                             expandedHumanNodes: expandedHumanNodes,
                         });
+                        $()
                     } else {
 
                     }
@@ -413,6 +415,30 @@ class OntologyHierarchy extends React.Component {
         this.setState({selectedHumanNodes: nodeIds});
     }
 
+    scrollTrees = () => {
+        // Store a 'this' ref, and
+        var _this = this;
+        // wait for a paint before running scrollHeight dependent code.
+        window.requestAnimationFrame(function () {
+            var node = _this.getDOMNode();
+            if (node !== undefined) {
+                node.scrollTop = node.scrollHeight;
+            }
+        });
+    }
+
+    scrollTrees = () => {
+        if (this.state.mappedMousePhenotype && this.state.isMappingPresent) {
+            $('#humanTree').animate({
+                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replaceAll(" ", "-")).offset().top - $("#humanTree").offset().top
+            }, 1000);
+            $('#mouseTree').animate({
+                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replaceAll(" ", "-")).offset().top - $("#mouseTree").offset().top
+            }, 1000);
+            this.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
+        }
+
+    }
 
     render() {
         const {classes} = this.props;
@@ -428,14 +454,64 @@ class OntologyHierarchy extends React.Component {
             selectedHumanNodes,
             expandedMouseNodes,
             expandedHumanNodes,
+            mappedMousePhenotype,
+            mappedHumanPhenotype,
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
+
         if (conErrorStatus)
             throw new Error("A connection error occurred retrieving ontology trees.");
         return <div>
             <ErrorBoundary>
                 <Grid container spacing={3}>
+                    <Grid item xs>
+                        <Paper id="humanTreeWrapper" className={classes.paper}>
+                            <h3>Human Phenotype</h3>
+                            <Autocomplete
+                                freeSolo
+                                id="humanSearchInput"
+                                className={classes.autoComplete}
+                                onInputChange={this.retrieveLiveSearch}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Term search"
+                                        variant="outlined"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <React.Fragment>
+                                                    {humanLiveLoading ?
+                                                        <CircularProgress color="inherit" size={20}/> : null}
+                                                    {params.InputProps.endAdornment}
+                                                </React.Fragment>
+                                            ),
+                                        }}
+                                    />
+                                )}
+                                options={humanLiveSearchResults.map((option) => option.FSN)}/>
+
+                            <Button size="large" color="primary" variant="contained" id="search_btn"
+                                    onClick={this.humanSearchBtnClick}>Search</Button>
+                            {
+                                !humanTree ? null :
+                                    <OntologyTree treeID="humanTree" selectedPhenotypeLabel={mappedHumanPhenotype}
+                                                  onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
+                                                  selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
+                                                  onToggle={this.handleHumanToggle} treeData={humanTree}
+                                                  sourceOntology="HPO" mappingOntology="MP"/>
+                            }
+
+                        </Paper>
+                    </Grid>
+                    <Grid item xs>
+                        {
+                            this.state.isMappingPresent ?
+                                <PhenotypeResultBreakdown selectedPhenotype={this.state.treeData.mouseID}/>
+                                : null
+                        }
+                    </Grid>
                     <Grid item xs>
                         <Paper id="mouseTreeWrapper" className={classes.paper}>
                             <div className="ontologySearchWrapper">
@@ -469,76 +545,15 @@ class OntologyHierarchy extends React.Component {
                             </div>
                             <LoadingSpinner loading={loading}/>
                             {!mouseTree ? null :
-                                <OntologyTree onBtnClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
+                                <OntologyTree treeID="mouseTree" selectedPhenotypeLabel={mappedMousePhenotype}
+                                              onBtnClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
                                               selected={selectedMouseNodes} onSelect={this.handleMouseSelect}
                                               onToggle={this.handleMouseToggle} treeData={mouseTree}
                                               sourceOntology="MP" mappingOntology="HPO"/>}
                         </Paper>
                     </Grid>
-                    <Grid item xs>
-                        {
-                            this.state.isMappingPresent ?
-                                <PhenotypeResultBreakdown selectedPhenotype={this.state.treeData.mouseID}/>
-                                // <Paper id="mappingInfoWrapper" style={{marginTop: '50%'}} className={classes.paper}>
-                                //     <Typography gutterBottom variant="h5">Mapping Result Found!</Typography>
-                                //     <Divider variant="middle"/>
-                                //     <Grid container spacing={2}>
-                                //         <Grid item xs>
-                                //             <Typography gutterBottom variant="h6">Mouse</Typography>
-                                //             <Divider variant="middle"/>
-                                //             <Typography gutterBottom
-                                //                         variant="body1">{this.state.treeData.mouseID}</Typography>
-                                //         </Grid>
-                                //         <Grid item xs>
-                                //             <Typography gutterBottom variant="h6">Human</Typography>
-                                //             <Divider variant="middle"/>
-                                //             <Typography gutterBottom
-                                //                         variant="body1">{this.state.treeData.humanID}</Typography>
-                                //         </Grid>
-                                //     </Grid>
-                                // </Paper>
-                                : null
-                        }
-                    </Grid>
-                    <Grid item xs>
-                        <Paper id="humanTreeWrapper" className={classes.paper}>
-                            <h3>Human Phenotype</h3>
-                            <Autocomplete
-                                freeSolo
-                                id="humanSearchInput"
-                                className={classes.autoComplete}
-                                onInputChange={this.retrieveLiveSearch}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Term search"
-                                        variant="outlined"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            endAdornment: (
-                                                <React.Fragment>
-                                                    {humanLiveLoading ?
-                                                        <CircularProgress color="inherit" size={20}/> : null}
-                                                    {params.InputProps.endAdornment}
-                                                </React.Fragment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                                options={humanLiveSearchResults.map((option) => option.FSN)}/>
 
-                            <Button size="large" color="primary" variant="contained" id="search_btn"
-                                    onClick={this.humanSearchBtnClick}>Search</Button>
-                            {
-                                !humanTree ? null :
-                                    <OntologyTree onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
-                                                  selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
-                                                  onToggle={this.handleHumanToggle} treeData={humanTree}
-                                                  sourceOntology="HPO" mappingOntology="MP"/>
-                            }
 
-                        </Paper>
-                    </Grid>
                 </Grid>
             </ErrorBoundary>
 

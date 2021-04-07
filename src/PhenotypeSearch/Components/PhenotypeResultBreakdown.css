@@ -17,11 +17,19 @@ li{
 
 .highlight {
     font-weight: bold;
-    color: white;
-    background-color: #303f9f;
+    color: black;
+    background-color: #C8D9EE;
     margin: 0.1em;
     text-align: center;
 }
 .highlight > p{
     margin-left: 1em;
+}
+.subTabMenu > .MuiBox-root{
+    padding-top: 0;
+}
+.subTabMenu .MuiAppBar-root{
+    width: 55%;
+    margin-left: auto;
+    margin-right: auto;
 }

@@ -10,11 +10,14 @@ import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import StyledTreeItem from "./Components/StyledTreeItem";
+import $ from "jquery";
 
 const useStyles = theme => ({
     root: {
         marginTop: 20,
         marginLeft: 5,
+        overflowY: "scroll",
+        height: "70vh",
     },
     highlight: {
         backgroundColor: "#a6a6ff",
@@ -58,6 +61,8 @@ class OntologyTree extends React.Component {
             onBtnClick: null,
             sourceOntology: "",
             mappingOntology: "",
+            selectedPhenotypeLabel: "",
+            treeID: "",
         };
         this.tempExpandedIds = [];
     }
@@ -73,7 +78,7 @@ class OntologyTree extends React.Component {
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         // let siblings = (nodes.hassibling) ? nodes.hassibling.map((node) => this.getTreeNodes(node)) : null;
         return (
-            <StyledTreeItem onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
+            <StyledTreeItem id={this.props.treeID + "-" + nodes.FSN.replaceAll(" ", "-")} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
                             labelText={nodes.FSN} labelIcon={btn}>
                 {Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
                 {/*{siblings}*/}
@@ -99,7 +104,7 @@ class OntologyTree extends React.Component {
             throw new Error('No ontology data received.');
         }
         return (
-            <TreeView className={classes.root} expanded={this.props.expanded}
+            <TreeView id={this.props.treeID} className={classes.root} expanded={this.props.expanded}
                       selected={this.props.selected}
                       defaultCollapseIcon={<ArrowDropDownIcon/>} defaultExpandIcon={<ArrowRightIcon/>}
                       defaultEndIcon={<div style={{width: 24}}/>} onNodeToggle={this.props.onToggle}

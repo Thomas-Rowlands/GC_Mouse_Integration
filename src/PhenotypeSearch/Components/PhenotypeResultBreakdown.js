@@ -7,8 +7,29 @@ import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinne
 import {AppBar, Button, Grid, Paper, Tab, Tabs} from "@material-ui/core";
 import TabPanel from "../../UtilityComponents/TabPanel";
 import api_server from "../../UtilityComponents/ConfigData";
+import {Graph} from "react-d3-graph";
 
 class PhenotypeResultBreakdown extends React.Component {
+// the graph configuration, just override the ones you need
+    const
+    myConfig = {
+        nodeHighlightBehavior: true,
+        directed: false,
+        staticGraphWithDragAndDrop: false,
+        node: {
+            color: "blue",
+            size: 400,
+            highlightStrokeColor: "black",
+            labelProperty: "name",
+            labelPosition: "bottom",
+        },
+        link: {
+            highlightColor: "lightblue",
+            renderLabel: true,
+            labelProperty: "linkType"
+        },
+    };
+
     constructor(props) {
         super(props);
         this.gwasStudyClicked = this.gwasStudyClicked.bind(this);
@@ -20,7 +41,9 @@ class PhenotypeResultBreakdown extends React.Component {
             loading: true,
             tabValue: 0,
             dataTabValue: 0,
-            configData: api_server
+            configData: api_server,
+            mappingGraphData: null,
+            mappingGraphConfig: null,
         };
     }
 
@@ -45,7 +68,62 @@ class PhenotypeResultBreakdown extends React.Component {
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
-                        this.setState({breakdownData: response.data, loading: false});
+                        // graph payload (with minimalist structure)
+                        var data = {
+                            nodes: [
+                                {
+                                    id: response.data["Mappings"]["humanID"],
+                                    name: response.data["Mappings"]["humanLabel"]
+                                },
+                                {
+                                    id: response.data["Mappings"]["mouseID"],
+                                    name: response.data["Mappings"]["mouseLabel"]
+                                }
+                            ],
+                            links: []
+                        };
+                        for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
+                            let mapping = response.data["Mappings"]["mouseSynonyms"][i];
+                            let mouseNode = {id: mapping["synonymId"], name: mapping["synonymLabel"]};
+                            let link = {
+                                source: mapping["synonymId"],
+                                target: response.data["Mappings"]["mouseID"],
+                                linkType: "Synonym"
+                            };
+                            if (!data.nodes.includes(mouseNode)) {
+                                data.nodes.push(mouseNode);
+                            }
+                            if (!data.links.includes(link)) {
+                                data.links.push(link);
+                            }
+                        }
+                        for (var i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
+                            let mapping = response.data["Mappings"]["humanSynonyms"][i];
+                            let humanNode = {id: mapping["synonymId"], name: mapping["synonymLabel"]};
+                            let link = {
+                                source: response.data["Mappings"]["humanID"],
+                                target: mapping["synonymId"],
+                                linkType: "Synonym"
+                            };
+                            if (!data.nodes.includes(humanNode)) {
+                                data.nodes.push(humanNode);
+                            }
+                            if (!data.links.includes(link)) {
+                                data.links.push(link);
+                            }
+                        }
+                        for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
+                            let match = response.data["Mappings"]["matches"][i];
+                            let link = {
+                                source: match["humanNodeType"] === "term" ? response.data["Mappings"]["humanID"] : match["humanNodeId"],
+                                target: match["mouseNodeType"] === "term" ? response.data["Mappings"]["mouseID"] : match["mouseNodeId"],
+                                linkType: match["isExact"] ? "Exact Match" : "Partial Match"
+                            }
+                            if (!data.links.includes(link)) {
+                                data.links.push(link);
+                            }
+                        }
+                        this.setState({breakdownData: response.data, loading: false, mappingGraphData: data});
                     } else {
 
                     }
@@ -58,8 +136,8 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanTermID(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"].length > 0) {
-                return breakdownData["Mappings"][0]["humanID"];
+            if (breakdownData["Mappings"]) {
+                return breakdownData["Mappings"]["humanID"];
             } else {
                 return "No mapping found";
             }
@@ -68,8 +146,8 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanTerm(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"].length > 0) {
-                return breakdownData["Mappings"][0]["humanLabel"];
+            if (breakdownData["Mappings"]) {
+                return breakdownData["Mappings"]["humanLabel"];
             } else {
                 return "No mapping found";
             }
@@ -78,8 +156,8 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseTermID(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"].length > 0) {
-                return breakdownData["Mappings"][0]["mouseID"];
+            if (breakdownData["Mappings"]) {
+                return breakdownData["Mappings"]["mouseID"];
             } else {
                 return "No mapping found";
             }
@@ -88,8 +166,8 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseTerm(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"].length > 0) {
-                return breakdownData["Mappings"][0]["mouseLabel"];
+            if (breakdownData["Mappings"]) {
+                return breakdownData["Mappings"]["mouseLabel"];
             } else {
                 return "No mapping found";
             }
@@ -118,9 +196,9 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"][0]["humanSynonyms"].length > 0) {
-                return breakdownData["Mappings"][0]["humanSynonyms"].map((synonym, index) =>
-                    <li>{synonym}</li>);
+            if (breakdownData["Mappings"]["humanSynonyms"].length > 0) {
+                return breakdownData["Mappings"]["humanSynonyms"].map((synonym, index) =>
+                    <li>{synonym["synonymLabel"]}</li>);
             } else {
                 return <li>None</li>;
             }
@@ -129,17 +207,25 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"][0]["mouseSynonyms"].length > 0) {
-                return breakdownData["Mappings"][0]["mouseSynonyms"].map((synonym, index) =>
-                    <li>{synonym}</li>);
+            if (breakdownData["Mappings"]["mouseSynonyms"].length > 0) {
+                return breakdownData["Mappings"]["mouseSynonyms"].map((synonym, index) =>
+                    <li>{synonym["synonymLabel"]}</li>);
             } else {
                 return <li>None</li>;
             }
         }
     }
 
+    onClickNode = function (nodeId) {
+        window.alert(`Clicked node ${nodeId}`);
+    };
+
+    onClickLink = function (source, target) {
+        window.alert(`Clicked link between ${source} and ${target}`);
+    };
+
     render() {
-        const {breakdownData, loading, tabValue, dataTabValue} = this.state;
+        const {breakdownData, loading, tabValue, dataTabValue, mappingGraphData} = this.state;
         return (
             <Paper id="phenotypeResultsContainer" className="container">
                 <LoadingSpinner loading={loading}/>
@@ -160,47 +246,47 @@ class PhenotypeResultBreakdown extends React.Component {
 
                         </Tabs>
                     </AppBar>
-                    <TabPanel value={tabValue} index={0}>
+                    <TabPanel value={tabValue} index={0} className="subTabMenu">
                         <AppBar position="static" color="default">
                             <Tabs
                                 value={dataTabValue}
                                 onChange={(e, val) => this.setState({dataTabValue: val})}
                                 indicatorColor="primary"
                                 textColor="primary"
-                                variant="fullWidth"
                                 aria-label="full width tabs example"
+                                variant="fullWidth"
+                                centered
                             >
                                 <Tab
-                                    label={(breakdownData ? breakdownData["Gene Knockouts"].length : 0) + " Mouse Gene Knockouts"}/>
+                                    label={(breakdownData ? breakdownData["GWAS Studies"].length : 0) + " Human GWAS Studies"}
+                                    wrapped/>
                                 <Tab
-                                    label={(breakdownData ? breakdownData["GWAS Studies"].length : 0) + " Human GWAS Studies"}/>
+                                    label={(breakdownData ? breakdownData["Gene Knockouts"].length : 0) + " Mouse Gene Knockouts"}
+                                    wrapped/>
+
                             </Tabs>
                         </AppBar>
                         <TabPanel value={dataTabValue} index={0}>
-                            {breakdownData ? <ResultTable tableData={breakdownData["Gene Knockouts"]}
-                                                          onRowClick={this.experimentClicked}/> : null}
-                        </TabPanel>
-                        <TabPanel value={dataTabValue} index={1}>
                             {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]}
                                                           onRowClick={this.gwasStudyClicked}/> : null}
                         </TabPanel>
+                        <TabPanel value={dataTabValue} index={1}>
+                            {breakdownData ? <ResultTable tableData={breakdownData["Gene Knockouts"]}
+                                                          onRowClick={this.experimentClicked}/> : null}
+                        </TabPanel>
+
                     </TabPanel>
                     <TabPanel value={tabValue} index={1}>
                         <Grid container>
                             <Grid item xs>
-                                <h4 className="center">Mus Musculus</h4>
-                            </Grid>
-                            <Grid item xs>
                                 <h4 className="center">Homo Sapiens</h4>
                             </Grid>
+                            <Grid item xs>
+                                <h4 className="center">Mus Musculus</h4>
+                            </Grid>
+
                         </Grid>
                         <Grid container>
-                            <Grid item xs={3} className="col highlight">
-                                <p>ID</p>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
-                            </Grid>
                             <Grid item xs={3} className="col highlight">
                                 <p>ID</p>
                             </Grid>
@@ -208,10 +294,10 @@ class PhenotypeResultBreakdown extends React.Component {
                                 <p id="HPO-Matched-Term">{this.getHumanTermID(breakdownData)}</p>
                             </Grid>
                             <Grid item xs={3} className="col highlight">
-                                <p>Term</p>
+                                <p>ID</p>
                             </Grid>
                             <Grid item xs={3}>
-                                <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
+                                <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
                             </Grid>
                             <Grid item xs={3} className="col highlight">
                                 <p>Term</p>
@@ -219,16 +305,15 @@ class PhenotypeResultBreakdown extends React.Component {
                             <Grid item xs={3}>
                                 <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
                             </Grid>
+                            <Grid item xs={3} className="col highlight">
+                                <p>Term</p>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
+                            </Grid>
+
                         </Grid>
                         <Grid container>
-                            <Grid item xs={3} className="col highlight">
-                                <p>Synonyms</p>
-                            </Grid>
-                            <Grid item xs={3} className="col">
-                                <ul>
-                                    {this.getMouseSynonyms(breakdownData)}
-                                </ul>
-                            </Grid>
                             <Grid item xs={3} className="col highlight">
                                 <p>Synonyms</p>
                             </Grid>
@@ -237,7 +322,23 @@ class PhenotypeResultBreakdown extends React.Component {
                                     {this.getHumanSynonyms(breakdownData)}
                                 </ul>
                             </Grid>
+                            <Grid item xs={3} className="col highlight">
+                                <p>Synonyms</p>
+                            </Grid>
+                            <Grid item xs={3} className="col">
+                                <ul>
+                                    {this.getMouseSynonyms(breakdownData)}
+                                </ul>
+                            </Grid>
+
                         </Grid>
+                        <Graph
+                            id="graph-id" // id is mandatory
+                            data={mappingGraphData}
+                            config={this.myConfig}
+                            onClickNode={this.onClickNode}
+                            onClickLink={this.onClickLink}
+                        />
                     </TabPanel>
 
 
