@@ -273,8 +273,8 @@ class OntologyHierarchy extends React.Component {
                             selectedMouseNodes: tree["mouseID"],
                             expandedHumanNodes: expandedHumanNodes,
                             selectedHumanNodes: tree["humanID"],
-                            mappedMousePhenotype: response.data.mouseLabel,
-                            mappedHumanPhenotype: response.data.humanLabel
+                            mappedMousePhenotype: response.data.mouseID,
+                            mappedHumanPhenotype: response.data.humanID
                         }, () => this.scrollTrees());
                     } else {
                         this.setState({loading: false, isMappingPresent: false});
@@ -416,24 +416,12 @@ class OntologyHierarchy extends React.Component {
     }
 
     scrollTrees = () => {
-        // Store a 'this' ref, and
-        var _this = this;
-        // wait for a paint before running scrollHeight dependent code.
-        window.requestAnimationFrame(function () {
-            var node = _this.getDOMNode();
-            if (node !== undefined) {
-                node.scrollTop = node.scrollHeight;
-            }
-        });
-    }
-
-    scrollTrees = () => {
         if (this.state.mappedMousePhenotype && this.state.isMappingPresent) {
             $('#humanTree').animate({
-                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replaceAll(" ", "-")).offset().top - $("#humanTree").offset().top
+                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replace(":", "-")).offset().top - $("#humanTree").offset().top
             }, 1000);
             $('#mouseTree').animate({
-                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replaceAll(" ", "-")).offset().top - $("#mouseTree").offset().top
+                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replace(":", "-")).offset().top - $("#mouseTree").offset().top
             }, 1000);
             this.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
         }

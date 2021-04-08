@@ -15,10 +15,17 @@ class PhenotypeResultBreakdown extends React.Component {
     myConfig = {
         nodeHighlightBehavior: true,
         directed: false,
-        staticGraphWithDragAndDrop: false,
+        staticGraphWithDragAndDrop: true,
+          d3: {
+                alphaTarget: 0.05,
+                gravity: -400,
+                linkLength: 180,
+                linkStrength: 1,
+                disableLinkForce: true
+              },
         node: {
             color: "blue",
-            size: 400,
+            size: 300,
             highlightStrokeColor: "black",
             labelProperty: "name",
             labelPosition: "bottom",
@@ -69,22 +76,36 @@ class PhenotypeResultBreakdown extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         // graph payload (with minimalist structure)
+                        let humanTermCoords = [30, 214];
+                        let mouseTermCoords = [730, 214];
                         var data = {
                             nodes: [
                                 {
                                     id: response.data["Mappings"]["humanID"],
-                                    name: response.data["Mappings"]["humanLabel"]
+                                    name: response.data["Mappings"]["humanLabel"],
+                                    x: humanTermCoords[0],
+                                    y: humanTermCoords[1],
+                                    color: "red"
                                 },
                                 {
                                     id: response.data["Mappings"]["mouseID"],
-                                    name: response.data["Mappings"]["mouseLabel"]
+                                    name: response.data["Mappings"]["mouseLabel"],
+                                    x: mouseTermCoords[0],
+                                    y: mouseTermCoords[1],
+                                    color: "blue"
                                 }
                             ],
                             links: []
                         };
                         for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
                             let mapping = response.data["Mappings"]["mouseSynonyms"][i];
-                            let mouseNode = {id: mapping["synonymId"], name: mapping["synonymLabel"]};
+                            let mouseNode = {
+                                id: mapping["synonymId"],
+                                name: mapping["synonymLabel"],
+                                x: mouseTermCoords[0] - 100,
+                                y: mouseTermCoords[1] - 85 + (i * 65),
+                                color: "lightblue"
+                            };
                             let link = {
                                 source: mapping["synonymId"],
                                 target: response.data["Mappings"]["mouseID"],
@@ -99,7 +120,13 @@ class PhenotypeResultBreakdown extends React.Component {
                         }
                         for (var i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
                             let mapping = response.data["Mappings"]["humanSynonyms"][i];
-                            let humanNode = {id: mapping["synonymId"], name: mapping["synonymLabel"]};
+                            let humanNode = {
+                                id: mapping["synonymId"],
+                                name: mapping["synonymLabel"],
+                                x: humanTermCoords[0] + 100,
+                                y: humanTermCoords[1] - 85 + (i * 65),
+                                color: "orange"
+                            };
                             let link = {
                                 source: response.data["Mappings"]["humanID"],
                                 target: mapping["synonymId"],
