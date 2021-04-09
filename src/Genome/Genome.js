@@ -1,98 +1,89 @@
 import React from "react";
 import {withStyles} from "@material-ui/core";
 import {
-  createViewState,
-  createJBrowseTheme,
-  JBrowseLinearGenomeView,
-  ThemeProvider,
+    createViewState,
+    createJBrowseTheme,
+    JBrowseLinearGenomeView,
+    ThemeProvider,
 } from '@jbrowse/react-linear-genome-view';
 
 const theme = createJBrowseTheme();
 const assembly = {
-  name: 'GRCh38',
-  sequence: {
-    type: 'ReferenceSequenceTrack',
-    trackId: 'GRCh38-ReferenceSequenceTrack',
-    adapter: {
-      type: 'BgzipFastaAdapter',
-      fastaLocation: {
-        uri:
-          "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz",
-      },
-      faiLocation: {
-        uri:
-          "JBrowseData/seq/chr.fa.gz.fai",
-      },
-              gziLocation: {
-        uri:
-          "JBrowseData/seq/chr.fa.gz.gzi",
-      },
+    name: 'GRCh38',
+    sequence: {
+        type: 'ReferenceSequenceTrack',
+        trackId: 'GRCh38-ReferenceSequenceTrack',
+        adapter: {
+            type: 'BgzipFastaAdapter',
+            fastaLocation: {
+                uri:
+                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz",
+            },
+            faiLocation: {
+                uri:
+                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz.fai",
+            },
+            gziLocation: {
+                uri:
+                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz.gzi",
+            },
+        },
     },
-  },
-  aliases: ['hg38'],
-  refNameAliases: {
-    adapter: {
-      type: 'RefNameAliasAdapter',
-      location: {
-        uri:
-          'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/hg38_aliases.txt',
-      },
-    },
-  },
+    aliases: ['hg38']
 }
 
 const tracks = [
-  {
-    type: 'FeatureTrack',
-    trackId: 'ncbi_refseq_109_hg38',
-    name: 'NCBI RefSeq (GFF3Tabix)',
-    assemblyNames: ['GRCh38'],
-    category: ['Annotation'],
-    adapter: {
-      type: 'Gff3TabixAdapter',
-      gffGzLocation: {
-        uri:
-          'JBrowseData/chromFa/tracks.conf',
-      },
-      index: {
-        location: {
-          uri:
-            'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz.tbi',
+    {
+        type: 'FeatureTrack',
+        trackId: 'gc_variants_hg38',
+        name: 'Human Variants',
+        assemblyNames: ['GRCh38'],
+        category: ['Annotation'],
+        adapter: {
+            type: 'Gff3TabixAdapter',
+            gffGzLocation: {
+                uri:
+                    'JBrowseData/tracks/tracks.conf',
+            },
+            index: {
+                location: {
+                    uri:
+                        '',
+                },
+            },
         },
-      },
     },
-  },
 ]
 
 const defaultSession = {
-  name: 'My session',
-  view: {
-    id: 'linearGenomeView',
-    type: 'LinearGenomeView',
-    tracks: [
-      {
-        type: 'ReferenceSequenceTrack',
-        configuration: 'GRCh38-ReferenceSequenceTrack',
-        displays: [
-          {
-            type: 'LinearReferenceSequenceDisplay',
-            configuration:
-              'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
-          },
+    name: 'My session',
+    view: {
+        id: 'linearGenomeView',
+        type: 'LinearGenomeView',
+        tracks: [
+            {
+                type: 'ReferenceSequenceTrack',
+                configuration: 'GRCh38-ReferenceSequenceTrack',
+                displays: [
+                    {
+                        type: 'LinearReferenceSequenceDisplay',
+                        configuration:
+                            'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
+                    },
+                ],
+            },
+            {
+                type: 'FeatureTrack',
+                configuration: 'ncbi_refseq_109_hg38',
+                displays: [
+                    {
+                        type: 'LinearBasicDisplay',
+                        configuration: 'ncbi_refseq_109_hg38-LinearBasicDisplay',
+                    },
+                ],
+            },
         ],
-      },
-      {
-        type: 'FeatureTrack',
-        configuration: 'ncbi_refseq_109_hg38',
-        displays: [
-          {
-            type: 'LinearBasicDisplay',
-            configuration: 'ncbi_refseq_109_hg38-LinearBasicDisplay',
-          },
-        ],
-      },
-    ],
-  },
+    },
 }
 
 const useStyles = theme => ({
@@ -150,7 +141,7 @@ class Genome extends React.Component {
         return (
             <div>
                 <ThemeProvider theme={Genome.theme}>
-                    <JBrowseLinearGenomeView viewState={viewState} />
+                    <JBrowseLinearGenomeView viewState={viewState}/>
                 </ThemeProvider>
             </div>
         );

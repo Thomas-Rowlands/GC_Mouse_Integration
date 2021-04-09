@@ -61,14 +61,13 @@
             $results = [];
             
             foreach ($mapped_terms as $mapping) {
-                // Check if at least 1 GWAS & Knockout is present for this phenotype
+                // Check if at least 1 GWAS or Knockout is present for this phenotype
                 $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$mapping['humanID']}', {$human_pval}, {$page}, 0)";
                 $gwas = $this->con->execute($cmd, "gc_mouse");
                 $gwas = (int)mysqli_fetch_row($gwas)[0];
                 $cmd = "CALL gc_mouse.get_mouse_knockouts_by_term('{$mapping['mouseID']}', {$mouse_pval}, {$page}, 0)";
                 $knockouts = $this->con->execute($cmd, "gc_mouse");
                 $knockouts = (int)mysqli_fetch_row($knockouts)[0];
-
                 if ($knockouts == 0 && $gwas == 0)
                     continue;
                 

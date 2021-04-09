@@ -62,6 +62,7 @@ class OntologyHierarchy extends React.Component {
         this.getRootTree();
     }
 
+
     retrieveLiveSearch = (e, x) => {
         let input = x;
         let species = e.target.id === "mouseSearchInput" ? "mouse" : "human";
@@ -88,7 +89,7 @@ class OntologyHierarchy extends React.Component {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
-                        if (response.data.length == 0) {
+                        if (response.data.length === 0) {
                             if (species === "mouse") {
                                 this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
                             } else {
@@ -312,7 +313,6 @@ class OntologyHierarchy extends React.Component {
                             expandedMouseNodes: expandedMouseNodes,
                             expandedHumanNodes: expandedHumanNodes,
                         });
-                        $()
                     } else {
 
                     }
@@ -418,10 +418,10 @@ class OntologyHierarchy extends React.Component {
     scrollTrees = () => {
         if (this.state.mappedMousePhenotype && this.state.isMappingPresent) {
             $('#humanTree').animate({
-                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replace(":", "-")).offset().top - $("#humanTree").offset().top
+                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replace(":", "-")).offset().top - ($("#humanTree").position().top + 90)
             }, 1000);
             $('#mouseTree').animate({
-                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replace(":", "-")).offset().top - $("#mouseTree").offset().top
+                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replace(":", "-")).offset().top - ($("#mouseTree").position().top + 90)
             }, 1000);
             this.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
         }
@@ -460,6 +460,7 @@ class OntologyHierarchy extends React.Component {
                                 freeSolo
                                 id="humanSearchInput"
                                 className={classes.autoComplete}
+                                id="humanSearchInput"
                                 onInputChange={this.retrieveLiveSearch}
                                 renderInput={(params) => (
                                     <TextField

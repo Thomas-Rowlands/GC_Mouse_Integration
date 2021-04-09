@@ -18,9 +18,6 @@ class PhenotypeResultBreakdown extends React.Component {
         staticGraphWithDragAndDrop: true,
           d3: {
                 alphaTarget: 0.05,
-                gravity: -400,
-                linkLength: 180,
-                linkStrength: 1,
                 disableLinkForce: true
               },
         node: {
@@ -33,7 +30,9 @@ class PhenotypeResultBreakdown extends React.Component {
         link: {
             highlightColor: "lightblue",
             renderLabel: true,
-            labelProperty: "linkType"
+            labelProperty: "linkType",
+            strokeWidth: 3,
+            fontSize: 10
         },
     };
 
@@ -76,8 +75,8 @@ class PhenotypeResultBreakdown extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         // graph payload (with minimalist structure)
-                        let humanTermCoords = [30, 214];
-                        let mouseTermCoords = [730, 214];
+                        let humanTermCoords = [50, 214];
+                        let mouseTermCoords = [750, 214];
                         var data = {
                             nodes: [
                                 {
@@ -102,8 +101,8 @@ class PhenotypeResultBreakdown extends React.Component {
                             let mouseNode = {
                                 id: mapping["synonymId"],
                                 name: mapping["synonymLabel"],
-                                x: mouseTermCoords[0] - 100,
-                                y: mouseTermCoords[1] - 85 + (i * 65),
+                                x: mouseTermCoords[0] - 175,
+                                y: mouseTermCoords[1] - 105 + (i * 65),
                                 color: "lightblue"
                             };
                             let link = {
@@ -123,8 +122,8 @@ class PhenotypeResultBreakdown extends React.Component {
                             let humanNode = {
                                 id: mapping["synonymId"],
                                 name: mapping["synonymLabel"],
-                                x: humanTermCoords[0] + 100,
-                                y: humanTermCoords[1] - 85 + (i * 65),
+                                x: humanTermCoords[0] + 175,
+                                y: humanTermCoords[1] - 105 + (i * 65),
                                 color: "orange"
                             };
                             let link = {
@@ -242,10 +241,6 @@ class PhenotypeResultBreakdown extends React.Component {
             }
         }
     }
-
-    onClickNode = function (nodeId) {
-        window.alert(`Clicked node ${nodeId}`);
-    };
 
     onClickLink = function (source, target) {
         window.alert(`Clicked link between ${source} and ${target}`);

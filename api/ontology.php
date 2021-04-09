@@ -162,10 +162,10 @@
                 // RETURN value AS tree;";
                 $cmd = "MATCH a=(endNode:MP{id: \"$termID\"})-[:ISA*1..]->(startNode:MP{id: 'MP:0000001'})
                 WITH NODES(a) AS aNodes, startNode
-                MATCH b=(startNode)<-[:ISA*1..]-(test)-[:hasSibling*0..1]->(sibs)
-                WHERE test in aNodes
-                WITH b, test, sibs
-                ORDER BY test.FSN, sibs.FSN
+                MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
+                WHERE terms in aNodes
+                WITH b, terms, sibs
+                ORDER BY terms.FSN, sibs.FSN
                 WITH COLLECT(b) AS paths
                 CALL apoc.convert.toTree(paths) YIELD value AS tree
                 RETURN tree";
@@ -180,10 +180,10 @@
                 // RETURN value AS tree;";
                 $cmd = "MATCH a=(endNode:HPO{id: \"$termID\"})-[:ISA*1..]->(startNode:HPO{id: 'HP:0000001'})
                 WITH NODES(a) AS aNodes, startNode
-                MATCH b=(startNode)<-[:ISA*1..]-(test)-[:hasSibling*0..1]->(sibs)
-                WHERE test in aNodes
-                WITH b, test, sibs
-                ORDER BY test.FSN, sibs.FSN
+                MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
+                WHERE terms in aNodes
+                WITH b, terms, sibs
+                ORDER BY terms.FSN, sibs.FSN
                 WITH COLLECT(b) AS paths
                 CALL apoc.convert.toTree(paths) YIELD value AS tree
                 RETURN tree";
