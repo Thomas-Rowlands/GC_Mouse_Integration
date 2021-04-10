@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import $ from 'jquery';
 import axios from "axios";
 import {Button, Grid, Paper, TextField, withStyles} from '@material-ui/core';
@@ -56,6 +56,7 @@ class OntologyHierarchy extends React.Component {
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
         this.liveCancelToken = null;
+        this.testPaths = [];
     }
 
     componentDidMount() {
@@ -199,6 +200,23 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
+
+    getAllPaths = (obj, key, prev = '') => {
+        const result = []
+
+        for (let k in obj) {
+            let path = prev + (prev ? '.' : '') + k;
+
+            if (k == key) {
+                result.push(path)
+            } else if (typeof obj[k] == 'object') {
+                result.push(...this.getAllPaths(obj[k], key, path))
+            }
+        }
+
+        return result
+    }
+
     pathToIdArray = (path, tree) => {
         var result = [];
         for (var i = 1; i < path.length; i += 2) {
@@ -258,7 +276,8 @@ class OntologyHierarchy extends React.Component {
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
-                        tree["mouseTree"] = _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
+                        tree["mouseTree"] = response.data.mouseTree; // _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
+                        var test = this.getAllPaths(tree["mouseID"], tree["mouseTree"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();

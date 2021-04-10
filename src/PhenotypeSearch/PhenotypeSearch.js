@@ -3,15 +3,19 @@ import './PhenotypeSearch.css';
 import $ from 'jquery';
 import {
     Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     FormControl,
+    FormControlLabel,
+    InputLabel,
+    MenuItem,
     Radio,
     RadioGroup,
-    FormControlLabel,
     Select,
-    MenuItem,
-    InputLabel,
-    withStyles,
-    TextField
+    TextField,
+    withStyles
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -73,10 +77,6 @@ class PhenotypeSearch extends React.Component {
             this.page_num -= 1;
             this.search();
         }
-    }
-
-    resultBreakdownBackClicked = (btn) => {
-        this.setState({searchOpen: true});
     }
 
     humanPValChanged = (e) => {
@@ -175,8 +175,7 @@ class PhenotypeSearch extends React.Component {
     render() {
         const {tableData, liveSearchResults, liveLoading, loading, searchOpen, selectedSpecies} = this.state;
         const {classes} = this.props;
-        if (searchOpen)
-            return (<div className="PhenotypeSearch">
+        return (<div className="PhenotypeSearch">
                 <div className="searchResultsContainer">
                     {/* Orthology Selection */}
                     <div className="orthology-menu">
@@ -204,7 +203,7 @@ class PhenotypeSearch extends React.Component {
                                     }}
                                 />
                             )}
-                         options={liveSearchResults.map((option) => option.FSN)}/>
+                            options={liveSearchResults.map((option) => option.FSN)}/>
                         <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}
                                     onChange={this.speciesRadioChanged}>
                             <FormControlLabel value="Human" label="Human" control={<Radio/>} id="human-radio"/>
@@ -258,17 +257,28 @@ class PhenotypeSearch extends React.Component {
                 </div>
                 {/*Phenotype selection results drill down*/
                 }
-            </div>)
-                ;
-        else
-            return (
-                <div className="table-container">
-                    <PhenotypeResultBreakdown selectedPhenotype={this.state.selectedPhenotype}
-                          breakdownData={this.state.breakdownData}
-                          backBtnClick={this.resultBreakdownBackClicked}/>
-                </div>
+                <Dialog
+                    fullWidth={true}
+                    maxWidth="lg"
+                    open={!searchOpen}
+                    aria-labelledby="max-width-dialog-title"
+                >
+                    <DialogContent>
 
-            );
+                        <div className="table-container">
+                            <PhenotypeResultBreakdown selectedPhenotype={this.state.selectedPhenotype}
+                                                      breakdownData={this.state.breakdownData}/>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.setState({searchOpen: true})} color="primary">
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        )
+            ;
     }
 }
 

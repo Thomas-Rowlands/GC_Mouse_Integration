@@ -21,7 +21,7 @@ class ResultTable extends React.Component {
     }
 
     handleChangeRowsPerPage = (event) => {
-        this.setState({rowsPerPage: parseInt(event.target.value, 10), page: 1});
+        this.setState({rowsPerPage: parseInt(event.target.value, 10), page: 0});
     }
 
     render() {
