@@ -362,8 +362,6 @@ class PhenotypeResultBreakdown extends React.Component {
                             onClickLink={this.onClickLink}
                         />
                     </TabPanel>
-
-
                 </div>
             </Paper>
         );

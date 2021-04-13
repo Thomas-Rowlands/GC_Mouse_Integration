@@ -1,6 +1,7 @@
 <?php
     include_once 'database.php';
     include_once 'utility.php';
+    include_once 'tree.php';
 
     class Ontology {
 
@@ -124,7 +125,7 @@
                     $result["humanID"] = $humanID;
                     $result["humanLabel"] = $humanLabel;
                     $result["isExactMatch"] = $match[0]["isExactMatch"];
-
+                    
 
                     if ($result["mouseTree"] || $result["humanTree"])
                         return $result;
@@ -160,15 +161,20 @@
                 // WITH COLLECT(p) AS ps 
                 // CALL apoc.convert.toTree(ps) yield value 
                 // RETURN value AS tree;";
-                $cmd = "MATCH a=(endNode:MP{id: \"$termID\"})-[:ISA*1..]->(startNode:MP{id: 'MP:0000001'})
-                WITH NODES(a) AS aNodes, startNode
-                MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
-                WHERE terms in aNodes
-                WITH b, terms, sibs
-                ORDER BY terms.FSN, sibs.FSN
-                WITH COLLECT(b) AS paths
-                CALL apoc.convert.toTree(paths) YIELD value AS tree
-                RETURN tree";
+
+                
+                // $cmd = "MATCH a=(endNode:MP{id: \"$termID\"})-[:ISA*1..]->(startNode:MP{id: 'MP:0000001'})
+                // WITH NODES(a) AS aNodes, startNode
+                // MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
+                // WHERE terms in aNodes
+                // WITH b, terms, sibs
+                // ORDER BY terms.FSN, sibs.FSN
+                // WITH COLLECT(b) AS paths
+                // CALL apoc.convert.toTree(paths) YIELD value AS tree
+                // RETURN tree";
+                $tree = new OntologyTree("MP");
+                $tree->getTreeByID($termID);
+
             } else {
                 // $cmd = "MATCH (mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})<-[:LOOM_MAPPING*0..]-(targetMapping)
                 // WITH parent, child

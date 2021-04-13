@@ -35,6 +35,8 @@ const useStyles = theme => ({
 
 class OntologyHierarchy extends React.Component {
 
+    function
+
     constructor(props) {
         super(props);
         this.state = {
@@ -62,7 +64,6 @@ class OntologyHierarchy extends React.Component {
     componentDidMount() {
         this.getRootTree();
     }
-
 
     retrieveLiveSearch = (e, x) => {
         let input = x;
@@ -146,43 +147,29 @@ class OntologyHierarchy extends React.Component {
             tree = _.sortBy(tree, o => o.FSN);
         }
         if (_.isArray(tree)) {
-            if (tree.length > 0) {
-                var test = [];
-                for (var i = 0; i < tree.length; i++) {
-                    if (tree[i].isa) {
-                        tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node));
-                        if (Array.isArray(tree[i].isa[0]))
-                            tree[i].isa = tree[i].isa[0];
-                        tree[i].isa = _.sortBy(tree[i].isa, o => o.FSN);
-                    }
-                    if (tree[i].hassibling) {
-                        let newTree = tree[i].hassibling;
-                        newTree.filter((node) => !this.isNodeDuplicate(tree, node));
-                        delete tree[i].hassibling;
-                        tree.push(newTree);
-                    }
+            for (var i = 0; i < tree.length; i++) {
+                if (tree[i].isa) {
+                    tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node));
+                    if (Array.isArray(tree[i].isa[0]))
+                        tree[i].isa = tree[i].isa[0];
+                    tree[i].isa = _.sortBy(tree[i].isa, o => o.FSN);
                 }
-                tree = _.sortBy(tree, o => o.FSN);
-            } else {
-                if (tree[0].isa) {
-                    tree[0].isa = tree[0].isa.map((node) => this.expandSiblings(node));
-                    if (Array.isArray(tree[0].isa[0]))
-                        tree[0].isa = tree[0].isa[0];
-                    tree[0].isa = _.sortBy(tree.isa[0], o => o.FSN);
-                }
-                if (tree[0].hassibling) {
-                    let newTree = tree[0].hassibling;
+                if (tree[i].hassibling) {
+                    let newTree = tree[i].hassibling;
                     newTree.filter((node) => !this.isNodeDuplicate(tree, node));
-                    delete tree[0].hassibling;
-                    newTree.push(tree[0]);
+                    delete tree[i].hassibling;
                     tree.push(newTree);
-                    tree = _.sortBy(tree, o => o.FSN);
                 }
             }
+            tree = _.sortBy(tree, o => o.FSN);
         } else if (tree.isa) {
             tree.isa = tree.isa.map((node) => this.expandSiblings(node));
-            if (Array.isArray(tree.isa[0]))
-                tree.isa = tree.isa[0];
+            for (var k in tree.isa) {
+                if (Array.isArray(tree.isa[k])) {
+                    tree.isa[k].map((node) => tree.isa.push(node));
+                    tree.isa = tree.isa.splice(k, 1);
+                }
+            }
             tree.isa = _.sortBy(tree.isa, o => o.FSN);
         }
         return tree;
@@ -200,17 +187,16 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
-
     getAllPaths = (obj, key, prev = '') => {
-        const result = []
+        const result = [];
 
         for (let k in obj) {
             let path = prev + (prev ? '.' : '') + k;
 
-            if (k == key) {
-                result.push(path)
+            if (obj[k] === key) {
+                result.push(path);
             } else if (typeof obj[k] == 'object') {
-                result.push(...this.getAllPaths(obj[k], key, path))
+                result.push(...this.getAllPaths(obj[k], key, path));
             }
         }
 
@@ -257,6 +243,35 @@ class OntologyHierarchy extends React.Component {
         return this.mergeDeep(target, ...sources);
     }
 
+    objectToPaths = (data, target) => {
+        var result = [];
+        var matched_paths = [];
+        doIt(data, "");
+        return matched_paths;
+
+        function doIt(data, s) {
+            if (data && typeof data === "object") {
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i] === target) {
+                            matched_paths.push(s + "." + i);
+                        }
+                        doIt(data[i], s + "." + i);
+                    }
+                } else {
+                    for (var p in data) {
+                        if (data[p] === target) {
+                            matched_paths.push(s + "." + p);
+                        }
+                        doIt(data[p], s + "." + p);
+                    }
+                }
+            } else {
+                result.push(s);
+            }
+        }
+    }
+
     search = (searchInput, ontology) => {
         this.setState({loading: true, isMappingPresent: false});
         if (searchInput === undefined || searchInput === "") {
@@ -277,7 +292,7 @@ class OntologyHierarchy extends React.Component {
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
                         tree["mouseTree"] = response.data.mouseTree; // _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
-                        var test = this.getAllPaths(tree["mouseID"], tree["mouseTree"]);
+                        var test = this.objectToPaths(tree["mouseTree"], tree["mouseID"]);
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
