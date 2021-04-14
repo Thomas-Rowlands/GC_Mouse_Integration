@@ -114,11 +114,17 @@
 
                     $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
                     
-                    if ($mouseID)
-                        $result["mouseTree"] = $this->search_ontology_hierarchy($mouseID, "MP");
+                    if ($mouseID) {
+                        $tree = new OntologyTree("MP", "MP", $mouseID);
+                        $result["mouseTree"] = $tree->getTree();
+                    }
+                        
 
-                    if ($humanID)
-                        $result["humanTree"] = $this->search_ontology_hierarchy($humanID, "HPO");
+                    if ($humanID) {
+                        $tree = new OntologyTree("HPO", "HP", $humanID);
+                        $result["humanTree"] = $tree->getTree();
+                    }
+                        
 
                     $result["mouseID"] = $mouseID;
                     $result["mouseLabel"] = $mouseLabel;
@@ -134,10 +140,12 @@
                 }
             } else {
                 $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
-                $result["mouseTree"] = $this->get_term_children($term, "MP");
-                $result["humanTree"] = $this->get_term_children($term, "HPO");
-                $result["mouseID"] = $result["mouseTree"]["id"];
-                $result["humanID"] = $result["humanTree"]["id"];
+                $mouseOntTree = new OntologyTree("MP", "MP", null, true);
+                $humanOntTree = new OntologyTree("HPO", "HP", null, true);
+                $result["mouseTree"] = $mouseOntTree->getTree();
+                $result["humanTree"] = $humanOntTree->getTree();
+                $result["mouseID"] = $result["mouseTree"]->id;
+                $result["humanID"] = $result["humanTree"]->id;
                 if ($result["mouseTree"])
                     return $result;
                 else
@@ -150,57 +158,9 @@
 
         private function search_ontology_hierarchy($termID, $ontology) {
             $ontology = strtoupper($ontology);
-            $result = null;
-            $cmd = "";
-            if (strtolower($ontology) == "mp") {
-                // $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
-                // WITH parent, child
-                // ORDER BY parent.FSN, child.FSN
-                // MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})-[:LOOM_MAPPING*0..]->(targetMapping)
-                // WHERE \"mammalian phenotype\" in parent.FSN
-                // WITH COLLECT(p) AS ps 
-                // CALL apoc.convert.toTree(ps) yield value 
-                // RETURN value AS tree;";
-
-                
-                // $cmd = "MATCH a=(endNode:MP{id: \"$termID\"})-[:ISA*1..]->(startNode:MP{id: 'MP:0000001'})
-                // WITH NODES(a) AS aNodes, startNode
-                // MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
-                // WHERE terms in aNodes
-                // WITH b, terms, sibs
-                // ORDER BY terms.FSN, sibs.FSN
-                // WITH COLLECT(b) AS paths
-                // CALL apoc.convert.toTree(paths) YIELD value AS tree
-                // RETURN tree";
-                $tree = new OntologyTree("MP");
-                $tree->getTreeByID($termID);
-
-            } else {
-                // $cmd = "MATCH (mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})<-[:LOOM_MAPPING*0..]-(targetMapping)
-                // WITH parent, child
-                // ORDER BY parent.FSN, child.FSN
-                // MATCH p=(mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology})<-[:ISA*1..]-(child {id: \"{$termID}\"})<-[:LOOM_MAPPING*0..]-(targetMapping)
-                // WHERE \"All\" in parent.FSN
-                // WITH COLLECT(p) AS ps 
-                // CALL apoc.convert.toTree(ps) yield value 
-                // RETURN value AS tree;";
-                $cmd = "MATCH a=(endNode:HPO{id: \"$termID\"})-[:ISA*1..]->(startNode:HPO{id: 'HP:0000001'})
-                WITH NODES(a) AS aNodes, startNode
-                MATCH b=(startNode)<-[:ISA*1..]-(terms)-[:hasSibling*0..1]->(sibs)
-                WHERE terms in aNodes
-                WITH b, terms, sibs
-                ORDER BY terms.FSN, sibs.FSN
-                WITH COLLECT(b) AS paths
-                CALL apoc.convert.toTree(paths) YIELD value AS tree
-                RETURN tree";
-            }
-            
-            $result = $this->neo->execute($cmd);
-            $return_package = [];
-            if (count($result) > 0) {
-                $return_package = $result[0]->get("tree");
-            }
-            return $return_package;
+            $ontLabel = str_replace( "O", "", $ontology);
+            $tree = new OntologyTree($ontology, $ontLabel, $termID);
+            return $tree->getTree();
         }
 
         public function get_term_children($termID, $ontology) {

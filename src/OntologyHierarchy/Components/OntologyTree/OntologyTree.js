@@ -69,18 +69,16 @@ class OntologyTree extends React.Component {
 
     getTreeNodes = (nodes) => {
         const {classes} = this.props;
-        const mappingProperty = "has" + this.props.mappingOntology + "Mapping";
-        const btn = mappingProperty in nodes ?
-            <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.FSN)}
+        const btn = "hasMapping" in nodes ?
+            <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
             ><LinearScaleIcon fontSize="small"/></Button> : null;
-        const tempChildNode = ("hasChildren" in nodes) && !("isa" in nodes) ?
+        const tempChildNode = ("hasChildren" in nodes) && (nodes.children) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
-        // let siblings = (nodes.hassibling) ? nodes.hassibling.map((node) => this.getTreeNodes(node)) : null;
         return (
             <StyledTreeItem id={this.props.treeID + "-" + nodes.id.replace(":", "-")} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
-                            labelText={nodes.FSN} labelIcon={btn}>
-                {Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
+                            labelText={nodes.label} labelIcon={btn}>
+                {Array.isArray(nodes.children) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
                 {/*{siblings}*/}
             </StyledTreeItem>
         );
