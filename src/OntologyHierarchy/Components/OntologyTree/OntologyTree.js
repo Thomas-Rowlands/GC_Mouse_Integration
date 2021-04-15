@@ -69,7 +69,7 @@ class OntologyTree extends React.Component {
 
     getTreeNodes = (nodes) => {
         const {classes} = this.props;
-        const btn = "hasMapping" in nodes ?
+        const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
             ><LinearScaleIcon fontSize="small"/></Button> : null;
@@ -78,7 +78,7 @@ class OntologyTree extends React.Component {
         return (
             <StyledTreeItem id={this.props.treeID + "-" + nodes.id.replace(":", "-")} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
                             labelText={nodes.label} labelIcon={btn}>
-                {Array.isArray(nodes.children) ? nodes.isa.map((node) => this.getTreeNodes(node)) : tempChildNode}
+                {Object.keys(nodes.children).length > 0 ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key])) : tempChildNode}
                 {/*{siblings}*/}
             </StyledTreeItem>
         );

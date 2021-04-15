@@ -6,7 +6,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     FormControl,
     FormControlLabel,
     InputLabel,
@@ -47,7 +46,6 @@ const useStyles = theme => ({
 
 
 class PhenotypeSearch extends React.Component {
-
 
     constructor(props) {
         super(props);
@@ -104,7 +102,7 @@ class PhenotypeSearch extends React.Component {
         this.setState({searchInput: input});
         if (input.length < 1) {
             $("#live-search").hide();
-            this.setState({liveLoading: false, liveSearchResults: []});
+            this.setState({liveLoading: false, liveSearchResults: [], inputErrorText: "Input cannot be empty."});
             return;
         }
         this.liveCancelToken = axios.CancelToken.source();
@@ -176,6 +174,7 @@ class PhenotypeSearch extends React.Component {
         const {tableData, liveSearchResults, liveLoading, loading, searchOpen, selectedSpecies} = this.state;
         const {classes} = this.props;
         return (<div className="PhenotypeSearch">
+                <LoadingSpinner loading={loading}/>
                 <div className="searchResultsContainer">
                     {/* Orthology Selection */}
                     <div className="orthology-menu">
@@ -183,15 +182,13 @@ class PhenotypeSearch extends React.Component {
                         <Autocomplete
                             freeSolo
                             className={classes.autoComplete}
-                            // getOptionSelected={(option, value) => option.FSN === value.FSN}
-                            // getOptionLabel={(option) => option.FSN}
                             onInputChange={this.retrieveLiveSearch}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="Phenotype search"
                                     variant="outlined"
-                                    // onChange={this.retrieveLiveSearch}
+                                    errorText={this.state.inputErrorText}
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (
@@ -247,7 +244,6 @@ class PhenotypeSearch extends React.Component {
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.searchClick}>Search</Button>
                         </div>
-                        <LoadingSpinner loading={loading}/>
                     </div>
                     <div className="table-container">
                         {tableData ? this.displayTable(tableData) : null}

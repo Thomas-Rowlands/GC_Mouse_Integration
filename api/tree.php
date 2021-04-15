@@ -77,8 +77,8 @@
                             foreach ($sibs as $sib) {
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
                                     $hasMapping = false;
-                                    if ($sib->hasValue("hasMPMapping") || $sib->hasValue("hasHPOMapping"))
-                                        $hasMapping = true;
+                                    if ($sib->hasValue("hasMapping"))
+                                        $hasMapping = $sib->get('hasMapping');
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasMapping, $sib->get('hasChildren'));
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }

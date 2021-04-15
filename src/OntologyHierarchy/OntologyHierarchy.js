@@ -137,44 +137,6 @@ class OntologyHierarchy extends React.Component {
         return false;
     }
 
-    expandSiblings = (tree) => {
-        if (tree.hassibling) {
-            let newTree = tree.hassibling;
-            newTree.filter((node) => !this.isNodeDuplicate(tree, node));
-            delete tree.hassibling;
-            newTree.push(tree);
-            tree = newTree;
-            tree = _.sortBy(tree, o => o.FSN);
-        }
-        if (_.isArray(tree)) {
-            for (var i = 0; i < tree.length; i++) {
-                if (tree[i].isa) {
-                    tree[i].isa = tree[i].isa.map((node) => this.expandSiblings(node));
-                    if (Array.isArray(tree[i].isa[0]))
-                        tree[i].isa = tree[i].isa[0];
-                    tree[i].isa = _.sortBy(tree[i].isa, o => o.FSN);
-                }
-                if (tree[i].hassibling) {
-                    let newTree = tree[i].hassibling;
-                    newTree.filter((node) => !this.isNodeDuplicate(tree, node));
-                    delete tree[i].hassibling;
-                    tree.push(newTree);
-                }
-            }
-            tree = _.sortBy(tree, o => o.FSN);
-        } else if (tree.isa) {
-            tree.isa = tree.isa.map((node) => this.expandSiblings(node));
-            for (var k in tree.isa) {
-                if (Array.isArray(tree.isa[k])) {
-                    tree.isa[k].map((node) => tree.isa.push(node));
-                    tree.isa = tree.isa.splice(k, 1);
-                }
-            }
-            tree.isa = _.sortBy(tree.isa, o => o.FSN);
-        }
-        return tree;
-    }
-
     findPath = (a, obj) => {
         for (var key in obj) {                                         // for each key in the object obj
             if (obj.hasOwnProperty(key)) {                             // if it's an owned key
@@ -206,8 +168,8 @@ class OntologyHierarchy extends React.Component {
     pathToIdArray = (path, tree) => {
         var result = [];
         for (var i = 1; i < path.length; i += 2) {
-            result.push(tree.isa[path[i]].id);
-            tree = tree.isa[path[i]];
+            result.push(tree.children[path[i]].id);
+            tree = tree.children[path[i]];
         }
         return result;
     }
@@ -286,17 +248,16 @@ class OntologyHierarchy extends React.Component {
                         let tree = this.state.treeData;
                         let expandedMouseNodes = [];
                         let expandedHumanNodes = [];
-                        response.data.mouseTree = this.expandSiblings(response.data.mouseTree);
-                        response.data.humanTree = this.expandSiblings(response.data.humanTree);
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
                         tree["mouseTree"] = response.data.mouseTree; // _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
                         var test = this.objectToPaths(tree["mouseTree"], tree["mouseID"]);
+
                         expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
                         expandedMouseNodes.unshift("MP:0000001");
                         expandedMouseNodes.pop();
-                        tree["humanTree"] = _.mergeWith(response.data.humanTree, tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
+                        tree["humanTree"] = response.data.humanTree;//_.mergeWith(response.data.humanTree, tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
                         expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
                         expandedHumanNodes.unshift("HP:0000001");
                         expandedHumanNodes.pop();
@@ -486,7 +447,7 @@ class OntologyHierarchy extends React.Component {
             throw new Error("A connection error occurred retrieving ontology trees.");
         return <div>
             <ErrorBoundary>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs>
                         <Paper id="humanTreeWrapper" className={classes.paper}>
                             <h3>Human Phenotype</h3>
