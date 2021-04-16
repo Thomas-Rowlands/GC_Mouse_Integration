@@ -165,34 +165,20 @@
             return $tree->getTree();
         }
 
-        public function get_term_children($termID, $ontology) {
-            $ontology = strtoupper($ontology);
-            $result = null;
-            $root_terms = ["MP"=>"MP:0000001", "HPO"=>"HP:0000001"];
-            if ($termID == "GET_ROOT")
-                $termID = $root_terms[$ontology];
-            if ($ontology == "MP") {
-                $cmd = "MATCH (mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)-[:LOOM_MAPPING*0..]->(targetMapping) 
-                WITH parent, child
-                ORDER BY parent.FSN, child.FSN
-                MATCH p=(mapping)<-[:LOOM_MAPPING*0..]-(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)-[:LOOM_MAPPING*0..]->(targetMapping) 
-                WITH COLLECT(p) AS ps  
-                CALL apoc.convert.toTree(ps) yield value 
-                RETURN value AS tree;";
-            } else {
-                $cmd = "MATCH (mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)<-[:LOOM_MAPPING*0..]-(targetMapping) 
-                WITH parent, child
-                ORDER BY parent.FSN, child.FSN
-                MATCH p=(mapping)-[:LOOM_MAPPING*0..]->(parent:{$ontology}{id:\"{$termID}\"})<-[:ISA]-(child)<-[:LOOM_MAPPING*0..]-(targetMapping) 
-                WITH COLLECT(p) AS ps  
-                CALL apoc.convert.toTree(ps) yield value 
-                RETURN value AS tree;";
+        public function getTermChildren($termID, $ontLabel) {
+            $ontLabel = strtoupper($ontLabel);
+            $mappingProperty = $ontLabel == "HPO" ? "hasMPMapping" : "hasHPOMapping";
+            $children = $this->neo->execute("MATCH (n:$ontLabel {id: \"$termID\"})<-[:ISA]-(m)
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren
+            ORDER BY label ASC");
+            $return_package = [];
+            foreach ($children as $child) {
+                $hasMapping = false;
+                if ($child->hasValue("hasMapping"))
+                    $hasMapping = $child->get('hasMapping');
+                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasMapping, $child->get('hasChildren'));
+                $return_package[$child->get('id')] = $childNode;
             }
-            $result = $this->neo->execute($cmd);
-            if (count($result) > 0) {
-                $return_package = $result[0]->get("tree");
-            }
-                
             return $return_package;
         }
 

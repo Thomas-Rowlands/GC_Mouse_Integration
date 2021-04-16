@@ -1,6 +1,8 @@
 <?php
     // ini_set('display_errors', '0');
     include_once "studies.php";
+    include_once "tree.php";
+
     if (isset($_GET['type'])) {
         if ($_GET['type'] == "study") {
             if (parameters_present(array("search", "page", "human_pval", "mouse_pval", "species"))) {
@@ -37,7 +39,7 @@
             } else if (parameters_present(array("childSearch", "term", "ontology"))) {
                 $ont = new Ontology();
                 $result = null;
-                $result = $ont->get_term_children($_GET["term"], $_GET["ontology"]);
+                $result = $ont->getTermChildren($_GET["term"], $_GET["ontology"]);
                 if ($result)
                     echo json_encode($result);
                 else

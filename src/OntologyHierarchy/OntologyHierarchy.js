@@ -313,12 +313,12 @@ class OntologyHierarchy extends React.Component {
             });
     }
 
-    updateTree = (id, isa) => obj => {
+    updateTree = (id, children) => obj => {
         if (obj.id === id) {
-            obj.isa = isa.isa;
+            obj.children = children;
             return true;
-        } else if (obj.isa)
-            return obj.isa.some(this.updateTree(id, isa));
+        } else if (!_.isEmpty(obj.children))
+            return obj.children.some(this.updateTree(id, children));
     }
 
     getRootTree = () => {
@@ -404,11 +404,11 @@ class OntologyHierarchy extends React.Component {
     }
 
     isLoadingRequired = (id, obj) => {
-        if (obj.id === id && !obj.isa) {
+        if (obj.id === id && _.isEmpty(obj.children)) {
             return true;
-        } else if (obj.isa) {
-            for (var i = 0; i < obj.isa.length; i++) {
-                if (this.isLoadingRequired(id, obj.isa[i]))
+        } else if (!_.isEmpty(obj.children)) {
+            for (var i = 0; i < Object.keys(obj.children).length; i++) {
+                if (this.isLoadingRequired(id, obj.children[i]))
                     return true;
             }
         }
