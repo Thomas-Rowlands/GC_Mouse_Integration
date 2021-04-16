@@ -20,6 +20,7 @@
             OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
             WHERE (N:Synonym)
             WITH N, M, H, T, MT
+            WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
             RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {
@@ -39,6 +40,7 @@
             OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
             WHERE (N:Synonym)
             WITH N, M, H, T, MT
+            WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
             RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             $matches = [];
             foreach ($result as $row) {

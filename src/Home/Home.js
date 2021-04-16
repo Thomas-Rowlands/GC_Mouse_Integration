@@ -21,7 +21,7 @@ class Home extends React.Component {
 
     render() {
         const {classes} = this.props;
-        return (<Grid className={classes.root} container spacing={3}>
+        return (<Grid className={classes.root} container spacing={2}>
             <Grid item xs>
                 <Link to="/PhenotypeSearch">
                     <MainMenuItem url="/PhenotypeSearch" image="images/bootstrap-icons-1.3.0/search.svg"
@@ -36,8 +36,7 @@ class Home extends React.Component {
                     <MainMenuItem url="/OntologyHierarchy" image="images/bootstrap-icons-1.3.0/bezier2.svg"
                                   alt="image of a bezier curve between two points."
                                   heading="Phenotype Ontology Hierarchy"
-                                  body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
-                        showing homology data."/>
+                                  body="Ontology mapping visualisation with orthologue data."/>
                 </Link>
             </Grid>
 
@@ -45,8 +44,7 @@ class Home extends React.Component {
                 <Link to="/Genome">
                     <MainMenuItem url="/Genome" image="images/bootstrap-icons-1.3.0/dna-strand.svg"
                                   alt="image of a DNA double helix."
-                                  heading="Genome Browser/Gene Symbol Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
-                        showing homology data."/>
+                                  heading="Genome Browser/Gene Symbol Search" body="Interactive genome browser for human/mouse orthologue data."/>
                 </Link>
             </Grid>
         </Grid>);

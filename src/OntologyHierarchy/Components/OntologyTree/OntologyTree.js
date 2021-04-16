@@ -10,7 +10,7 @@ import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import StyledTreeItem from "./Components/StyledTreeItem";
-import $ from "jquery";
+import _ from 'lodash';
 
 const useStyles = theme => ({
     root: {
@@ -73,13 +73,15 @@ class OntologyTree extends React.Component {
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
             ><LinearScaleIcon fontSize="small"/></Button> : null;
-        const tempChildNode = ("hasChildren" in nodes) && (nodes.children) ?
+        const tempChildNode = ("hasChildren" in nodes) && (Object.keys(nodes.children).length === 0) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
+        if (Object.keys(nodes.children).length > 0) {
+            nodes.children = _.orderBy(nodes.children, ['label'], ['asc']); // all nodes must be sorted alphabetically!
+        }
         return (
             <StyledTreeItem id={this.props.treeID + "-" + nodes.id.replace(":", "-")} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
                             labelText={nodes.label} labelIcon={btn}>
                 {Object.keys(nodes.children).length > 0 ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key])) : tempChildNode}
-                {/*{siblings}*/}
             </StyledTreeItem>
         );
     }

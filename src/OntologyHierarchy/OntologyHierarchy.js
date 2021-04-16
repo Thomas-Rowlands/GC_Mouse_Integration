@@ -42,10 +42,6 @@ class OntologyHierarchy extends React.Component {
         this.state = {
             loading: true,
             treeData: null,
-            mouseLiveSearchResults: [],
-            humanLiveSearchResults: [],
-            mouseLiveLoading: false,
-            humanLiveLoading: false,
             expandedMouseNodes: [''],
             expandedHumanNodes: [''],
             selectedMouseNodes: [''],
@@ -54,36 +50,44 @@ class OntologyHierarchy extends React.Component {
             isMappingPresent: false,
             conErrorStatus: false,
             configData: api_server,
+            searchInput: "",
+            humanLiveSearchResults: [],
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
         this.liveCancelToken = null;
-        this.testPaths = [];
+        this.mouseLiveSearchResults = [];
+        this.humanLiveSearchResults = [];
+        this.mouseLiveLoading = false;
+        this.humanLiveLoading = false;
+        this.searchInput = "";
     }
 
     componentDidMount() {
         this.getRootTree();
     }
 
-    retrieveLiveSearch = (e, x) => {
+    retrieveLiveSearch = async (e, x) => {
         let input = x;
         let species = e.target.id === "mouseSearchInput" ? "mouse" : "human";
         if (this.liveCancelToken)
             this.liveCancelToken.cancel();
         if (input.length < 1) {
             $("#live-search").hide();
-            if (species === "mouse")
-                this.setState({mouseLiveLoading: false, mouseLiveSearchResults: []});
-            else
-                this.setState({humanLiveLoading: false, humanLiveSearchResults: []});
+            if (species === "mouse") {
+                this.mouseLiveLoading = false;
+                this.mouseLiveSearchResults = [];
+            } else {
+                this.humanLiveLoading = false;
+                this.humanLiveSearchResults = [];
+            }
             return;
         }
         if (species === "mouse")
-            this.setState({mouseLiveLoading: true});
+            this.mouseLiveLoading = true;
         else
-            this.setState({humanLiveLoading: true});
-
-        this.setState({searchInput: input});
+            this.humanLiveLoading = true;
+        this.searchInput = input;
         this.liveCancelToken = axios.CancelToken.source();
         let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + species;
 
@@ -93,26 +97,38 @@ class OntologyHierarchy extends React.Component {
                     if (response.status === 200) {
                         if (response.data.length === 0) {
                             if (species === "mouse") {
-                                this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
+                                this.mouseLiveSearchResults = [];
+                                this.mouseLiveLoading = false;
                             } else {
-                                this.setState({humanLiveSearchResults: [], humanLiveLoading: false});
+                                this.humanLiveSearchResults = [];
+                                this.humanLiveLoading = false;
                             }
                         } else {
                             if (species === "mouse") {
-                                this.setState({mouseLiveSearchResults: response.data, mouseLiveLoading: false});
+                                this.mouseLiveSearchResults = response.data;
+                                this.mouseLiveLoading = false;
                             } else {
-                                this.setState({humanLiveSearchResults: response.data, humanLiveLoading: false});
+                                this.humanLiveSearchResults = response.data;
+                                this.humanLiveLoading = false;
+                                    this.setState({humanLiveSearchResults: response.data});
                             }
                         }
                     }
                 })
                 .catch((error) => {
-                    console.log("An error occurred retrieving live search results.");
-                    if (species === "mouse") {
-                        this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
+                    if (!axios.isCancel(error)) {
+                        console.log("An error occurred retrieving live search results.");
                     } else {
-                        this.setState({humanLiveSearchResults: [], humanLiveLoading: false});
+                        if (species === "mouse") {
+                            this.mouseLiveSearchResults = [];
+                            this.mouseLiveLoading = false;
+                        } else {
+                            this.humanLiveSearchResults = [];
+                            this.humanLiveLoading = false;
+                        }
                     }
+
+
                 });
         }
     }
@@ -167,7 +183,7 @@ class OntologyHierarchy extends React.Component {
 
     pathToIdArray = (path, tree) => {
         var result = [];
-        for (var i = 1; i < path.length; i += 2) {
+        for (var i = 2; i < path.length; i += 2) {
             result.push(tree.children[path[i]].id);
             tree = tree.children[path[i]];
         }
@@ -251,16 +267,30 @@ class OntologyHierarchy extends React.Component {
                         tree["humanID"] = response.data.humanID;
                         tree["mouseID"] = response.data.mouseID;
                         tree["isExactMatch"] = response.data.isExactMatch;
-                        tree["mouseTree"] = response.data.mouseTree; // _.mergeWith(response.data.mouseTree, tree["mouseTree"], this.appendSearchResult);//this.mergeDeep(tree["mouseTree"], response.data.mouseTree);
-                        var test = this.objectToPaths(tree["mouseTree"], tree["mouseID"]);
-
-                        expandedMouseNodes = this.pathToIdArray(this.findPath(tree["mouseID"], tree["mouseTree"]).split("."), tree["mouseTree"]);
+                        tree["mouseTree"] = response.data.mouseTree;
+                        tree["humanTree"] = response.data.humanTree;
+                        let mousePaths = this.objectToPaths(tree["mouseTree"], tree["mouseID"]);
+                        if (mousePaths.length > 1) {
+                            mousePaths.forEach (mousePath => this.pathToIdArray(mousePath.split("."), tree["mouseTree"]).forEach(id => expandedMouseNodes.push(id)));
+                        } else {
+                            expandedMouseNodes = this.pathToIdArray(mousePaths[0].split("."), tree["mouseTree"]);
+                        }
                         expandedMouseNodes.unshift("MP:0000001");
-                        expandedMouseNodes.pop();
-                        tree["humanTree"] = response.data.humanTree;//_.mergeWith(response.data.humanTree, tree["humanTree"], this.appendSearchResult);//this.mergeDeep(tree["humanTree"], response.data.humanTree);
-                        expandedHumanNodes = this.pathToIdArray(this.findPath(tree["humanID"], tree["humanTree"]).split("."), tree["humanTree"]);
+                        let tempFilteredNodes = [];
+                        expandedMouseNodes.forEach(node => node !== tree["mouseID"] ? tempFilteredNodes.push(node) : null);
+                        expandedMouseNodes = tempFilteredNodes;
+
+                        let humanPaths = this.objectToPaths(tree["humanTree"], tree["humanID"]);
+                        if (humanPaths.length > 1) {
+                            humanPaths.forEach (humanPath => this.pathToIdArray(humanPath.split("."), tree["humanTree"]).forEach(id => expandedHumanNodes.push(id)));
+                        } else {
+                            expandedHumanNodes = this.pathToIdArray(humanPaths[0].split("."), tree["humanTree"]);
+                        }
                         expandedHumanNodes.unshift("HP:0000001");
-                        expandedHumanNodes.pop();
+                        tempFilteredNodes = [];
+                        expandedHumanNodes.forEach(node => node !== tree["humanID"] ? tempFilteredNodes.push(node) : null);
+                        expandedHumanNodes = tempFilteredNodes;
+
                         this.setState({
                             treeData: tree,
                             loading: false,
@@ -423,14 +453,11 @@ class OntologyHierarchy extends React.Component {
 
     }
 
+
     render() {
         const {classes} = this.props;
         const {
-            mouseLiveLoading,
-            humanLiveLoading,
             loading,
-            mouseLiveSearchResults,
-            humanLiveSearchResults,
             treeData,
             conErrorStatus,
             selectedMouseNodes,
@@ -439,12 +466,14 @@ class OntologyHierarchy extends React.Component {
             expandedHumanNodes,
             mappedMousePhenotype,
             mappedHumanPhenotype,
+            humanLiveSearchResults,
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
 
         if (conErrorStatus)
             throw new Error("A connection error occurred retrieving ontology trees.");
+
         return <div>
             <ErrorBoundary>
                 <Grid container spacing={2}>
@@ -466,7 +495,7 @@ class OntologyHierarchy extends React.Component {
                                             ...params.InputProps,
                                             endAdornment: (
                                                 <React.Fragment>
-                                                    {humanLiveLoading ?
+                                                    {this.humanLiveLoading ?
                                                         <CircularProgress color="inherit" size={20}/> : null}
                                                     {params.InputProps.endAdornment}
                                                 </React.Fragment>
@@ -474,7 +503,7 @@ class OntologyHierarchy extends React.Component {
                                         }}
                                     />
                                 )}
-                                options={humanLiveSearchResults.map((option) => option.FSN)}/>
+                                options={this.state.humanLiveSearchResults.map((option) => option.FSN)}/>
 
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.humanSearchBtnClick}>Search</Button>
@@ -514,7 +543,7 @@ class OntologyHierarchy extends React.Component {
                                                 ...params.InputProps,
                                                 endAdornment: (
                                                     <React.Fragment>
-                                                        {mouseLiveLoading ?
+                                                        {this.mouseLiveLoading ?
                                                             <CircularProgress color="inherit" size={20}/> : null}
                                                         {params.InputProps.endAdornment}
                                                     </React.Fragment>
@@ -522,7 +551,7 @@ class OntologyHierarchy extends React.Component {
                                             }}
                                         />
                                     )}
-                                    options={mouseLiveSearchResults.map((option) => option.FSN)}/>
+                                    options={this.mouseLiveSearchResults.map((option) => option.FSN)}/>
 
                                 <Button size="large" color="primary" variant="contained" id="search_btn"
                                         onClick={this.mouseSearchBtnClick}>Search</Button>
