@@ -94,10 +94,43 @@
             return $synonyms;
         }
 
+        public function get_root_ontology_tree($ontology, $mappingOnt) {
+            $ontLabel = "";
+            if ($ontology == "MP")
+                $ontLabel = "MP";
+            else
+                $ontLabel = $ontology === "MESH" ? "MESH" : "HP";
+            $result = ["tree" => []];
+            if ($ontLabel == "MP") {
+                $mouseOntTree = new OntologyTree("MP", "MP", null, true);
+                $result["tree"] = $mouseOntTree->getTree();
+                $result["ID"] = $result["tree"]->id;
+                return $result;
+            } else {
+                $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true);
+                $result["tree"] = $humanOntTree->getTree();
+                $result["ID"] = $result["tree"]->id;
+                return $result;
+            }
+        }
+
+        public function get_root_ontology_trees($ontology) {
+            $ontLabel = $ontology === "MESH" ? "MESH" : "HP";
+            $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
+            $mouseOntTree = new OntologyTree("MP", "MP", null, true);
+            $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true);
+            $result["mouseTree"] = $mouseOntTree->getTree();
+            $result["humanTree"] = $humanOntTree->getTree();
+            $result["mouseID"] = $result["mouseTree"]->id;
+            $result["humanID"] = $result["humanTree"]->id;
+            if ($result)
+                return $result;
+            else
+                return null;
+        }
+
         public function get_ontology_trees($term, $ontology) {
             $ontology = strtoupper($ontology);
-            //search for closest matching term ID
-            if ($term !== "GET_ROOT") {
                 $mouseID = "";
                 $humanID = "";
                 $mouseLabel = "";
@@ -140,20 +173,6 @@
                     else
                         return null;
                 }
-            } else {
-                $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
-                $mouseOntTree = new OntologyTree("MP", "MP", null, true);
-                $humanOntTree = new OntologyTree("HPO", "HP", null, true);
-                $result["mouseTree"] = $mouseOntTree->getTree();
-                $result["humanTree"] = $humanOntTree->getTree();
-                $result["mouseID"] = $result["mouseTree"]->id;
-                $result["humanID"] = $result["humanTree"]->id;
-                if ($result["mouseTree"])
-                    return $result;
-                else
-                    return null;
-
-            }
 
             return null;
         }

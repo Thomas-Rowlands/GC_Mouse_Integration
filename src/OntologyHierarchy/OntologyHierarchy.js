@@ -65,7 +65,7 @@ class OntologyHierarchy extends React.Component {
     }
 
     componentDidMount() {
-        this.getRootTree();
+        this.getRootTrees();
     }
 
     retrieveLiveSearch = async (e, x) => {
@@ -254,7 +254,7 @@ class OntologyHierarchy extends React.Component {
     search = (searchInput, ontology) => {
         this.setState({loading: true, isMappingPresent: false});
         if (searchInput === undefined || searchInput === "") {
-            this.getRootTree();
+            this.getRootTrees();
             return;
         }
         let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
@@ -322,9 +322,9 @@ class OntologyHierarchy extends React.Component {
             return obj.children.some(this.updateTree(id, children));
     }
 
-    getRootTree = () => {
+    getRootTrees = () => {
         this.setState({loading: true});
-        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=GET_ROOT&ontology=mp";
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoots&ontology=" + this.state.humanOntology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -349,6 +349,37 @@ class OntologyHierarchy extends React.Component {
                 this.setState({conErrorStatus: true, loading: false});
             });
     }
+
+    getRootTree = (ontology, species) => {
+        this.setState({loading: true});
+        let mappingOnt = ontology === "MP" ? this.state.humanOntology : "MP";
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoot&ontology=" + ontology + "&mappingOnt=" + mappingOnt;
+        axios.get(url_string)
+            .then((response) => {
+                if (response.status === 200) {
+                    if (response.data) {
+                        if (species === "human") {
+                            let expandedHumanNodes = [];
+                            expandedHumanNodes.push(response.data.ID);
+                            let tree = this.state.treeData;
+                            tree["humanTree"] = response.data.tree;
+                            this.setState({treeData: tree, loading: false, expandedHumanNodes: expandedHumanNodes});
+                        } else {
+                            let expandedMouseNodes = [];
+                            expandedMouseNodes.push(response.data.ID);
+                            let tree = this.state.treeData;
+                            tree["mouseTree"] = response.data.tree;
+                            this.setState({treeData: tree, loading: false, expandedMouseNodes: expandedMouseNodes});
+                        }
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log("An error occurred retrieving root tree data.");
+                this.setState({conErrorStatus: true, loading: false});
+            });
+    }
+
     getTermChildren = (e, tree, ont) => {
         let url_string = this.state.configData.api_server + "/controller.php?type=ontology&childSearch&term=" + e + "&ontology=" + ont;
         axios.get(url_string)
@@ -454,6 +485,14 @@ class OntologyHierarchy extends React.Component {
 
     }
 
+    changeHumanOntology = (e) => {
+        this.setState({
+            humanOntology: e.target.value,
+            selectedHumanNodes: [''],
+            expandedHumanNodes: [''],
+        });
+        this.getRootTree(e.target.value, "human");
+    }
 
     render() {
         const {classes} = this.props;
@@ -485,7 +524,7 @@ class OntologyHierarchy extends React.Component {
                                 labelId="demo-simple-select-outlined-label"
                                 id="demo-simple-select-outlined"
                                 value={this.state.humanOntology}
-                                onChange={(e) => this.setState({humanOntology: e.target.value})}
+                                onChange={this.changeHumanOntology}
                                 label="Age"
                             >
                                 <MenuItem value={"HPO"}>Human Phenotype Ontology</MenuItem>

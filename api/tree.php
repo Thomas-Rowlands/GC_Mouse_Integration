@@ -8,12 +8,14 @@
         private $tree;
         private $neo;
         private $ontLabel;
+        private $mappingOntLabel;
         private $termIDLabel;
 
-        public function __construct($ontLabel, $termIDLabel, $termID=null, $isRoot=false){
+        public function __construct($ontLabel, $termIDLabel, $termID=null, $isRoot=false, $mappingOntLabel){
             $this->neo = new Neo_Connection();
             $this->ontLabel = $ontLabel;
             $this->termIDLabel = $termIDLabel;
+            $this->mappingOntLabel = $mappingOntLabel;
             if ($termID) {
                 $this->getTreeByID($termID);
             } else if ($isRoot) {
@@ -26,7 +28,7 @@
         }
 
 
-        private function getRootTree() {
+        private function getRootTree($isMesh=false) {
             $results = $this->getTermChildren("$this->termIDLabel:0000001");
             $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, true);
             foreach ($results as $result) {
@@ -36,15 +38,20 @@
             $this->tree = $rootNode;
         }
 
-        private function getTermChildren($termID) {
-            $mappingProperty = $this->ontLabel == "HPO" ? "hasMPMapping" : "hasHPOMapping";
+        private function getTermChildren($termID, $isMesh=false) {
+            $mappingProperty = "";
+            if ($this->ontLabel == "MP") {
+                $mappingProperty = "hasMPMapping";
+            } else {
+                $mappingProperty = $this->ontLabel == "HPO" ? "hasHPOMapping" : "hasMESHMapping";
+            }
             $result = $this->neo->execute("MATCH (n:$this->ontLabel {id: \"$termID\"})<-[:ISA]-(m)
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren
             ORDER BY label ASC");
             return $result;
         }
 
-        private function getTermSiblings($termID) {
+        private function getTermSiblings($termID, $isMesh=false) {
             $mappingProperty = $this->ontLabel == "HPO" ? "hasMPMapping" : "hasHPOMapping";
             $result = $this->neo->execute("MATCH (n:$this->ontLabel {id: \"$termID\"})-[:hasSibling]->(sib)
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasMapping, sib.hasChildren AS hasChildren
