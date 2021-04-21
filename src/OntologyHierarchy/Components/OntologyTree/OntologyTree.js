@@ -56,6 +56,7 @@ class OntologyTree extends React.Component {
             expandedNodes: [''],
             selectedNodes: [''],
             selectedSpecies: "Mouse",
+            treeOntology: "",
             onToggle: null,
             onSelect: null,
             onBtnClick: null,

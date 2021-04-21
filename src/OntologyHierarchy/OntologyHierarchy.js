@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import axios from "axios";
-import {Button, Grid, Paper, TextField, withStyles} from '@material-ui/core';
+import {Button, Grid, InputLabel, MenuItem, Paper, Select, TextField, withStyles} from '@material-ui/core';
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import './OntologyHierarchy.css';
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -52,6 +52,7 @@ class OntologyHierarchy extends React.Component {
             configData: api_server,
             searchInput: "",
             humanLiveSearchResults: [],
+            humanOntology: "HPO",
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
@@ -110,7 +111,7 @@ class OntologyHierarchy extends React.Component {
                             } else {
                                 this.humanLiveSearchResults = response.data;
                                 this.humanLiveLoading = false;
-                                    this.setState({humanLiveSearchResults: response.data});
+                                this.setState({humanLiveSearchResults: response.data});
                             }
                         }
                     }
@@ -271,7 +272,7 @@ class OntologyHierarchy extends React.Component {
                         tree["humanTree"] = response.data.humanTree;
                         let mousePaths = this.objectToPaths(tree["mouseTree"], tree["mouseID"]);
                         if (mousePaths.length > 1) {
-                            mousePaths.forEach (mousePath => this.pathToIdArray(mousePath.split("."), tree["mouseTree"]).forEach(id => expandedMouseNodes.push(id)));
+                            mousePaths.forEach(mousePath => this.pathToIdArray(mousePath.split("."), tree["mouseTree"]).forEach(id => expandedMouseNodes.push(id)));
                         } else {
                             expandedMouseNodes = this.pathToIdArray(mousePaths[0].split("."), tree["mouseTree"]);
                         }
@@ -282,7 +283,7 @@ class OntologyHierarchy extends React.Component {
 
                         let humanPaths = this.objectToPaths(tree["humanTree"], tree["humanID"]);
                         if (humanPaths.length > 1) {
-                            humanPaths.forEach (humanPath => this.pathToIdArray(humanPath.split("."), tree["humanTree"]).forEach(id => expandedHumanNodes.push(id)));
+                            humanPaths.forEach(humanPath => this.pathToIdArray(humanPath.split("."), tree["humanTree"]).forEach(id => expandedHumanNodes.push(id)));
                         } else {
                             expandedHumanNodes = this.pathToIdArray(humanPaths[0].split("."), tree["humanTree"]);
                         }
@@ -479,7 +480,17 @@ class OntologyHierarchy extends React.Component {
                 <Grid container spacing={2}>
                     <Grid item xs>
                         <Paper id="humanTreeWrapper" className={classes.paper}>
-                            <h3>Human Phenotype</h3>
+                            <InputLabel id="demo-simple-select-outlined-label">Human Ontology</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-outlined-label"
+                                id="demo-simple-select-outlined"
+                                value={this.state.humanOntology}
+                                onChange={(e) => this.setState({humanOntology: e.target.value})}
+                                label="Age"
+                            >
+                                <MenuItem value={"HPO"}>Human Phenotype Ontology</MenuItem>
+                                <MenuItem value={"MESH"}>Medical Subject Headings</MenuItem>
+                            </Select>
                             <Autocomplete
                                 freeSolo
                                 id="humanSearchInput"
@@ -513,7 +524,7 @@ class OntologyHierarchy extends React.Component {
                                                   onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
                                                   selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
                                                   onToggle={this.handleHumanToggle} treeData={humanTree}
-                                                  sourceOntology="HPO" mappingOntology="MP"/>
+                                                  sourceOntology={this.state.humanOntology} mappingOntology="MP"/>
                             }
 
                         </Paper>
