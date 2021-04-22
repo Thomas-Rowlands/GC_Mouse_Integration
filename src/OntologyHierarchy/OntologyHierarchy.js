@@ -463,7 +463,7 @@ class OntologyHierarchy extends React.Component {
         let tree = this.state.treeData.humanTree;
         var loadingRequired = this.isLoadingRequired(nodeIds[0], tree);
         if (loadingRequired) {
-            this.getTermChildren(nodeIds[0], "human", "hpo");
+            this.getTermChildren(nodeIds[0], "human", this.state.humanOntology);
         }
         this.setState({expandedHumanNodes: nodeIds});
     }

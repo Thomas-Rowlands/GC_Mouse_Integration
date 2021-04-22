@@ -102,12 +102,12 @@
                 $ontLabel = $ontology === "MESH" ? "MESH" : "HP";
             $result = ["tree" => []];
             if ($ontLabel == "MP") {
-                $mouseOntTree = new OntologyTree("MP", "MP", null, true);
+                $mouseOntTree = new OntologyTree("MP", "MP", null, true, $ontLabel);
                 $result["tree"] = $mouseOntTree->getTree();
                 $result["ID"] = $result["tree"]->id;
                 return $result;
             } else {
-                $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true);
+                $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
                 $result["tree"] = $humanOntTree->getTree();
                 $result["ID"] = $result["tree"]->id;
                 return $result;
@@ -117,8 +117,9 @@
         public function get_root_ontology_trees($ontology) {
             $ontLabel = $ontology === "MESH" ? "MESH" : "HP";
             $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
-            $mouseOntTree = new OntologyTree("MP", "MP", null, true);
-            $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true);
+            $mouseOntTree = new OntologyTree("MP", "MP", null, true, $ontLabel);
+            $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
+
             $result["mouseTree"] = $mouseOntTree->getTree();
             $result["humanTree"] = $humanOntTree->getTree();
             $result["mouseID"] = $result["mouseTree"]->id;
