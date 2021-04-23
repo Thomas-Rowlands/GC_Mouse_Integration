@@ -17,7 +17,7 @@ const useStyles = theme => ({
         marginTop: 20,
         marginLeft: 5,
         overflowY: "scroll",
-        height: "70vh",
+        height: "75vh",
     },
     highlight: {
         backgroundColor: "#a6a6ff",
@@ -56,6 +56,7 @@ class OntologyTree extends React.Component {
             expandedNodes: [''],
             selectedNodes: [''],
             selectedSpecies: "Mouse",
+            nodes: [],
             treeOntology: "",
             onToggle: null,
             onSelect: null,
@@ -66,6 +67,7 @@ class OntologyTree extends React.Component {
             treeID: "",
         };
         this.tempExpandedIds = [];
+        this.usedIDs = [];
     }
 
     getTreeNodes = (nodes) => {

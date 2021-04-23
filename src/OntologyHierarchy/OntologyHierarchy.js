@@ -257,7 +257,7 @@ class OntologyHierarchy extends React.Component {
             this.getRootTrees();
             return;
         }
-        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology;
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&ontology=" + ontology + "&mappingOnt=" + this.state.humanOntology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -322,9 +322,10 @@ class OntologyHierarchy extends React.Component {
             return obj.children.some(this.updateTree(id, children));
     }
 
-    getRootTrees = () => {
+    getRootTrees = (ontology=null) => {
         this.setState({loading: true});
-        let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoots&ontology=" + this.state.humanOntology;
+        let ont = ontology ? ontology : "HPO";
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoots&ontology=" + ont;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -491,7 +492,7 @@ class OntologyHierarchy extends React.Component {
             selectedHumanNodes: [''],
             expandedHumanNodes: [''],
         });
-        this.getRootTree(e.target.value, "human");
+        this.getRootTrees(e.target.value, "human");
     }
 
     render() {
@@ -530,6 +531,7 @@ class OntologyHierarchy extends React.Component {
                                 <MenuItem value={"HPO"}>Human Phenotype Ontology</MenuItem>
                                 <MenuItem value={"MESH"}>Medical Subject Headings</MenuItem>
                             </Select>
+                            <br/><br/>
                             <Autocomplete
                                 freeSolo
                                 id="humanSearchInput"

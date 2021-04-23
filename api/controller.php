@@ -44,10 +44,10 @@
                     echo json_encode($result);
                 else
                     echo null;
-            } else if (parameters_present(array("search", "term", "ontology"))) {
+            } else if (parameters_present(array("search", "term", "ontology", "mappingOnt"))) {
                 $ont = new Ontology();
                 $result = null;
-                $result = $ont->get_ontology_trees($_GET["term"], $_GET["ontology"]);
+                $result = $ont->get_ontology_trees($_GET["term"], $_GET["ontology"], $_GET["mappingOnt"]);
                 if ($result)
                     echo json_encode($result);
                 else

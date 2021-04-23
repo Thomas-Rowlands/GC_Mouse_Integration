@@ -54,9 +54,9 @@
             $mapped_terms = null;
             $ont = new Ontology();
             if (strtolower($species) == "mouse") {
-                $mapped_terms = $ont->search_mouse_term($user_input);
+                $mapped_terms = $ont->search_mouse_term($user_input, "HPO");
             } else {
-                $mapped_terms = $ont->search_human_term($user_input);
+                $mapped_terms = $ont->search_human_term($user_input, "HPO");
             }
             $results = [];
             

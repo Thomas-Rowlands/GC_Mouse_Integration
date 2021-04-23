@@ -10,18 +10,34 @@
             $this->neo = new Neo_Connection();
         }
 
-        public function search_mouse_term($search) {
-            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
-            WHERE N.FSN =~ '(?i).*{$search}.*'
-            WITH N, M, H
-            OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-            WHERE (H:Synonym)
-            WITH N, M, H, T
-            OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-            WHERE (N:Synonym)
-            WITH N, M, H, T, MT
-            WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-            RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+        public function search_mouse_term($search, $mappingOnt) {
+            $result = null;
+            if ($mappingOnt == "MESH") {
+                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
+                WHERE N.FSN =~ '(?i).*{$search}.*'
+                WITH N, M, H
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                WHERE (H:Synonym)
+                WITH N, M, H, T
+                OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                WHERE (N:Synonym)
+                WITH N, M, H, T, MT
+                WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+            } else {
+                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+                WHERE N.FSN =~ '(?i).*{$search}.*'
+                WITH N, M, H
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                WHERE (H:Synonym)
+                WITH N, M, H, T
+                OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                WHERE (N:Synonym)
+                WITH N, M, H, T, MT
+                WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+            }
+
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
@@ -30,18 +46,34 @@
             return $matches;
         }
 
-        public function search_human_term($search) {
-            $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
-            WHERE H.FSN =~ '(?i).*{$search}.*'
-            WITH N, M, H
-            OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-            WHERE (H:Synonym)
-            WITH N, M, H, T
-            OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-            WHERE (N:Synonym)
-            WITH N, M, H, T, MT
-            WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-            RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+        public function search_human_term($search, $ontology) {
+            $result = null;
+            if ($ontology == "MESH") {
+                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
+                WHERE H.FSN =~ '(?i).*{$search}.*'
+                WITH N, M, H
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                WHERE (H:Synonym)
+                WITH N, M, H, T
+                OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                WHERE (N:Synonym)
+                WITH N, M, H, T, MT
+                WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+            } else {
+                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+                WHERE H.FSN =~ '(?i).*{$search}.*'
+                WITH N, M, H
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                WHERE (H:Synonym)
+                WITH N, M, H, T
+                OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                WHERE (N:Synonym)
+                WITH N, M, H, T, MT
+                WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+            }
+
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
@@ -118,8 +150,12 @@
             $ontLabel = $ontology === "MESH" ? "MESH" : "HP";
             $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
             $mouseOntTree = new OntologyTree("MP", "MP", null, true, $ontLabel);
-            $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
+            $humanOntTree = null;
 
+            if ($ontology == "MESH")
+                $humanOntTree = new MeSHTree(null, true);
+            else
+                $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
             $result["mouseTree"] = $mouseOntTree->getTree();
             $result["humanTree"] = $humanOntTree->getTree();
             $result["mouseID"] = $result["mouseTree"]->id;
@@ -130,50 +166,52 @@
                 return null;
         }
 
-        public function get_ontology_trees($term, $ontology) {
+        public function get_ontology_trees($term, $ontology, $mappingOnt) {
             $ontology = strtoupper($ontology);
-                $mouseID = "";
-                $humanID = "";
-                $mouseLabel = "";
-                $humanLabel = "";
-                $match = null;
-                if ($ontology == "MP") {
-                    $match = $this->search_mouse_term($term);
-                } else {
-                    $match = $this->search_human_term($term);
+            $mappingOnt = strtoupper($mappingOnt);
+            $ontLabel = $mappingOnt === "MESH" ? "MESH" : "HP";
+            $mouseID = "";
+            $humanID = "";
+            $mouseLabel = "";
+            $humanLabel = "";
+            $match = null;
+            if ($ontology == "MP") {
+                $match = $this->search_mouse_term($term, $mappingOnt);
+            } else {
+                $match = $this->search_human_term($term, $ontology);
+            }
+            if ($match) {
+                $mouseID = $match[0]["mouseID"];
+                $mouseLabel = $match[0]["mouseLabel"];
+                $humanID = $match[0]["humanID"];
+                $humanLabel = $match[0]["humanLabel"];
+                
+                $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
+                
+                if ($mouseID) {
+                    $tree = new OntologyTree("MP", "MP", $mouseID, false, $ontLabel);
+                    $result["mouseTree"] = $tree->getTree();
                 }
-                if ($match) {
-                    $mouseID = $match[0]["mouseID"];
-                    $mouseLabel = $match[0]["mouseLabel"];
-                    $humanID = $match[0]["humanID"];
-                    $humanLabel = $match[0]["humanLabel"];
-
-                    $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
-                    
-                    if ($mouseID) {
-                        $tree = new OntologyTree("MP", "MP", $mouseID);
-                        $result["mouseTree"] = $tree->getTree();
-                    }
-                        
-
-                    if ($humanID) {
-                        $tree = new OntologyTree("HPO", "HP", $humanID);
-                        $result["humanTree"] = $tree->getTree();
-                    }
-                        
-
-                    $result["mouseID"] = $mouseID;
-                    $result["mouseLabel"] = $mouseLabel;
-                    $result["humanID"] = $humanID;
-                    $result["humanLabel"] = $humanLabel;
-                    $result["isExactMatch"] = $match[0]["isExactMatch"];
                     
 
-                    if ($result["mouseTree"] || $result["humanTree"])
-                        return $result;
-                    else
-                        return null;
+                if ($humanID) {
+                    $tree = new OntologyTree($mappingOnt, $ontLabel, $humanID, false, "MP");
+                    $result["humanTree"] = $tree->getTree();
                 }
+                    
+
+                $result["mouseID"] = $mouseID;
+                $result["mouseLabel"] = $mouseLabel;
+                $result["humanID"] = $humanID;
+                $result["humanLabel"] = $humanLabel;
+                $result["isExactMatch"] = $match[0]["isExactMatch"];
+                
+
+                if ($result["mouseTree"] || $result["humanTree"])
+                    return $result;
+                else
+                    return null;
+            }
 
             return null;
         }
