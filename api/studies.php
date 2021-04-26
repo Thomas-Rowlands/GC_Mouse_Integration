@@ -2,6 +2,7 @@
     include_once 'database.php';
     include_once 'utility.php';
     include_once 'ontology.php';
+    include_once 'mappings.php';
 
     class StudySearch {
 
@@ -10,11 +11,13 @@
             $this->neo = new Neo_Connection();
         }
 
-        public function get_phenotype_homology_breakdown($termID) {
+        public function get_phenotype_homology_breakdown($termID, $humanOnt) {
             $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get mappings & synonyms for the chosen phenotype.
             $ont = new Ontology();
-            $mappings = $ont->get_ontology_mappings($termID);
+            // $mappings = $ont->get_ontology_mappings($termID);
+            $humanOnt = strtoupper($humanOnt);
+            $mappings = Mapper::getMPMappings($termID, $humanOnt, $this->neo);
 
             $return_package["Mappings"] = $mappings;
             // Get GWAS Studies

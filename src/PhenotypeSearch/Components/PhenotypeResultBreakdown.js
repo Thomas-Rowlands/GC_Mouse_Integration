@@ -50,6 +50,7 @@ class PhenotypeResultBreakdown extends React.Component {
             configData: api_server,
             mappingGraphData: null,
             mappingGraphConfig: null,
+            humanOntology: "",
         };
     }
 
@@ -69,7 +70,7 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     getBreakdownData() {
-        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&term=" + this.props.selectedPhenotype;
+        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&term=" + this.props.selectedPhenotype + "&humanOntology=" + this.props.humanOntology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -80,14 +81,14 @@ class PhenotypeResultBreakdown extends React.Component {
                         var data = {
                             nodes: [
                                 {
-                                    id: response.data["Mappings"]["humanID"],
+                                    id: response.data["Mappings"]["humanNodeId"],
                                     name: response.data["Mappings"]["humanLabel"],
                                     x: humanTermCoords[0],
                                     y: humanTermCoords[1],
                                     color: "red"
                                 },
                                 {
-                                    id: response.data["Mappings"]["mouseID"],
+                                    id: response.data["Mappings"]["mouseNodeId"],
                                     name: response.data["Mappings"]["mouseLabel"],
                                     x: mouseTermCoords[0],
                                     y: mouseTermCoords[1],
@@ -107,7 +108,7 @@ class PhenotypeResultBreakdown extends React.Component {
                             };
                             let link = {
                                 source: mapping["synonymId"],
-                                target: response.data["Mappings"]["mouseID"],
+                                target: response.data["Mappings"]["mouseNodeId"],
                                 linkType: "Synonym"
                             };
                             if (!data.nodes.includes(mouseNode)) {
@@ -127,7 +128,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 color: "orange"
                             };
                             let link = {
-                                source: response.data["Mappings"]["humanID"],
+                                source: response.data["Mappings"]["humanNodeId"],
                                 target: mapping["synonymId"],
                                 linkType: "Synonym"
                             };
@@ -141,8 +142,8 @@ class PhenotypeResultBreakdown extends React.Component {
                         for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
                             let match = response.data["Mappings"]["matches"][i];
                             let link = {
-                                source: match["humanNodeType"] === "term" ? response.data["Mappings"]["humanID"] : match["humanNodeId"],
-                                target: match["mouseNodeType"] === "term" ? response.data["Mappings"]["mouseID"] : match["mouseNodeId"],
+                                source: match["humanNodeId"],
+                                target: match["mouseNodeId"],
                                 linkType: match["isExact"] ? "Exact Match" : "Partial Match"
                             }
                             if (!data.links.includes(link)) {
