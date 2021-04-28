@@ -8,6 +8,7 @@ import {AppBar, Button, Grid, Paper, Tab, Tabs} from "@material-ui/core";
 import TabPanel from "../../UtilityComponents/TabPanel";
 import api_server from "../../UtilityComponents/ConfigData";
 import {Graph} from "react-d3-graph";
+import _ from "lodash";
 
 class PhenotypeResultBreakdown extends React.Component {
 // the graph configuration, just override the ones you need
@@ -16,10 +17,10 @@ class PhenotypeResultBreakdown extends React.Component {
         nodeHighlightBehavior: true,
         directed: false,
         staticGraphWithDragAndDrop: true,
-          d3: {
-                alphaTarget: 0.05,
-                disableLinkForce: true
-              },
+        d3: {
+            alphaTarget: 0.05,
+            disableLinkForce: true
+        },
         node: {
             color: "blue",
             size: 300,
@@ -78,7 +79,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         // graph payload (with minimalist structure)
                         let humanTermCoords = [50, 214];
                         let mouseTermCoords = [750, 214];
-                        var data = {
+                        let data = {
                             nodes: [
                                 {
                                     id: response.data["Mappings"]["humanNodeId"],
@@ -97,6 +98,7 @@ class PhenotypeResultBreakdown extends React.Component {
                             ],
                             links: []
                         };
+
                         for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
                             let mapping = response.data["Mappings"]["mouseSynonyms"][i];
                             let mouseNode = {
@@ -141,9 +143,17 @@ class PhenotypeResultBreakdown extends React.Component {
                         }
                         for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
                             let match = response.data["Mappings"]["matches"][i];
+                            let source = _.find(data.nodes, function(node) {
+                               if (node.id === match["humanNodeId"])
+                                   return true;
+                            });
+                            let target = _.find(data.nodes, function(node) {
+                               if (node.id === match["mouseNodeId"])
+                                   return true;
+                            });
                             let link = {
-                                source: match["humanNodeId"],
-                                target: match["mouseNodeId"],
+                                source:  source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
+                                target: target ? match["mouseNodeId"] : response.data["Mappings"]["mouseNodeId"],
                                 linkType: match["isExact"] ? "Exact Match" : "Partial Match"
                             }
                             if (!data.links.includes(link)) {
