@@ -42,7 +42,8 @@ class PhenotypeResultBreakdown extends React.Component {
         this.gwasStudyClicked = this.gwasStudyClicked.bind(this);
         this.experimentClicked = this.experimentClicked.bind(this);
         this.state = {
-            selectedPhenotype: "",
+            mousePhenotype: "",
+            humanPhenotype: "",
             breakdownData: null,
             backBtnClick: null,
             loading: true,
@@ -71,7 +72,7 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     getBreakdownData() {
-        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&term=" + this.props.selectedPhenotype + "&humanOntology=" + this.props.humanOntology;
+        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&mouseTerm=" + this.props.mousePhenotype + "&humanTerm=" + this.props.humanPhenotype + "&humanOntology=" + this.props.humanOntology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {

@@ -582,7 +582,7 @@ class OntologyHierarchy extends React.Component {
                     <Grid item xs>
                         {
                             this.state.isMappingPresent ?
-                                <PhenotypeResultBreakdown selectedPhenotype={this.state.treeData.mouseID} humanOntology={this.state.humanOntology}/>
+                                <PhenotypeResultBreakdown mousePhenotype={this.state.treeData.mouseID} humanPhenotype={this.state.treeData.humanID} humanOntology={this.state.humanOntology}/>
                                 : null
                         }
                     </Grid>

@@ -19,9 +19,9 @@
                     echo json_encode($result);
                 else
                     echo null;
-            } elseif (parameters_present(array("phenotypeBreakdown", "term", "humanOntology"))) {
+            } elseif (parameters_present(array("phenotypeBreakdown", "mouseTerm", "humanTerm", "humanOntology"))) {
                 $study = new StudySearch();
-                $result = $study->get_phenotype_homology_breakdown($_GET["term"], $_GET["humanOntology"]);
+                $result = $study->get_phenotype_homology_breakdown($_GET["mouseTerm"], $_GET["humanTerm"], $_GET["humanOntology"]);
                 if ($result)
                     echo json_encode($result);
             } else {
