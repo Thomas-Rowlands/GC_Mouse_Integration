@@ -87,14 +87,16 @@ class PhenotypeResultBreakdown extends React.Component {
                                     name: response.data["Mappings"]["humanLabel"],
                                     x: humanTermCoords[0],
                                     y: humanTermCoords[1],
-                                    color: "red"
+                                    color: "red",
+                                    symbolType: "square"
                                 },
                                 {
                                     id: response.data["Mappings"]["mouseNodeId"],
                                     name: response.data["Mappings"]["mouseLabel"],
                                     x: mouseTermCoords[0],
                                     y: mouseTermCoords[1],
-                                    color: "blue"
+                                    color: "blue",
+                                    symbolType: "square"
                                 }
                             ],
                             links: []
@@ -144,16 +146,16 @@ class PhenotypeResultBreakdown extends React.Component {
                         }
                         for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
                             let match = response.data["Mappings"]["matches"][i];
-                            let source = _.find(data.nodes, function(node) {
-                               if (node.id === match["humanNodeId"])
-                                   return true;
+                            let source = _.find(data.nodes, function (node) {
+                                if (node.id === match["humanNodeId"])
+                                    return true;
                             });
-                            let target = _.find(data.nodes, function(node) {
-                               if (node.id === match["mouseNodeId"])
-                                   return true;
+                            let target = _.find(data.nodes, function (node) {
+                                if (node.id === match["mouseNodeId"])
+                                    return true;
                             });
                             let link = {
-                                source:  source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
+                                source: source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
                                 target: target ? match["mouseNodeId"] : response.data["Mappings"]["mouseNodeId"],
                                 linkType: match["isExact"] ? "Exact Match" : "Partial Match"
                             }
@@ -253,10 +255,6 @@ class PhenotypeResultBreakdown extends React.Component {
             }
         }
     }
-
-    onClickLink = function (source, target) {
-        window.alert(`Clicked link between ${source} and ${target}`);
-    };
 
     render() {
         const {breakdownData, loading, tabValue, dataTabValue, mappingGraphData} = this.state;
@@ -364,14 +362,39 @@ class PhenotypeResultBreakdown extends React.Component {
                                     {this.getMouseSynonyms(breakdownData)}
                                 </ul>
                             </Grid>
-
+                        </Grid>
+                        <Grid container>
+                            <Grid item xs={3} className="col">
+                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="5" cy="5" r="10px" fill="red"/>
+                                </svg>
+                                {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
+                            </Grid>
+                            <Grid item xs={3} className="col">
+                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="5" cy="5" r="10px" fill="blue"/>
+                                </svg>
+                                {" MP Term"}
+                            </Grid>
+                        </Grid>
+                        <Grid container>
+                            <Grid item xs={3} className="col">
+                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="5" cy="5" r="10px" fill="orange"/>
+                                </svg>
+                                {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
+                            </Grid>
+                            <Grid item xs={3} className="col">
+                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="5" cy="5" r="10px" fill="lightblue"/>
+                                </svg>
+                                {" MP Synonym"}
+                            </Grid>
                         </Grid>
                         <Graph
                             id="graph-id" // id is mandatory
                             data={mappingGraphData}
                             config={this.myConfig}
-                            onClickNode={this.onClickNode}
-                            onClickLink={this.onClickLink}
                         />
                     </TabPanel>
                 </div>

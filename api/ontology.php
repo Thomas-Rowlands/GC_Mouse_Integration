@@ -13,21 +13,22 @@
 
         public function search_mouse_term($search, $mappingOnt) {
             $result = null;
+            $search = strtolower($search);
             if ($mappingOnt == "MESH") {
-                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                WHERE N.FSN =~ '(?i).*{$search}.*'
+                $result = $this->neo->execute("MATCH (O:MP)-[:HAS_SYNONYM]-(N:MP)-[M:LOOM_MAPPING]->(H:MESH)
+                WHERE toLower(N.FSN) STARTS WITH '{$search}' or toLower(O.FSN) STARTS WITH '{$search}'
                 WITH N, M, H
-                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
                 WHERE (H:Synonym)
                 WITH N, M, H, T
                 OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
                 WHERE (N:Synonym)
                 WITH N, M, H, T, MT
                 WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             } else {
                 $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
-                WHERE N.FSN =~ '(?i).*{$search}.*'
+                WHERE toLower(N.FSN) STARTS WITH '{$search}'
                 WITH N, M, H
                 OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
                 WHERE (H:Synonym)
@@ -36,9 +37,8 @@
                 WHERE (N:Synonym)
                 WITH N, M, H, T, MT
                 WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             }
-
             $matches = [];
             foreach ($result as $row) {
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
@@ -49,21 +49,22 @@
 
         public function search_human_term($search, $ontology) {
             $result = null;
+            $search = strtolower($search);
             if ($ontology == "MESH") {
                 $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                WHERE H.FSN =~ '(?i).*{$search}.*'
+                WHERE toLOWER(H.FSN) STARTS WITH \"$search\"
                 WITH N, M, H
-                OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
                 WHERE (H:Synonym)
                 WITH N, M, H, T
                 OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
                 WHERE (N:Synonym)
                 WITH N, M, H, T, MT
                 WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
+                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt");
             } else {
                 $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
-                WHERE H.FSN =~ '(?i).*{$search}.*'
+                WHERE toLower(H.FSN) STARTS WITH '{$search}'
                 WITH N, M, H
                 OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
                 WHERE (H:Synonym)
@@ -192,13 +193,6 @@
             }
 
             return null;
-        }
-
-        private function search_ontology_hierarchy($termID, $ontology) {
-            $ontology = strtoupper($ontology);
-            $ontLabel = str_replace( "O", "", $ontology);
-            $tree = new OntologyTree($ontology, $ontLabel, $termID);
-            return $tree->getTree();
         }
 
         public function getTermChildren($termID, $ontLabel) {
