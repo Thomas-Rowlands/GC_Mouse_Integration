@@ -545,7 +545,6 @@ class OntologyHierarchy extends React.Component {
                                 freeSolo
                                 id="humanSearchInput"
                                 className={classes.autoComplete}
-                                id="humanSearchInput"
                                 onInputChange={this.retrieveLiveSearch}
                                 renderInput={(params) => (
                                     <TextField
@@ -565,7 +564,7 @@ class OntologyHierarchy extends React.Component {
                                     />
                                 )}
                                 options={this.state.humanLiveSearchResults.map((option) => option.FSN)}/>
-
+                            <p>Search for terms with mappings to the MP ontology</p>
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.humanSearchBtnClick}>Search</Button>
                             {

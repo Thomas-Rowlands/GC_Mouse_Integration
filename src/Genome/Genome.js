@@ -6,31 +6,29 @@ import {
     JBrowseLinearGenomeView,
     ThemeProvider,
 } from '@jbrowse/react-linear-genome-view';
+import assembly from './Components/assembly';
 
 const theme = createJBrowseTheme();
-const assembly = {
-    name: 'GRCh38',
-    sequence: {
-        type: 'ReferenceSequenceTrack',
-        trackId: 'GRCh38-ReferenceSequenceTrack',
-        adapter: {
-            type: 'BgzipFastaAdapter',
-            fastaLocation: {
-                uri:
-                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz",
-            },
-            faiLocation: {
-                uri:
-                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz.fai",
-            },
-            gziLocation: {
-                uri:
-                    "JBrowseData/seq/Homo_sapiens.GRCh38.dna.fa.gz.gzi",
-            },
-        },
+
+const useStyles = theme => ({
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
     },
-    aliases: ['hg38']
-}
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+    autoComplete: {
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
+    radio: {
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
+});
 
 const tracks = [
     {
@@ -86,26 +84,6 @@ const defaultSession = {
     },
 }
 
-const useStyles = theme => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    autoComplete: {
-        width: "50%",
-        marginLeft: "auto",
-        marginRight: "auto",
-    },
-    radio: {
-        width: "50%",
-        marginLeft: "auto",
-        marginRight: "auto"
-    },
-});
-
 
 class Genome extends React.Component {
 
@@ -134,7 +112,6 @@ class Genome extends React.Component {
     }
 
     render() {
-        const assembly = Genome.assembly;
         const tracks = Genome.tracks;
         const defaultSession = Genome.defaultSession;
         const viewState = createViewState({assembly, tracks, location: '10:29,838,737..29,838,819', defaultSession,});
