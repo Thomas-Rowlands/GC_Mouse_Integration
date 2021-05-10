@@ -7,7 +7,7 @@ import React from "react";
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import LinearScaleIcon from '@material-ui/icons/LinearScale';
+import SearchIcon from '@material-ui/icons/Search';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import StyledTreeItem from "./Components/StyledTreeItem";
 import _ from 'lodash';
@@ -75,7 +75,7 @@ class OntologyTree extends React.Component {
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
-            ><LinearScaleIcon fontSize="small"/></Button> : null;
+            ><SearchIcon fontSize="small"/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {

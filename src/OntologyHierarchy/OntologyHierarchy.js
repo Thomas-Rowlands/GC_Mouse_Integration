@@ -307,10 +307,17 @@ class OntologyHierarchy extends React.Component {
                             expandedHumanNodes: expandedHumanNodes,
                             selectedHumanNodes: tree["humanID"],
                             mappedMousePhenotype: response.data.mouseID,
-                            mappedHumanPhenotype: response.data.humanID
+                            mappedHumanPhenotype: response.data.humanID,
+                            humanSearchFailed: false,
+                            mouseSearchFailed: false
                         }, () => this.scrollTrees());
                     } else {
-                        this.setState({loading: false, isMappingPresent: false});
+                        this.setState({
+                            loading: false,
+                            isMappingPresent: false,
+                            humanSearchFailed: searchOnt !== "MP",
+                            mouseSearchFailed: searchOnt === "MP"
+                        });
                     }
                 }
             })
@@ -328,7 +335,7 @@ class OntologyHierarchy extends React.Component {
             return obj.children.some(this.updateTree(id, children));
     }
 
-    getRootTrees = (ontology=null) => {
+    getRootTrees = (ontology = null) => {
         this.setState({loading: true});
         let ont = ontology ? ontology : "HPO";
         let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoots&ontology=" + ont;
@@ -567,6 +574,7 @@ class OntologyHierarchy extends React.Component {
                             <p>Search for terms with mappings to the MP ontology</p>
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.humanSearchBtnClick}>Search</Button>
+                            {this.state.humanSearchFailed ? <p style={{color: "red"}}>No match found.</p> : null}
                             {
                                 !humanTree ? null :
                                     <OntologyTree treeID="humanTree" selectedPhenotypeLabel={mappedHumanPhenotype}
@@ -581,7 +589,9 @@ class OntologyHierarchy extends React.Component {
                     <Grid item xs>
                         {
                             this.state.isMappingPresent ?
-                                <PhenotypeResultBreakdown mousePhenotype={this.state.treeData.mouseID} humanPhenotype={this.state.treeData.humanID} humanOntology={this.state.humanOntology}/>
+                                <PhenotypeResultBreakdown mousePhenotype={this.state.treeData.mouseID}
+                                                          humanPhenotype={this.state.treeData.humanID}
+                                                          humanOntology={this.state.humanOntology}/>
                                 : null
                         }
                     </Grid>
@@ -612,9 +622,10 @@ class OntologyHierarchy extends React.Component {
                                         />
                                     )}
                                     options={this.mouseLiveSearchResults.map((option) => option.FSN)}/>
-
+                                <p>Search for MP terms which map to the selected human ontology.</p>
                                 <Button size="large" color="primary" variant="contained" id="search_btn"
                                         onClick={this.mouseSearchBtnClick}>Search</Button>
+                                {this.state.mouseSearchFailed ? <p style={{color: "red"}}>No match found.</p> : null}
                             </div>
                             <LoadingSpinner loading={loading}/>
                             {!mouseTree ? null :
