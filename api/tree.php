@@ -85,7 +85,7 @@
                             continue;
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
                             $hasMapping = false;
-                            if ($nodes[$i]->hasValue("hasMPMapping") || $nodes[$i]->hasValue("hasHPOMapping"))
+                            if ($nodes[$i]->hasValue("hasMeSHMapping") || $nodes[$i]->hasValue("hasHPOMapping"))
                                 $hasMapping = true;
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasMapping, $nodes[$i]->hasValue('hasChildren'));
                             $sibs = $this->getTermSiblings($childNode->id, $isMesh);

@@ -114,7 +114,7 @@ class Genome extends React.Component {
     render() {
         const tracks = Genome.tracks;
         const defaultSession = Genome.defaultSession;
-        const viewState = createViewState({assembly, tracks, location: '10:29,838,737..29,838,819', defaultSession,});
+        const viewState = createViewState({assembly, location: '10:29,838,737..29,838,819', defaultSession,});
         return (
             <div>
                 <ThemeProvider theme={Genome.theme}>

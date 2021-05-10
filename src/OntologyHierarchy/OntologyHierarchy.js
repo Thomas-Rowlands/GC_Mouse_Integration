@@ -330,7 +330,6 @@ class OntologyHierarchy extends React.Component {
     updateTree = (id, children) => obj => {
         if (obj.id === id) {
             obj.children = children;
-            return true;
         } else if (!_.isEmpty(obj.children))
             return obj.children.some(this.updateTree(id, children));
     }
@@ -373,14 +372,12 @@ class OntologyHierarchy extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         if (species === "human") {
-                            let expandedHumanNodes = [];
-                            expandedHumanNodes.push(response.data.ID);
+                            let expandedHumanNodes = ["humanTree-term-1"];
                             let tree = this.state.treeData;
                             tree["humanTree"] = response.data.tree;
                             this.setState({treeData: tree, loading: false, expandedHumanNodes: expandedHumanNodes});
                         } else {
-                            let expandedMouseNodes = [];
-                            expandedMouseNodes.push(response.data.ID);
+                            let expandedMouseNodes = ["mouseTree-term-1"];
                             let tree = this.state.treeData;
                             tree["mouseTree"] = response.data.tree;
                             this.setState({treeData: tree, loading: false, expandedMouseNodes: expandedMouseNodes});
@@ -462,9 +459,10 @@ class OntologyHierarchy extends React.Component {
 
     handleMouseToggle = (event, nodeIds) => {
         let tree = this.state.treeData.mouseTree;
-        var loadingRequired = this.isLoadingRequired(nodeIds[0], tree);
+        let nodeID = event.currentTarget.parentNode.dataset["term"].replace("-", ":");
+        var loadingRequired = this.isLoadingRequired(nodeID, tree);
         if (loadingRequired) {
-            this.getTermChildren(nodeIds[0], "mouse", "mp");
+            this.getTermChildren(nodeID, "mouse", "mp");
         }
         this.setState({expandedMouseNodes: nodeIds});
     }
@@ -475,9 +473,10 @@ class OntologyHierarchy extends React.Component {
 
     handleHumanToggle = (event, nodeIds) => {
         let tree = this.state.treeData.humanTree;
+        let nodeID = event.currentTarget.parentNode.dataset["term"];
         var loadingRequired = this.isLoadingRequired(nodeIds[0], tree);
         if (loadingRequired) {
-            this.getTermChildren(nodeIds[0], "human", this.state.humanOntology);
+            this.getTermChildren(nodeID, "human", this.state.humanOntology);
         }
         this.setState({expandedHumanNodes: nodeIds});
     }
@@ -488,11 +487,13 @@ class OntologyHierarchy extends React.Component {
 
     scrollTrees = () => {
         if (this.state.mappedMousePhenotype && this.state.isMappingPresent) {
+            let humanPhenotype = this.state.mappedHumanPhenotype.replace(':', '-');
+            let mousePhenotype = this.state.mappedMousePhenotype.replace(":", "-");
             $('#humanTree').animate({
-                scrollTop: $("#humanTree-" + this.state.mappedHumanPhenotype.replace(":", "-")).offset().top - ($("#humanTree").position().top + 90)
+                scrollTop: $("#humanTree li[data-term='"+humanPhenotype+"']").offset().top - ($("#humanTree").position().top + 90)
             }, 1000);
             $('#mouseTree').animate({
-                scrollTop: $("#mouseTree-" + this.state.mappedMousePhenotype.replace(":", "-")).offset().top - ($("#mouseTree").position().top + 90)
+                scrollTop: $("#mouseTree li[data-term='"+mousePhenotype+"']").offset().top - ($("#mouseTree").position().top + 90)
             }, 1000);
             this.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
         }

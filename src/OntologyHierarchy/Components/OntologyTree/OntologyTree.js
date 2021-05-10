@@ -70,8 +70,9 @@ class OntologyTree extends React.Component {
         this.usedIDs = [];
     }
 
-    getTreeNodes = (nodes) => {
+    getTreeNodes = (nodes, i = 0) => {
         const {classes} = this.props;
+        i += 1;
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
@@ -81,10 +82,11 @@ class OntologyTree extends React.Component {
         if (!_.isEmpty(nodes.children)) {
             nodes.children = _.orderBy(nodes.children, ['label'], ['asc']); // all nodes must be sorted alphabetically!
         }
+        let id = this.props.treeID + "-term-" + i.toString();
         return (
-            <StyledTreeItem id={this.props.treeID + "-" + nodes.id.replace(":", "-")} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={nodes.id}
-                            labelText={nodes.label} labelIcon={btn}>
-                {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key])) : tempChildNode}
+            <StyledTreeItem id={id} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={id}
+                            data-term={nodes.id.replace(":", "-")} labelText={nodes.label} labelIcon={btn}>
+                {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key], i + index)) : tempChildNode}
             </StyledTreeItem>
         );
     }

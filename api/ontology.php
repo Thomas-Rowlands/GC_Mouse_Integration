@@ -15,8 +15,8 @@
             $result = null;
             $search = strtolower($search);
             if ($mappingOnt == "MESH") {
-                $result = $this->neo->execute("MATCH (O:MP)-[:HAS_SYNONYM]-(N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                WHERE toLower(N.FSN) STARTS WITH '{$search}' or toLower(O.FSN) STARTS WITH '{$search}'
+                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
+                WHERE toLower(N.FSN) STARTS WITH '{$search}'
                 WITH N, M, H
                 OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
                 WHERE (H:Synonym)
@@ -149,7 +149,6 @@
             } else {
                 $match = $this->search_human_term($term, $searchOntology);
             }
-
             if ($match) {
                 $mouseID = $match[0]["mouseID"];
                 $mouseLabel = $match[0]["mouseLabel"];
@@ -159,7 +158,7 @@
                 $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
 
                 if ($mouseID) {
-                    $tree = new OntologyTree($mouseOntology, $mouseOntology, $mouseID, false, $mouseOntology);
+                    $tree = new OntologyTree($mouseOntology, $mouseOntology, $mouseID, false, $humanOntology);
                     $result["mouseTree"] = $tree->getTree();
                 } else {
                     return null;
