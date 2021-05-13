@@ -20,7 +20,7 @@ const useStyles = theme => ({
         height: "75vh",
     },
     highlight: {
-        backgroundColor: "#a6a6ff",
+        backgroundColor: "#61aefd",
     },
     btn: {
         marginRight: 20,
@@ -66,13 +66,10 @@ class OntologyTree extends React.Component {
             selectedPhenotypeLabel: "",
             treeID: "",
         };
-        this.tempExpandedIds = [];
-        this.usedIDs = [];
     }
 
-    getTreeNodes = (nodes, i = 0) => {
+    getTreeNodes = (nodes, parentPath) => {
         const {classes} = this.props;
-        i += 1;
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
                    style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
@@ -82,21 +79,27 @@ class OntologyTree extends React.Component {
         if (!_.isEmpty(nodes.children)) {
             nodes.children = _.orderBy(nodes.children, ['label'], ['asc']); // all nodes must be sorted alphabetically!
         }
-        let id = this.props.treeID + "-term-" + i.toString();
+        let path = null;
+        if (parentPath !== undefined)
+            path = parentPath + "-" + nodes.id;
+        else
+            path = nodes.id;
+        let id = this.props.treeID + "-" + path;
         return (
             <StyledTreeItem id={id} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={id}
-                            data-term={nodes.id.replace(":", "-")} labelText={nodes.label} labelIcon={btn}>
-                {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key], i + index)) : tempChildNode}
+                            data-term={nodes.id} labelText={nodes.label} labelIcon={btn}>
+                {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key], path)) : tempChildNode}
             </StyledTreeItem>
         );
     }
 
-    setExpandedSourceNodes = (nodes, ids) => {
-        if (Array.isArray(ids[0]))
-            ids = ids[0];
-        ids.push(nodes.id);
-        this.tempExpandedSourceIds = ids;
-        return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setExpandedSourceNodes(node, ids)) : ids;
+    getExpandedNodeIDs = () => {
+        let terms = this.props.expanded;
+        let result = [];
+        terms.forEach(term => function() {
+            // result.push($())
+        });
+        return result;
     }
 
 

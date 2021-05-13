@@ -107,7 +107,8 @@ class PhenotypeSearch extends React.Component {
         }
         this.liveCancelToken = axios.CancelToken.source();
         this.setState({liveLoading: true});
-        let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&species=" + this.state.selectedSpecies;
+        let ontology = this.state.selectedSpecies === "Human" ? "HPO" : "MP"
+        let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&ontology=" + ontology;
         if (input.length > 0) {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
@@ -171,7 +172,7 @@ class PhenotypeSearch extends React.Component {
     }
 
     render() {
-        const {tableData, liveSearchResults, liveLoading, loading, searchOpen, selectedSpecies} = this.state;
+        const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
         return (<div className="PhenotypeSearch">
                 <LoadingSpinner loading={loading}/>
@@ -188,7 +189,7 @@ class PhenotypeSearch extends React.Component {
                                     {...params}
                                     label="Phenotype search"
                                     variant="outlined"
-                                    errorText={this.state.inputErrorText}
+                                    helperText={this.state.inputErrorText}
                                     InputProps={{
                                         ...params.InputProps,
                                         endAdornment: (
@@ -206,7 +207,7 @@ class PhenotypeSearch extends React.Component {
                             <FormControlLabel value="Human" label="Human" control={<Radio/>} id="human-radio"/>
                             <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>} id="mouse-radio"/>
                         </RadioGroup>
-                        <FormControl className={classes.formControl} onchange={this.humanPValChanged}>
+                        <FormControl className={classes.formControl} onChange={this.humanPValChanged}>
                             <InputLabel shrink>Human P-value</InputLabel>
                             <Select value={this.state.humanPval} className={classes.selectEmpty} id="human_pval_select"
                                     onChange={this.humanPValChanged}>
