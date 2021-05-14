@@ -52,10 +52,10 @@
                     echo json_encode($result);
                 else
                     echo null;
-            } else if (parameters_present(array("childSearch", "term", "ontology"))) {
+            } else if (parameters_present(array("childSearch", "term", "ontology", "mappingOntology"))) {
                 $ont = new Ontology();
                 $result = null;
-                $result = $ont->getTermChildren($_GET["term"], $_GET["ontology"]);
+                $result = $ont->getTermChildren($_GET["term"], $_GET["ontology"], $_GET["mappingOntology"]);
                 if ($result)
                     echo json_encode($result);
                 else

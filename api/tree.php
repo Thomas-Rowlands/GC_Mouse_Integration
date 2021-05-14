@@ -72,6 +72,7 @@
             $root = $this->ontLabel == "MESH" ? "mesh" : "{$this->termIDLabel}:0000001";
             $cmd = "MATCH p=(startNode:$this->ontLabel{id: \"$root\"})<-[:ISA*1..]-(endNode:$this->ontLabel{id: \"$id\"})
             RETURN p";
+            $mappingProperty = "has" . $this->mappingOntLabel . "Mapping";
             $result = $this->neo->execute($cmd);
             if ($result) {
                 $root = $result[0]->get("p")->start();
@@ -85,7 +86,7 @@
                             continue;
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
                             $hasMapping = false;
-                            if ($nodes[$i]->hasValue("hasMeSHMapping") || $nodes[$i]->hasValue("hasHPOMapping"))
+                            if ($nodes[$i]->hasValue($mappingProperty))
                                 $hasMapping = true;
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasMapping, $nodes[$i]->hasValue('hasChildren'));
                             $sibs = $this->getTermSiblings($childNode->id, $isMesh);

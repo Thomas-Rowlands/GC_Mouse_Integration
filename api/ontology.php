@@ -194,9 +194,10 @@
             return null;
         }
 
-        public function getTermChildren($termID, $ontLabel) {
+        public function getTermChildren($termID, $ontLabel, $mappingOnt) {
             $ontLabel = strtoupper($ontLabel);
-            $mappingProperty = $ontLabel == "HPO" ? "hasMPMapping" : "hasHPOMapping";
+            $mappingOnt = strtoupper($mappingOnt);
+            $mappingProperty = $ontLabel == "MP" ? "has" . $mappingOnt . "Mapping" : "hasMPMapping";
             $children = $this->neo->execute("MATCH (n:$ontLabel {id: \"$termID\"})<-[:ISA]-(m)
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren
             ORDER BY label ASC");

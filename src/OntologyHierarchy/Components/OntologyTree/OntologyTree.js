@@ -1,5 +1,4 @@
 import {Button, Paper, withStyles} from "@material-ui/core";
-import {fade} from "@material-ui/core/styles";
 import {animated, useSpring} from "react-spring/web.cjs";
 import Collapse from "@material-ui/core/Collapse";
 import PropTypes from "prop-types";
