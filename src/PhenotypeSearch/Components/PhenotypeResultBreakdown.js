@@ -61,14 +61,14 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     gwasStudyClicked(row) {
-        let studyID = $(row.currentTarget).attr("data-id");
+        let studyID = $(row.currentTarget).attr("data-study");
         var win = window.open("https://www.gwascentral.org/study/" + studyID, "_blank");
         if (win)
             win.focus();
     }
 
     experimentClicked(row) {
-        let selection = $(row.target).attr("data-id");
+        let selection = $(row.target).attr("data-study");
     }
 
     getBreakdownData() {

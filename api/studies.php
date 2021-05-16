@@ -57,13 +57,15 @@
             $mapped_terms = null;
             $ont = new Ontology();
             if (strtolower($species) == "mouse") {
-                $mapped_terms = $ont->search_mouse_term($user_input, "HPO");
+                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO");
+                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH");
             } else {
-                $mapped_terms = $ont->search_human_term($user_input, "HPO");
+                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO");
+                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH");
             }
             $results = [];
             
-            foreach ($mapped_terms as $mapping) {
+            foreach ($mapped_hpo_terms as $mapping) {
                 // Check if at least 1 GWAS or Knockout is present for this phenotype
                 $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$mapping['humanID']}', {$human_pval}, {$page}, 0)";
                 $gwas = $this->con->execute($cmd, "gc_mouse");
@@ -74,7 +76,26 @@
                 if ($knockouts == 0 && $gwas == 0)
                     continue;
                 
-                $result = ["HPO/MeSH ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$knockouts];
+                $result = ["Human Ontology"=>"HPO", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$knockouts];
+                array_push($results, $result);
+            }
+            $temp = [];
+            foreach($mapped_mesh_terms as $mapping) {
+                if (!in_array($mapping, $temp)) {
+                    $temp[] = $mapping;
+                }
+            } 
+            $mapped_mesh_terms = $temp;
+            foreach ($mapped_mesh_terms as $mapping) {
+                $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$mapping['humanID']}', {$human_pval}, {$page}, 0)";
+                $gwas = $this->con->execute($cmd, "gc_mouse");
+                $gwas = (int)mysqli_fetch_row($gwas)[0];
+                $cmd = "CALL gc_mouse.get_mouse_knockouts_by_term('{$mapping['mouseID']}', {$mouse_pval}, {$page}, 0)";
+                $knockouts = $this->con->execute($cmd, "gc_mouse");
+                $knockouts = (int)mysqli_fetch_row($knockouts)[0];
+                if ($knockouts == 0 && $gwas == 0)
+                    continue;
+                $result = ["Human Ontology"=>"MeSH", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$knockouts];
                 array_push($results, $result);
             }
             $total = count($results);

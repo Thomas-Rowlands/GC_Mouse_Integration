@@ -23,6 +23,7 @@ import PhenotypeResultBreakdown from "./Components/PhenotypeResultBreakdown";
 import axios from "axios";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import api_server from "../UtilityComponents/ConfigData";
+import Grow from '@material-ui/core/Grow';
 
 const useStyles = theme => ({
     formControl: {
@@ -54,13 +55,16 @@ class PhenotypeSearch extends React.Component {
             loading: false,
             tableData: null,
             liveSearchResults: [],
-            selectedPhenotype: null,
+            mouseTerm: null,
+            humanTerm: null,
+            humanOntology: null,
             searchOpen: true,
             breakdownData: null,
             humanPval: 0,
             mousePval: 0,
             searchInput: "",
             configData: api_server,
+            displayError: false,
         };
         this.page_num = 1;
         this.liveCancelToken = null;
@@ -91,8 +95,10 @@ class PhenotypeSearch extends React.Component {
     }
 
     searchRowClicked = (row) => {
-        let selection = $(row.target).attr("data-id");
-        this.setState({selectedPhenotype: selection, searchOpen: false});
+        let mouseTerm = $(row.target).attr("data-mouse-term");
+        let humanTerm = $(row.target).attr("data-human-term");
+        let humanOnt = $(row.target).attr("data-human-ont");
+        this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
     }
 
     retrieveLiveSearch = (e, x) => {
@@ -113,7 +119,7 @@ class PhenotypeSearch extends React.Component {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
-                        if (response.data.length == 0) {
+                        if (response.data.length === 0) {
                             this.setState({liveSearchResults: [], liveLoading: false});
                         } else {
                             this.setState({liveSearchResults: response.data, liveLoading: false});
@@ -127,11 +133,14 @@ class PhenotypeSearch extends React.Component {
     }
 
     search = () => {
-        this.setState({loading: true});
         let search_input = this.state.searchInput;
+        if (search_input.length < 3) {
+            this.setState({displayError: true});
+            return;
+        }
+        this.setState({loading: true, displayError: false});
         let human_pval = this.state.humanPval;
         let mouse_pval = this.state.mousePval;
-
         let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
         axios.get(url_string)
             .then((response) => {
@@ -167,7 +176,7 @@ class PhenotypeSearch extends React.Component {
         if (tableData === "No results found.")
             return <p className="center"><br/>{tableData}</p>
         else
-            return <ResultTable tableData={tableData} onRowClick={this.searchRowClicked}/>
+            return <ResultTable isSearchResult={true} tableData={tableData} onRowClick={this.searchRowClicked}/>
 
     }
 
@@ -201,7 +210,10 @@ class PhenotypeSearch extends React.Component {
                                     }}
                                 />
                             )}
-                            options={liveSearchResults.map((option) => option.FSN)}/>
+                            options={liveSearchResults}
+                            getOptionLabel={(option) => option.FSN}
+                            renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
+                        {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                         <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}
                                     onChange={this.speciesRadioChanged}>
                             <FormControlLabel value="Human" label="Human" control={<Radio/>} id="human-radio"/>
@@ -249,8 +261,6 @@ class PhenotypeSearch extends React.Component {
                     <div className="table-container">
                         {tableData ? this.displayTable(tableData) : null}
                     </div>
-
-
                 </div>
                 {/*Phenotype selection results drill down*/
                 }
@@ -259,12 +269,15 @@ class PhenotypeSearch extends React.Component {
                     maxWidth="lg"
                     open={!searchOpen}
                     aria-labelledby="max-width-dialog-title"
+                    TransitionComponent={Grow}
                 >
                     <DialogContent>
-
                         <div className="table-container">
-                            <PhenotypeResultBreakdown selectedPhenotype={this.state.selectedPhenotype}
-                                                      breakdownData={this.state.breakdownData}/>
+                            <PhenotypeResultBreakdown
+                                mousePhenotype={this.state.mouseTerm}
+                                humanPhenotype={this.state.humanTerm}
+                                humanOntology={this.state.humanOntology}
+                                breakdownData={this.state.breakdownData}/>
                         </div>
                     </DialogContent>
                     <DialogActions>

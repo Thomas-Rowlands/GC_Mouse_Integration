@@ -52,13 +52,12 @@ class OntologyHierarchy extends React.Component {
             configData: api_server,
             searchInput: "",
             humanLiveSearchResults: [],
+            mouseLiveSearchResults: [],
             humanOntology: "HPO",
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
         this.liveCancelToken = null;
-        this.mouseLiveSearchResults = [];
-        this.humanLiveSearchResults = [];
         this.mouseLiveLoading = false;
         this.humanLiveLoading = false;
         this.searchInput = "";
@@ -77,10 +76,10 @@ class OntologyHierarchy extends React.Component {
             $("#live-search").hide();
             if (ontology === "MP") {
                 this.mouseLiveLoading = false;
-                this.mouseLiveSearchResults = [];
+                this.setState({mouseLiveSearchResults: []});
             } else {
                 this.humanLiveLoading = false;
-                this.humanLiveSearchResults = [];
+                this.setState({humanLiveSearchResults: []});
             }
             return;
         }
@@ -98,18 +97,17 @@ class OntologyHierarchy extends React.Component {
                     if (response.status === 200) {
                         if (response.data.length === 0) {
                             if (ontology === "MP") {
-                                this.mouseLiveSearchResults = [];
                                 this.mouseLiveLoading = false;
+                                this.setState({mouseLiveSearchResults: []});
                             } else {
-                                this.humanLiveSearchResults = [];
                                 this.humanLiveLoading = false;
+                                this.setState({humanLiveSearchResults: []});
                             }
                         } else {
                             if (ontology === "MP") {
-                                this.mouseLiveSearchResults = response.data;
                                 this.mouseLiveLoading = false;
+                                this.setState({mouseLiveSearchResults: response.data});
                             } else {
-                                this.humanLiveSearchResults = response.data;
                                 this.humanLiveLoading = false;
                                 this.setState({humanLiveSearchResults: response.data});
                             }
@@ -567,7 +565,6 @@ class OntologyHierarchy extends React.Component {
             expandedHumanNodes,
             mappedMousePhenotype,
             mappedHumanPhenotype,
-            humanLiveSearchResults,
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
@@ -614,7 +611,9 @@ class OntologyHierarchy extends React.Component {
                                         }}
                                     />
                                 )}
-                                options={this.state.humanLiveSearchResults.map((option) => option.FSN)}/>
+                                options={this.state.humanLiveSearchResults}
+                                getOptionLabel={(option) => option.FSN}
+                                renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                             <p>Search for terms with mappings to the MP ontology</p>
                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                     onClick={this.humanSearchBtnClick}>Search</Button>
@@ -665,7 +664,9 @@ class OntologyHierarchy extends React.Component {
                                             }}
                                         />
                                     )}
-                                    options={this.mouseLiveSearchResults.map((option) => option.FSN)}/>
+                                    options={this.state.mouseLiveSearchResults}
+                                    getOptionLabel={(option) => option.FSN}
+                                    renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                                 <p>Search for MP terms which map to the selected human ontology.</p>
                                 <Button size="large" color="primary" variant="contained" id="search_btn"
                                         onClick={this.mouseSearchBtnClick}>Search</Button>

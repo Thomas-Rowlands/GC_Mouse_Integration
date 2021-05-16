@@ -40,13 +40,21 @@ class ResultTable extends React.Component {
                                 <TableBody>
                                     {this.props.tableData.slice(this.state.page * this.state.rowsPerPage,
                                         this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((row, index) => {
-                                        return (
-                                            <TableRow data-id={row["ID"]} key={index} onClick={this.props.onRowClick}>
-                                                {Object.keys(row).map((key) => {
-                                                    return (<TableCell align="left"
-                                                                       data-id={row["MP ID"]}>{row[key]}</TableCell>)
-                                                })}
-                                            </TableRow>)
+                                            if (this.props.isSearchResult)
+                                                return (
+                                                    <TableRow data-human-ont={row["Human Ontology"]} data-human-term={row["ID"]} data-mouse-term={row["MP ID"]} key={index} onClick={this.props.onRowClick}>
+                                                        {Object.keys(row).map((key) => {
+                                                            return (<TableCell align="left" data-human-ont={row["Human Ontology"]} data-human-term={row["ID"]} data-mouse-term={row["MP ID"]}>{row[key]}</TableCell>)
+                                                        })}
+                                                    </TableRow>)
+                                            else
+                                                return (
+                                                    <TableRow data-study={row["ID"]} key={index} onClick={this.props.onRowClick}>
+                                                        {Object.keys(row).map((key) => {
+                                                            return (<TableCell align="left" data-study={row["ID"]}>{row[key]}</TableCell>)
+                                                        })}
+                                                    </TableRow>
+                                                )
                                     })}
                                 </TableBody>
                             </Table>

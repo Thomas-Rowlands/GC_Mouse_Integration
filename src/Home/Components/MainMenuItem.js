@@ -10,13 +10,25 @@ const useStyles = theme => ({
         color: theme.palette.text.secondary,
         height: 500,
         zIndex: 1,
-        position: 'relative'
+        position: 'relative',
+        border: "solid 1px black",
+        width: "100%",
     },
     img: {
         width: 100,
+        marginTop: "5%",
+    },
+    header: {
+        textDecoration: "none",
+        marginTop: "5%",
+        position: "absolute",
+        textAlign: "center",
+        width: "90%",
     },
     text: {
         textDecoration: 'none',
+        marginTop: "10%",
+        position: "absolute",
     }
 });
 
@@ -40,7 +52,7 @@ class MainMenuItem extends React.Component {
                    onMouseEnter={() => this.toggle()}
                    onMouseLeave={() => this.toggle()} className={classes.paper}>
                 <img className={classes.img} src={this.props.image} alt={this.props.alt}/>
-                <Typography className={classes.text} variant='h5' gutterBottom>{this.props.heading}</Typography>
+                <Typography className={classes.header} variant='h5' gutterBottom>{this.props.heading}</Typography>
                 <Typography className={classes.text} variant='body1' gutterBottom>{this.props.body}</Typography>
             </Paper>);
     }
