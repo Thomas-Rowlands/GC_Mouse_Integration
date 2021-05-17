@@ -14,7 +14,7 @@ import _ from 'lodash';
 const useStyles = theme => ({
     root: {
         marginTop: 20,
-        marginLeft: 5,
+        marginLeft: 0,
         overflowY: "scroll",
         height: "75vh",
     },
@@ -22,7 +22,7 @@ const useStyles = theme => ({
         backgroundColor: "#61aefd",
     },
     btn: {
-        marginRight: 20,
+        marginRight: 5
     }
 });
 
@@ -71,7 +71,7 @@ class OntologyTree extends React.Component {
         const {classes} = this.props;
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
-                   style={{margin: 0}} color="primary" variant="outlined" id={nodes.id}
+                    color="primary" variant="outlined" id={nodes.id}
             ><SearchIcon fontSize="small"/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;

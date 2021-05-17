@@ -295,7 +295,6 @@ class PhenotypeResultBreakdown extends React.Component {
                                 <Tab
                                     label={(breakdownData ? breakdownData["Gene Knockouts"].length : 0) + " Mouse Gene Knockouts"}
                                     wrapped/>
-
                             </Tabs>
                         </AppBar>
                         <TabPanel value={dataTabValue} index={0}>
@@ -316,7 +315,6 @@ class PhenotypeResultBreakdown extends React.Component {
                             <Grid item xs>
                                 <h4 className="center">Mus Musculus</h4>
                             </Grid>
-
                         </Grid>
                         <Grid container>
                             <Grid item xs={3} className="col highlight">

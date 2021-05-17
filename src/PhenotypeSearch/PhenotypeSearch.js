@@ -127,7 +127,9 @@ class PhenotypeSearch extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    console.log("An error occurred retrieving live search results.");
+                    if (!axios.isCancel(error)) {
+                        console.log("An error occurred retrieving live search results.");
+                    }
                 });
         }
     }
@@ -208,10 +210,15 @@ class PhenotypeSearch extends React.Component {
                                             </React.Fragment>
                                         ),
                                     }}
+                                    onKeyDown={e => {
+                                        if (e.keyCode === 13) {
+                                            this.searchClick();
+                                        }
+                                    }}
                                 />
                             )}
                             options={liveSearchResults}
-                            getOptionLabel={(option) => option.FSN}
+                            getOptionLabel={(option) => option.FSN ? option.FSN : ""}
                             renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                         <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}

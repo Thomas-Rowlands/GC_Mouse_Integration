@@ -39,6 +39,7 @@ const useTreeItemStyles = theme => ({
     fontWeight: 'inherit',
     color: 'inherit',
       textAlign: 'left',
+      wordWrap: "normal"
   },
 });
 

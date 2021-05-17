@@ -5,15 +5,15 @@ include 'database.php';
 
 if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $cmd = "";
-    $ont = strtoupper($_GET["ontology"]);
+    $ont = strtolower($_GET["ontology"]);
     $entry = strtolower($_GET["entry"]);
-    $cmd = "MATCH (n:{$ont})
-    WHERE toLower(n.FSN) STARTS WITH '{$entry}' AND n.isObsolete = \"false\" 
+    $cmd = "MATCH (n)
+    WHERE n.ontology = {ont} AND toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\" 
     RETURN n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology
     ORDER BY FSN
     LIMIT 5;";
     $neo = new Neo_Connection();
-    $result = $neo->execute($cmd);
+    $result = $neo->execute($cmd, ['entry' => $entry, 'ont' => $ont]);
     $matches = [];
     foreach ($result as $row) {
         $type = $row->get("type");

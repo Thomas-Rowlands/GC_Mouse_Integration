@@ -64,8 +64,8 @@
             return mysqli_escape_string($this->con, $input_string);
         }
 
-        public function execute($query) {
-            $result = $this->client->run($query);
+        public function execute($query, $params) {
+            $result = $this->client->run($query, $params);
             return $result->getRecords();
         }
 

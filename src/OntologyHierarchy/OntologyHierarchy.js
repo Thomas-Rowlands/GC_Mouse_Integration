@@ -609,6 +609,11 @@ class OntologyHierarchy extends React.Component {
                                                 </React.Fragment>
                                             ),
                                         }}
+                                        onKeyDown={e => {
+                                            if (e.keyCode === 13) {
+                                                this.humanSearchBtnClick();
+                                            }
+                                        }}
                                     />
                                 )}
                                 options={this.state.humanLiveSearchResults}
@@ -661,6 +666,11 @@ class OntologyHierarchy extends React.Component {
                                                         {params.InputProps.endAdornment}
                                                     </React.Fragment>
                                                 ),
+                                            }}
+                                            onKeyDown={e => {
+                                                if (e.keyCode === 13) {
+                                                    this.mouseSearchBtnClick();
+                                                }
                                             }}
                                         />
                                     )}

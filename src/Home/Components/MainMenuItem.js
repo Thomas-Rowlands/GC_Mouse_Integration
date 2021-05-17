@@ -16,7 +16,7 @@ const useStyles = theme => ({
     },
     img: {
         width: 100,
-        marginTop: "5%",
+        marginTop: "10%",
     },
     header: {
         textDecoration: "none",
@@ -27,7 +27,7 @@ const useStyles = theme => ({
     },
     text: {
         textDecoration: 'none',
-        marginTop: "10%",
+        marginTop: "30%",
         position: "absolute",
     }
 });

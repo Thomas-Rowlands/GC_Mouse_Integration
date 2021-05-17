@@ -1,6 +1,8 @@
 <?php
     include_once 'database.php';
     include_once 'utility.php';
+    error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
     class OntologyTree {
 
@@ -54,26 +56,29 @@
                     $mappingProperty = "hasHPOMapping";
                 }
             }
-            $result = $this->neo->execute("MATCH (n:$this->ontLabel {id: \"$termID\"})<-[:ISA]-(m)
+            $result = $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
+            WHERE n.id = {termID}
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren
-            ORDER BY label ASC");
+            ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
         }
 
         private function getTermSiblings($termID, $isMesh=false) {
             $mappingProperty = "has{$this->mappingOntLabel}Mapping";
-            $result = $this->neo->execute("MATCH (n:$this->ontLabel {id: \"$termID\"})-[:hasSibling]->(sib)
+            $result = $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
+            WHERE n.id = {termID}
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasMapping, sib.hasChildren AS hasChildren
-            ORDER BY label ASC");
+            ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
         }
 
         private function getTreeByID($id, $isMesh=false) {
             $root = $this->ontLabel == "MESH" ? "mesh" : "{$this->termIDLabel}:0000001";
-            $cmd = "MATCH p=(startNode:$this->ontLabel{id: \"$root\"})<-[:ISA*1..]-(endNode:$this->ontLabel{id: \"$id\"})
+            $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
+            WHERE startNode.id = {root} AND endNode.id = {termID}
             RETURN p";
             $mappingProperty = "has" . $this->mappingOntLabel . "Mapping";
-            $result = $this->neo->execute($cmd);
+            $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
                 $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null, true); // Set the root node to begin tree building.
@@ -139,23 +144,26 @@
         }
 
         private function getTermChildren($termID) {
-            $result = $this->neo->execute("MATCH (n:MESH {id: \"$termID\"})<-[:ISA]-(m)
+            $result = $this->neo->execute("MATCH (n:MESH)<-[:ISA]-(m)
+            WHERE n.id = {termID}
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.hasMPMapping AS hasMapping, m.hasChildren AS hasChildren
-            ORDER BY label ASC");
+            ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
         }
 
         private function getTermSiblings($termID) {
-            $result = $this->neo->execute("MATCH (n:MESH {id: \"$termID\"})-[:hasSibling]->(sib)
+            $result = $this->neo->execute("MATCH (n:MESH)-[:hasSibling]->(sib)
+            WHERE n.id = {termID}
             RETURN sib.id AS id, sib.FSN AS label, sib.hasMPMapping AS hasMapping, sib.hasChildren AS hasChildren
-            ORDER BY label ASC");
+            ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
         }
 
         private function getTreeByID($id) {
-            $cmd = "MATCH p=(startNode:MESH{id: 'mesh'})<-[:ISA*1..]-(endNode:MESH{id: \"$id\"})
+            $cmd = "MATCH p=(startNode:MESH{id: 'mesh'})<-[:ISA*1..]-(endNode:MESH)
+            WHERE endNode.id = {id}
             RETURN p";
-            $result = $this->neo->execute($cmd);
+            $result = $this->neo->execute($cmd, ["id"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
                 $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null, true); // Set the root node to begin tree building.

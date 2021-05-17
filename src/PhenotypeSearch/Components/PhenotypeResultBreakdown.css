@@ -1,4 +1,4 @@
-p, ul > *{
+p, ul > * {
     font-size: 0.8em;
 }
 
@@ -6,7 +6,7 @@ p {
     margin-left: 1em;
 }
 
-li{
+li {
     list-style-type: disc;
 }
 
@@ -22,18 +22,28 @@ li{
     margin: 0.1em;
     text-align: center;
 }
-.highlight > p{
+
+.highlight > p {
     margin-left: 1em;
 }
-.subTabMenu > .MuiBox-root{
+
+.subTabMenu > .MuiBox-root {
     padding-top: 0;
 }
-.subTabMenu .MuiAppBar-root{
-    width: 55%;
+
+.subTabMenu .MuiAppBar-root {
+    max-width: 60%;
     margin-left: auto;
     margin-right: auto;
 }
-.legendIcon{
+
+@media (max-width: 1024px) {
+    .subTabMenu .MuiAppBar-root {
+        max-width: 90%;
+    }
+}
+
+.legendIcon {
     width: 10px;
     height: 10px;
 }
