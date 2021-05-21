@@ -107,7 +107,7 @@ class ResultTable extends React.Component {
                                                         return (<TableCell align="left"
                                                                            data-human-ont={row["Human Ontology"]}
                                                                            data-human-term={row["ID"]}
-                                                                           data-mouse-term={row["MP ID"]}>{row[key]}</TableCell>)
+                                                                           data-mouse-term={row["MP ID"]}>{row[key] || row[key] === 0 ? row[key] : "-"}</TableCell>)
                                                     })}
                                                 </TableRow>)
                                         else

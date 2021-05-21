@@ -62,34 +62,49 @@
             $limit = $this->con->escape_input($limit);
             $human_pval = $this->con->escape_input($human_pval);
             $mouse_pval = $this->con->escape_input($mouse_pval);
-
-            $mapped_terms = null;
+            $species = strtolower($species);
+            
             $ont = new Ontology();
             if (strtolower($species) == "mouse") {
-                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO");
-                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH");
+                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true);
+                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH", true);
             } else {
-                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO");
-                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH");
+                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true);
+                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH", true);
             }
+            $mapped_terms = array_merge($mapped_hpo_terms, $mapped_mesh_terms);
             $results = [];
-            
-            foreach ($mapped_hpo_terms as $mapping) {
+            $mouseIDs = [];
+            $humanIDs = [];
+            foreach ($mapped_terms as $mapping) {
+                $skip_duplicate = false; //filter out duplicates which do not have a mapped ID
                 // Check if at least 1 GWAS or Knockout is present for this phenotype
-                $result = ["Human Ontology"=>"HPO", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
-                array_push($results, $result);
-            }
-            $temp = [];
-            foreach($mapped_mesh_terms as $mapping) {
-                if (!in_array($mapping, $temp)) {
-                    $temp[] = $mapping;
+                if ($species == "mouse")
+                    if (in_array($mapping["mouseID"], $mouseIDs)) {
+                        if (!$mapping["humanID"]) 
+                            $skip_duplicate = true;
+                    } else
+                        array_push($mouseIDs, $mapping["mouseID"]);
+                else
+                    if (in_array($mapping["humanID"], $humanIDs)) {
+                        if (!$mapping["mouseID"]) 
+                            $skip_duplicate = true;
+                    } else
+                        array_push($humanIDs, $mapping["humanID"]);
+                if (!$skip_duplicate) {
+                    $result = ["Human Ontology"=>$mapping["humanOnt"], "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
+                    array_push($results, $result);
                 }
-            } 
-            $mapped_mesh_terms = $temp;
-            foreach ($mapped_mesh_terms as $mapping) {
-                $result = ["Human Ontology"=>"MeSH", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
-                array_push($results, $result);
+
             }
+            // $temp = [];
+            // foreach($mapped_mesh_terms as $mapping) {
+            //     if (!in_array($mapping, $temp)) {
+            //         $temp[] = $mapping;
+            //     }
+            // } 
+            // $mapped_mesh_terms = $temp;
+
             $total = count($results);
             if ($total > 0)
                 return [$results, $total];
