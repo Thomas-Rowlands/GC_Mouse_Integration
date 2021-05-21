@@ -35,8 +35,6 @@ const useStyles = theme => ({
 
 class OntologyHierarchy extends React.Component {
 
-    function
-
     constructor(props) {
         super(props);
         this.state = {

@@ -118,6 +118,18 @@
             }
         }
 
+        public function get_term_descendants($termID, $ontology) {
+            $ontology = strtoupper($ontology);
+            $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
+            WHERE n.id = {termID}
+            RETURN m.id AS descendant", ["termID"=>$termID]);
+            $descendants = [];
+            foreach ($result as $row) {
+                array_push($descendants, $row->get("descendant"));
+            }
+            return $descendants;
+        }
+
         public function get_root_ontology_trees($ontology) {
             $ontLabel = strtoupper($ontology) == "MESH" ? "MESH" : "HP";
             $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];

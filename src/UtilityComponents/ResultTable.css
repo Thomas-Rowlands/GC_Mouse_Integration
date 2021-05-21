@@ -1,9 +1,6 @@
 th{
     background-color: #C8D9EE;
 }
-th:hover{
-    cursor: default;
-}
 tr:hover{
     background-color: #f4f9ff;
     cursor:pointer;
