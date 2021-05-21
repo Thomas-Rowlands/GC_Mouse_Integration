@@ -14,16 +14,13 @@
         public function get_phenotype_homology_breakdown($mouseID, $humanID, $humanOnt) {
             $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get mappings & synonyms for the chosen phenotype.
-            $ont = new Ontology();
-            // $mappings = $ont->get_ontology_mappings($termID);
             $humanOnt = strtoupper($humanOnt);
             $mappings = Mapper::getMappings($mouseID, $humanID, $humanOnt, $this->neo);
-
             $return_package["Mappings"] = $mappings;
             // Get GWAS Studies
             if ($mappings) {
-                $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($humanOnt, $mappings["humanID"]);
-                $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mappings["mouseID"]);
+                $return_package["GWAS Studies"] = $mappings["gwas"] > 0 ? $this->get_mapped_gwas_studies($humanOnt, $mappings["humanID"]) : [];
+                $return_package["Gene Knockouts"] = $mappings["experiments"] > 0 ? $this->get_mouse_knockouts($mappings["mouseID"]) : [];
             }
             return $return_package;
         }
@@ -35,7 +32,7 @@
             array_push($descendants, $termID);
             $result = [];
             foreach ($descendants as $descendant) {
-                $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$descendant}', 0, 1, 500)";
+                $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$descendant}', 0, 1, 0)";
                 $gwas = $this->con->execute($cmd, "gc_mouse");
                 if ($gwas) {
                     $gwas_records = mysqli_fetch_all($gwas, MYSQLI_ASSOC);
@@ -79,19 +76,7 @@
             
             foreach ($mapped_hpo_terms as $mapping) {
                 // Check if at least 1 GWAS or Knockout is present for this phenotype
-                $descendants = $ont->get_term_descendants($mapping["humanID"], "HPO");
-                array_push($descendants, $mapping["humanID"]);
-                $gwas = $this->get_mapped_gwas_study_count($descendants);
-                $descendants = $ont->get_term_descendants($mapping["mouseID"], "MP");
-                array_push($descendants, $mapping["mouseID"]);
-                $knockouts = 0;
-                foreach ($descendants as $descendant) {
-                    $cmd = "CALL gc_mouse.get_mouse_knockouts_by_term('{$mapping['mouseID']}', {$mouse_pval}, {$page}, 0)";
-                    $knockouts_res = $this->con->execute($cmd, "gc_mouse");
-                    if ($knockouts_res)
-                        $knockouts += mysqli_fetch_row($knockouts_res)[0];
-                }
-                $result = ["Human Ontology"=>"HPO", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$knockouts];
+                $result = ["Human Ontology"=>"HPO", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
                 array_push($results, $result);
             }
             $temp = [];
@@ -102,19 +87,7 @@
             } 
             $mapped_mesh_terms = $temp;
             foreach ($mapped_mesh_terms as $mapping) {
-                $descendants = $ont->get_term_descendants($mapping["humanID"], "MESH");
-                array_push($descendants, $mapping["humanID"]);
-                $gwas = $this->get_mapped_gwas_study_count($descendants);
-                $descendants = $ont->get_term_descendants($mapping["mouseID"], "MP");
-                array_push($descendants, $mapping["mouseID"]);
-                $knockouts = 0;
-                foreach ($descendants as $descendant) {
-                    $cmd = "CALL gc_mouse.get_mouse_knockouts_by_term('{$mapping['mouseID']}', {$mouse_pval}, {$page}, 0)";
-                    $knockouts_res = $this->con->execute($cmd, "gc_mouse");
-                    if ($knockouts_res)
-                        $knockouts += mysqli_fetch_row($knockouts_res)[0];
-                }
-                $result = ["Human Ontology"=>"MeSH", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$knockouts];
+                $result = ["Human Ontology"=>"MeSH", "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
                 array_push($results, $result);
             }
             $total = count($results);
@@ -137,5 +110,3 @@
         }
 
     }
-
-?>

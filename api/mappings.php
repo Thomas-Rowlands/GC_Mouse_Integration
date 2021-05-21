@@ -12,7 +12,7 @@
                 WITH mouseTerm, mouseSyns, humanTerm, COLLECT(humanSyn) AS humanSyns
             MATCH (N)-[M:LOOM_MAPPING]-(H)
                 WHERE (N in mouseSyns or N = mouseTerm) AND (H in humanSyns or H = humanTerm)
-            RETURN DISTINCT ID(mouseTerm) AS mouseTermNodeId, mouseTerm.id as mouseID, mouseTerm.FSN AS mouseTermLabel, ID(N) as mouseNodeId, N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, ID(humanTerm) AS humanTermNodeId, humanTerm.FSN AS humanTermLabel, humanTerm.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
+            RETURN DISTINCT ID(mouseTerm) AS mouseTermNodeId, mouseTerm.id as mouseID, mouseTerm.FSN AS mouseTermLabel, mouseTerm.experiment_total AS Experiments, ID(N) as mouseNodeId, N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, ID(humanTerm) AS humanTermNodeId, humanTerm.FSN AS humanTermLabel, humanTerm.id as humanID, H.FSN as humanLabel, H.gwas_total AS GWAS, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
         ["mouseID"=>$mouseID, "humanID"=>$humanID]);
             } else {
                 $result = $neo->execute("MATCH (mouseTerm:MP)-[:HAS_SYNONYM*0..]->(mouseSyn)
@@ -23,17 +23,17 @@
                 WITH N, M, H, mouseTerm
                 OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT *1..2]-(humanTerm {originalType: \"descriptor\"})
                 WITH N, M, H, humanTerm, mouseTerm
-                RETURN ID(mouseTerm) AS mouseTermNodeId, mouseTerm.FSN AS mouseTermLabel, mouseTerm.id as mouseID, ID(N) as mouseNodeId,  N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(ID(humanTerm), ID(H)) AS humanTermNodeId, COALESCE(humanTerm.FSN, H.FSN) AS humanTermLabel, COALESCE(H.id, humanTerm.id) as humanID, H.FSN as humanLabel, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
+                RETURN ID(mouseTerm) AS mouseTermNodeId, mouseTerm.FSN AS mouseTermLabel, mouseTerm.id as mouseID, ID(N) as mouseNodeId,  mouseTerm.experiment_total AS Experiments, N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(ID(humanTerm), ID(H)) AS humanTermNodeId, COALESCE(humanTerm.FSN, H.FSN) AS humanTermLabel, COALESCE(H.id, humanTerm.id) as humanID, H.FSN as humanLabel, H.gwas_total AS GWAS, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
             ["mouseID"=>$mouseID]);
             }
             $mappings = [];
             $term_mapping_retrieved = false;
             foreach ($result as $row) {
                 if (!$term_mapping_retrieved) {
-                    $mappings = ["mouseNodeId"=> $row->get("mouseTermNodeId"), "mouseID"=> $mouseID, "mouseSynonyms"=>Mapper::get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt"), $neo), "mouseLabel"=> $row->get("mouseTermLabel"), "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanNodeId"=> $row->get("humanTermNodeId"), "humanID"=> $humanID, "humanSynonyms"=>Mapper::get_term_synonyms($row->get("humanID"), $row->get("humanOnt"), $neo),"humanLabel"=> $row->get("humanTermLabel"), "humanOnt"=> $row->get("humanOnt"), "matches" => []];
+                    $mappings = ["mouseNodeId"=> $row->get("mouseTermNodeId"), "mouseID"=> $mouseID, "mouseSynonyms"=>Mapper::get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt"), $neo), "mouseLabel"=> $row->get("mouseTermLabel"), "experiments"=> $row->get("Experiments"),"mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanNodeId"=> $row->get("humanTermNodeId"), "humanID"=> $humanID, "humanSynonyms"=>Mapper::get_term_synonyms($row->get("humanID"), $row->get("humanOnt"), $neo),"humanLabel"=> $row->get("humanTermLabel"), "gwas"=> $row->get("GWAS"), "humanOnt"=> $row->get("humanOnt"), "matches" => []];
                     $term_mapping_retrieved = true;
                 }
-                $match = ["mouseNodeId" => $row->get("mouseNodeId"), "mouseNodeType" => $row->get("mouseType"), "mouseLabel" => $row->get("mouseLabel"), "isExact" => $row->get("isExactMatch"), "humanNodeId" => $row->get("humanNodeId"), "humanNodeType" => $row->get("humanType"), "humanLabel" => $row->get("humanLabel")];
+                $match = ["mouseNodeId" => $row->get("mouseNodeId"), "mouseNodeType" => $row->get("mouseType"), "mouseLabel" => $row->get("mouseLabel"), "experiments" =>$row->get("Experiments"), "isExact" => $row->get("isExactMatch"), "humanNodeId" => $row->get("humanNodeId"), "humanNodeType" => $row->get("humanType"), "humanLabel" => $row->get("humanLabel"), "gwas" => $row->get("GWAS")];
                 array_push($mappings["matches"], $match);
             }
             return $mappings;
