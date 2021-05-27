@@ -234,9 +234,10 @@
 
         public function get_term_descendants($termID, $ontology) {
             $ontology = strtoupper($ontology);
+            $type = $ontology == "MESH" ? "descriptor" : "term";
             $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
-            WHERE n.id = {termID}
-            RETURN m.id AS descendant", ["termID"=>$termID]);
+            WHERE n.id = {termID} AND m.isObsolete = 'false' AND m.originalType = {type}
+            RETURN m.id AS descendant", ["termID"=>$termID, "type"=>$type]);
             $descendants = [];
             foreach ($result as $row) {
                 array_push($descendants, $row->get("descendant"));

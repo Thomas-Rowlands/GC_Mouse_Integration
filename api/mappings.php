@@ -28,14 +28,22 @@
             }
             $mappings = [];
             $term_mapping_retrieved = false;
+            $gwas = 0;
+            $experiments = 0;
             foreach ($result as $row) {
                 if (!$term_mapping_retrieved) {
+                    $gwas = $row->get("GWAS");
+                    $experiments = $row->get("Experiments");
                     $mappings = ["mouseNodeId"=> $row->get("mouseTermNodeId"), "mouseID"=> $mouseID, "mouseSynonyms"=>Mapper::get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt"), $neo), "mouseLabel"=> $row->get("mouseTermLabel"), "experiments"=> $row->get("Experiments"),"mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "humanNodeId"=> $row->get("humanTermNodeId"), "humanID"=> $humanID, "humanSynonyms"=>Mapper::get_term_synonyms($row->get("humanID"), $row->get("humanOnt"), $neo),"humanLabel"=> $row->get("humanTermLabel"), "gwas"=> $row->get("GWAS"), "humanOnt"=> $row->get("humanOnt"), "matches" => []];
                     $term_mapping_retrieved = true;
                 }
+                $gwas += $row->get("GWAS");
+                $experiments += $row->get("Experiments");
                 $match = ["mouseNodeId" => $row->get("mouseNodeId"), "mouseNodeType" => $row->get("mouseType"), "mouseLabel" => $row->get("mouseLabel"), "experiments" =>$row->get("Experiments"), "isExact" => $row->get("isExactMatch"), "humanNodeId" => $row->get("humanNodeId"), "humanNodeType" => $row->get("humanType"), "humanLabel" => $row->get("humanLabel"), "gwas" => $row->get("GWAS")];
                 array_push($mappings["matches"], $match);
             }
+            $mappings["gwas"] = $gwas;
+            $mappings["experiments"] = $experiments;
             return $mappings;
         }
 

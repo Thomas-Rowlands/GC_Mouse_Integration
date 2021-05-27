@@ -84,7 +84,7 @@ class ResultTable extends React.Component {
                                 <TableHead>
                                     <TableRow>
                                         {Object.keys(this.props.tableData[0]).map((header, index) => {
-                                            return (<TableCell align={"right"} padding={paddingHeaders.includes(header) ? "none" : "default"}
+                                            return (<TableCell align={"center"} padding={paddingHeaders.includes(header) ? "none" : "default"}
                                                                sortDirection={this.state.orderBy === header ? this.state.order : false} key={index}
                                                                onClick={() => this.handleRequestSort(header)}>{header}
                                                 <TableSortLabel active={this.state.orderBy === header}
@@ -104,7 +104,7 @@ class ResultTable extends React.Component {
                                                           data-human-term={row["ID"]} data-mouse-term={row["MP ID"]}
                                                           key={index} onClick={this.props.onRowClick}>
                                                     {Object.keys(row).map((key) => {
-                                                        return (<TableCell align="left"
+                                                        return (<TableCell align="center"
                                                                            data-human-ont={row["Human Ontology"]}
                                                                            data-human-term={row["ID"]}
                                                                            data-mouse-term={row["MP ID"]}>{row[key] || row[key] === 0 ? row[key] : "-"}</TableCell>)
@@ -115,7 +115,7 @@ class ResultTable extends React.Component {
                                                 <TableRow data-study={row["ID"]} key={index}
                                                           onClick={this.props.onRowClick}>
                                                     {Object.keys(row).map((key) => {
-                                                        return (<TableCell align="left"
+                                                        return (<TableCell align="center"
                                                                            data-study={row["ID"]}>{row[key]}</TableCell>)
                                                     })}
                                                 </TableRow>

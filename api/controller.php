@@ -13,25 +13,33 @@
                     echo json_encode($result);
                 else
                     echo null;
-            } elseif (parameters_present(array("homologSearch", "term"))) {
+            } else if (parameters_present(array("homologSearch", "term"))) {
                 $study = new StudySearch();
                 $result = $study->homologSearch($_GET["term"]);
                 if ($result)
                     echo json_encode($result);
                 else
                     echo null;
-            } elseif (parameters_present(array("phenotypeBreakdown", "mouseTerm", "humanTerm", "humanOntology"))) {
-                if (validate_ontology($_GET["humanOntology"])) {
-                    $study = new StudySearch();
-                    $result = $study->get_phenotype_homology_breakdown($_GET["mouseTerm"], $_GET["humanTerm"], $_GET["humanOntology"]);
-                    if ($result)
-                        echo json_encode($result);
+            } else if (parameters_present(array("phenotypeBreakdown", "mouseTerm", "humanTerm", "humanOntology"))) {
+                $study = new StudySearch();
+                $result = null;
+                if ($_GET["mouseTerm"] != null && $_GET["humanTerm"] != null) {
+                    if (validate_ontology($_GET["humanOntology"]))
+                        $result = $study->get_phenotype_homology_breakdown($_GET["mouseTerm"], $_GET["humanTerm"], $_GET["humanOntology"]);
                     else
-                        echo null;
-                } else {
-                    echo "invalid ontology specified";
+                        echo "invalid ontology specified";
+                } else if ($_GET["mouseTerm"] != null)
+                    $result = $study->get_mouse_term_breakdown($_GET["mouseTerm"]);
+                else {
+                    if (validate_ontology($_GET["humanOntology"]))
+                        $result = $study->get_human_term_breakdown($_GET["humanTerm"], $_GET["humanOntology"]);
+                    else
+                        echo "invalid ontology specified";
                 }
-
+                if ($result)
+                    echo json_encode($result);
+                else
+                    echo null;
             } else {
                 echo null;
             }

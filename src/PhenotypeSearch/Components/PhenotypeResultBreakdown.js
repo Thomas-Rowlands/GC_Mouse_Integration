@@ -72,100 +72,107 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     getBreakdownData() {
-        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&mouseTerm=" + this.props.mousePhenotype + "&humanTerm=" + this.props.humanPhenotype + "&humanOntology=" + this.props.humanOntology;
+        let mousePhenotype = this.props.mousePhenotype ? this.props.mousePhenotype : "";
+        let humanPhenotype = this.props.humanPhenotype ? this.props.humanPhenotype : "";
+        let humanOntology = this.props.humanOntology ? this.props.humanOntology : "";
+        let url_string = this.state.configData.api_server + "controller.php?type=study&phenotypeBreakdown=&mouseTerm=" + mousePhenotype + "&humanTerm=" + humanPhenotype + "&humanOntology=" + humanOntology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
                         // graph payload (with minimalist structure)
-                        let humanTermCoords = [50, 214];
-                        let mouseTermCoords = [750, 214];
-                        let data = {
-                            nodes: [
-                                {
-                                    id: response.data["Mappings"]["humanNodeId"],
-                                    name: response.data["Mappings"]["humanLabel"],
-                                    x: humanTermCoords[0],
-                                    y: humanTermCoords[1],
-                                    color: "red",
-                                    symbolType: "square"
-                                },
-                                {
-                                    id: response.data["Mappings"]["mouseNodeId"],
-                                    name: response.data["Mappings"]["mouseLabel"],
-                                    x: mouseTermCoords[0],
-                                    y: mouseTermCoords[1],
-                                    color: "blue",
-                                    symbolType: "square"
+                        if (!Array.isArray(response.data["Mappings"])) {
+                            let humanTermCoords = [50, 214];
+                            let mouseTermCoords = [750, 214];
+                            let data = {
+                                nodes: [
+                                    {
+                                        id: response.data["Mappings"]["humanNodeId"],
+                                        name: response.data["Mappings"]["humanLabel"],
+                                        x: humanTermCoords[0],
+                                        y: humanTermCoords[1],
+                                        color: "red",
+                                        symbolType: "square"
+                                    },
+                                    {
+                                        id: response.data["Mappings"]["mouseNodeId"],
+                                        name: response.data["Mappings"]["mouseLabel"],
+                                        x: mouseTermCoords[0],
+                                        y: mouseTermCoords[1],
+                                        color: "blue",
+                                        symbolType: "square"
+                                    }
+                                ],
+                                links: []
+                            };
+
+                            for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
+                                let mapping = response.data["Mappings"]["mouseSynonyms"][i];
+                                let mouseNode = {
+                                    id: mapping["synonymId"],
+                                    name: mapping["synonymLabel"],
+                                    x: mouseTermCoords[0] - 175,
+                                    y: mouseTermCoords[1] - 105 + (i * 65),
+                                    color: "lightblue"
+                                };
+                                let link = {
+                                    source: mapping["synonymId"],
+                                    target: response.data["Mappings"]["mouseNodeId"],
+                                    linkType: "Synonym"
+                                };
+                                if (!data.nodes.includes(mouseNode)) {
+                                    data.nodes.push(mouseNode);
                                 }
-                            ],
-                            links: []
-                        };
-
-                        for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
-                            let mapping = response.data["Mappings"]["mouseSynonyms"][i];
-                            let mouseNode = {
-                                id: mapping["synonymId"],
-                                name: mapping["synonymLabel"],
-                                x: mouseTermCoords[0] - 175,
-                                y: mouseTermCoords[1] - 105 + (i * 65),
-                                color: "lightblue"
-                            };
-                            let link = {
-                                source: mapping["synonymId"],
-                                target: response.data["Mappings"]["mouseNodeId"],
-                                linkType: "Synonym"
-                            };
-                            if (!data.nodes.includes(mouseNode)) {
-                                data.nodes.push(mouseNode);
+                                if (!data.links.includes(link)) {
+                                    data.links.push(link);
+                                }
                             }
-                            if (!data.links.includes(link)) {
-                                data.links.push(link);
+                            for (var i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
+                                let mapping = response.data["Mappings"]["humanSynonyms"][i];
+                                let humanNode = {
+                                    id: mapping["synonymId"],
+                                    name: mapping["synonymLabel"],
+                                    x: humanTermCoords[0] + 175,
+                                    y: humanTermCoords[1] - 105 + (i * 65),
+                                    color: "orange"
+                                };
+                                let link = {
+                                    source: response.data["Mappings"]["humanNodeId"],
+                                    target: mapping["synonymId"],
+                                    linkType: "Synonym"
+                                };
+                                if (!data.nodes.includes(humanNode)) {
+                                    data.nodes.push(humanNode);
+                                }
+                                if (!data.links.includes(link)) {
+                                    data.links.push(link);
+                                }
                             }
+                            for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
+                                let match = response.data["Mappings"]["matches"][i];
+                                let source = _.find(data.nodes, function (node) {
+                                    if (node.id === match["humanNodeId"])
+                                        return true;
+                                });
+                                let target = _.find(data.nodes, function (node) {
+                                    if (node.id === match["mouseNodeId"])
+                                        return true;
+                                });
+                                let link = {
+                                    source: source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
+                                    target: target ? match["mouseNodeId"] : response.data["Mappings"]["mouseNodeId"],
+                                    linkType: match["isExact"] ? "Exact Match" : "Partial Match"
+                                }
+                                if (!data.links.includes(link)) {
+                                    data.links.push(link);
+                                }
+                            }
+                            this.setState({breakdownData: response.data, loading: false, mappingGraphData: data});
+                        } else {
+                            this.setState({breakdownData: response.data, loading: false, mappingGraphData: null});
                         }
-                        for (var i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
-                            let mapping = response.data["Mappings"]["humanSynonyms"][i];
-                            let humanNode = {
-                                id: mapping["synonymId"],
-                                name: mapping["synonymLabel"],
-                                x: humanTermCoords[0] + 175,
-                                y: humanTermCoords[1] - 105 + (i * 65),
-                                color: "orange"
-                            };
-                            let link = {
-                                source: response.data["Mappings"]["humanNodeId"],
-                                target: mapping["synonymId"],
-                                linkType: "Synonym"
-                            };
-                            if (!data.nodes.includes(humanNode)) {
-                                data.nodes.push(humanNode);
-                            }
-                            if (!data.links.includes(link)) {
-                                data.links.push(link);
-                            }
-                        }
-                        for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
-                            let match = response.data["Mappings"]["matches"][i];
-                            let source = _.find(data.nodes, function (node) {
-                                if (node.id === match["humanNodeId"])
-                                    return true;
-                            });
-                            let target = _.find(data.nodes, function (node) {
-                                if (node.id === match["mouseNodeId"])
-                                    return true;
-                            });
-                            let link = {
-                                source: source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
-                                target: target ? match["mouseNodeId"] : response.data["Mappings"]["mouseNodeId"],
-                                linkType: match["isExact"] ? "Exact Match" : "Partial Match"
-                            }
-                            if (!data.links.includes(link)) {
-                                data.links.push(link);
-                            }
-                        }
-                        this.setState({breakdownData: response.data, loading: false, mappingGraphData: data});
                     } else {
-
+                        this.setState({breakdownData: null, loading: false, mappingGraphData: null});
                     }
                 }
             })
@@ -176,7 +183,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanTermID(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]) {
+            if (breakdownData["Mappings"]["humanID"]) {
                 return breakdownData["Mappings"]["humanID"];
             } else {
                 return "No mapping found";
@@ -186,7 +193,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanTerm(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]) {
+            if (breakdownData["Mappings"]["humanLabel"]) {
                 return breakdownData["Mappings"]["humanLabel"];
             } else {
                 return "No mapping found";
@@ -196,7 +203,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseTermID(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]) {
+            if (breakdownData["Mappings"]["mouseID"]) {
                 return breakdownData["Mappings"]["mouseID"];
             } else {
                 return "No mapping found";
@@ -206,7 +213,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseTerm(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]) {
+            if (breakdownData["Mappings"]["mouseLabel"]) {
                 return breakdownData["Mappings"]["mouseLabel"];
             } else {
                 return "No mapping found";
@@ -236,7 +243,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getHumanSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]["humanSynonyms"].length > 0) {
+            if (breakdownData["Mappings"]["humanSynonyms"] && breakdownData["Mappings"]["humanSynonyms"].length > 0) {
                 return breakdownData["Mappings"]["humanSynonyms"].map((synonym, index) =>
                     <li>{synonym["synonymLabel"]}</li>);
             } else {
@@ -247,7 +254,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getMouseSynonyms(breakdownData) {
         if (breakdownData) {
-            if (breakdownData["Mappings"]["mouseSynonyms"].length > 0) {
+            if (breakdownData["Mappings"]["mouseSynonyms"] && breakdownData["Mappings"]["mouseSynonyms"].length > 0) {
                 return breakdownData["Mappings"]["mouseSynonyms"].map((synonym, index) =>
                     <li>{synonym["synonymLabel"]}</li>);
             } else {
@@ -308,92 +315,98 @@ class PhenotypeResultBreakdown extends React.Component {
 
                     </TabPanel>
                     <TabPanel value={tabValue} index={1}>
-                        <Grid container>
-                            <Grid item xs>
-                                <h4 className="center">Homo Sapiens</h4>
+                        {
+                            breakdownData && !Array.isArray(breakdownData["Mappings"]) ? (<div>
+                                                            <Grid container>
+                                <Grid item xs>
+                                    <h4 className="center">Homo Sapiens</h4>
+                                </Grid>
+                                <Grid item xs>
+                                    <h4 className="center">Mus Musculus</h4>
+                                </Grid>
                             </Grid>
-                            <Grid item xs>
-                                <h4 className="center">Mus Musculus</h4>
-                            </Grid>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={3} className="col highlight">
-                                <p>ID</p>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <p id="HPO-Matched-Term">{this.getHumanTermID(breakdownData)}</p>
-                            </Grid>
-                            <Grid item xs={3} className="col highlight">
-                                <p>ID</p>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
-                            </Grid>
-                            <Grid item xs={3} className="col highlight">
-                                <p>Term</p>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
-                            </Grid>
-                            <Grid item xs={3} className="col highlight">
-                                <p>Term</p>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
-                            </Grid>
+                            <Grid container>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>ID</p>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <p id="HPO-Matched-Term">{this.getHumanTermID(breakdownData)}</p>
+                                </Grid>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>ID</p>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
+                                </Grid>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>Term</p>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
+                                </Grid>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>Term</p>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
+                                </Grid>
 
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={3} className="col highlight">
-                                <p>Synonyms</p>
                             </Grid>
-                            <Grid item xs={3} className="col">
-                                <ul>
-                                    {this.getHumanSynonyms(breakdownData)}
-                                </ul>
+                            <Grid container>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>Synonyms</p>
+                                </Grid>
+                                <Grid item xs={3} className="col">
+                                    <ul>
+                                        {this.getHumanSynonyms(breakdownData)}
+                                    </ul>
+                                </Grid>
+                                <Grid item xs={3} className="col highlight">
+                                    <p>Synonyms</p>
+                                </Grid>
+                                <Grid item xs={3} className="col">
+                                    <ul>
+                                        {this.getMouseSynonyms(breakdownData)}
+                                    </ul>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={3} className="col highlight">
-                                <p>Synonyms</p>
+                            <Grid container>
+                                <Grid item xs={3} className="col">
+                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5" cy="5" r="10px" fill="red"/>
+                                    </svg>
+                                    {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
+                                </Grid>
+                                <Grid item xs={3} className="col">
+                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5" cy="5" r="10px" fill="blue"/>
+                                    </svg>
+                                    {" MP Term"}
+                                </Grid>
                             </Grid>
-                            <Grid item xs={3} className="col">
-                                <ul>
-                                    {this.getMouseSynonyms(breakdownData)}
-                                </ul>
+                            <Grid container>
+                                <Grid item xs={3} className="col">
+                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5" cy="5" r="10px" fill="orange"/>
+                                    </svg>
+                                    {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
+                                </Grid>
+                                <Grid item xs={3} className="col">
+                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5" cy="5" r="10px" fill="lightblue"/>
+                                    </svg>
+                                    {" MP Synonym"}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={3} className="col">
-                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" r="10px" fill="red"/>
-                                </svg>
-                                {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
-                            </Grid>
-                            <Grid item xs={3} className="col">
-                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" r="10px" fill="blue"/>
-                                </svg>
-                                {" MP Term"}
-                            </Grid>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={3} className="col">
-                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" r="10px" fill="orange"/>
-                                </svg>
-                                {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
-                            </Grid>
-                            <Grid item xs={3} className="col">
-                                <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" r="10px" fill="lightblue"/>
-                                </svg>
-                                {" MP Synonym"}
-                            </Grid>
-                        </Grid>
-                        <Graph
-                            id="graph-id" // id is mandatory
-                            data={mappingGraphData}
-                            config={this.myConfig}
-                        />
+                            <Graph
+                                id="graph-id" // id is mandatory
+                                data={mappingGraphData}
+                                config={this.myConfig}
+                                />
+                                </div>
+                            ) : <p>No mappings identified.</p>
+                        }
+
                     </TabPanel>
                 </div>
             </Paper>
