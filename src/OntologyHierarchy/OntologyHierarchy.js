@@ -52,6 +52,8 @@ class OntologyHierarchy extends React.Component {
             humanLiveSearchResults: [],
             mouseLiveSearchResults: [],
             humanOntology: "HPO",
+            mouseSearchInput: "",
+            humanSearchInput: ""
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
@@ -452,11 +454,13 @@ class OntologyHierarchy extends React.Component {
 
     mouseSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("mouseSearchInput").value;
+        this.setState({mouseSearchInput: input});
         this.search(input, "MP");
     }
 
     humanSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("humanSearchInput").value;
+        this.setState({humanSearchInput: input});
         this.search(input, this.state.humanOntology);
     }
 
@@ -563,6 +567,8 @@ class OntologyHierarchy extends React.Component {
             expandedHumanNodes,
             mappedMousePhenotype,
             mappedHumanPhenotype,
+            mouseSearchInput,
+            humanSearchInput
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
@@ -592,6 +598,7 @@ class OntologyHierarchy extends React.Component {
                                 id="humanSearchInput"
                                 className={classes.autoComplete}
                                 onInputChange={this.retrieveLiveSearch}
+                                defaultValue={humanSearchInput}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -649,6 +656,7 @@ class OntologyHierarchy extends React.Component {
                                     freeSolo
                                     className={classes.autoComplete}
                                     id="mouseSearchInput"
+                                    defaultValue={mouseSearchInput}
                                     onInputChange={this.retrieveLiveSearch}
                                     renderInput={(params) => (
                                         <TextField

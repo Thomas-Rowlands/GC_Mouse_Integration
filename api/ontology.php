@@ -13,45 +13,10 @@
 
         public function search_mouse_term($search, $mappingOnt, $is_open_search=false) {
             $result = null;
+            $ont = strtoupper($mappingOnt);
             $search = strtolower($search);
-            if ($mappingOnt == "MESH") {
                 if ($is_open_search) {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                    WITH N, M, H
-                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
-                    WHERE (H:Synonym)
-                    WITH N, M, H, T
-                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                    WHERE (N:Synonym)
-                    WITH N, M, H, T, MT
-                    WHERE ((EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))) AND (N.experiment_total > 0) AND (toLOWER(N.FSN) STARTS WITH {search} OR toLOWER(N.FSN) CONTAINS {searchContains})
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt
-                    
-                    UNION
-
-                    MATCH (n:MP)-[:HAS_SYNONYM*0..1]->(m)
-                        WHERE (toLOWER(n.FSN) STARTS WITH {search} OR toLOWER(m.FSN) STARTS WITH {search} OR toLOWER(n.FSN) CONTAINS {searchContains} OR toLOWER(m.FSN) CONTAINS {searchContains}) AND n.experiment_total > 0 AND EXISTS(n.id)
-                        RETURN n.id as mouseID, n.FSN as mouseLabel, n.ontology as mouseOnt, n.experiment_total AS Experiments, null as isExactMatch, null as humanID, null AS GWAS, null as humanLabel, null as humanOnt
-                    "
-                , ["search"=>$search, "searchContains"=>" " . $search]);
-                } else {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                    WHERE toLOWER(N.FSN) STARTS WITH {search}
-                    WITH N, M, H
-                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
-                    WHERE (H:Synonym)
-                    WITH N, M, H, T
-                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                    WHERE (N:Synonym)
-                    WITH N, M, H, T, MT
-                    WHERE ((EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)))
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, N.ontology as mouseOnt, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt"
-                , ["search"=>$search]);
-                }
-
-            } else {
-                if ($is_open_search) {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$mappingOnt.")
                     WITH N, M, H
                     OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
                     WHERE (H:Synonym)
@@ -70,7 +35,7 @@
                     ",
                     ["search"=>$search, "searchContains"=>" " . $search]);
                 } else {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$mappingOnt.")
                     WHERE toLOWER(N.FSN) STARTS WITH {search}
                     WITH N, M, H
                     OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
@@ -84,7 +49,6 @@
                 ["search"=>$search]);
                 }
 
-            }
             $matches = [];
             foreach ($result as $row) {
                 $gwas = $row->get("GWAS");
@@ -106,48 +70,10 @@
 
         public function search_human_term($search, $ontology, $is_open_search=false) {
             $result = null;
+            $ont = strtoupper($ontology);
             $search = strtolower($search);
-            if ($ontology == "MESH") {
                 if ($is_open_search) {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                    WITH N, M, H
-                    
-                OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
-                    WHERE (H:Synonym)
-                    WITH N, M, H, T
-                
-                OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                    WHERE (N:Synonym)
-                    WITH N, M, H, T, MT
-                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0) AND (toLOWER(T.FSN) STARTS WITH {search} OR toLOWER(H.FSN) STARTS WITH {search} OR toLOWER(T.FSN) CONTAINS {searchContains} OR toLOWER(H.FSN) CONTAINS {searchContains})
-                
-                RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt
-                
-                UNION
-                
-                MATCH (n:MESH)-[:HAS_SYNONYM|HAS_CONCEPT*0..1]->(m)
-                    WHERE (toLOWER(n.FSN) STARTS WITH {search} OR toLOWER(m.FSN) STARTS WITH {search} OR toLOWER(n.FSN) CONTAINS {searchContains} OR toLOWER(m.FSN) CONTAINS {searchContains}) AND (n.originalType = \"descriptor\") AND n.gwas_total > 0 AND EXISTS(n.id)
-                
-                RETURN null as mouseID, null as mouseLabel, null AS Experiments, null as mouseOnt, null as isExactMatch, n.id as humanID, n.gwas_total AS GWAS, n.FSN as humanLabel, n.ontology as humanOnt",
-                ["search"=>$search, "searchContains"=>" " . $search]);
-                } else {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:MESH)
-                    WHERE toLOWER(H.FSN) STARTS WITH {search}
-                    WITH N, M, H
-                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM|:HAS_CONCEPT]-(T {originalType: \"descriptor\"})
-                    WHERE (H:Synonym)
-                    WITH N, M, H, T
-                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                    WHERE (N:Synonym)
-                    WITH N, M, H, T, MT
-                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0)
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt",
-                ["search"=>$search]);
-                }
-
-            } else {
-                if ($is_open_search) {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
+                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
                         WHERE toLOWER(H.FSN) STARTS WITH {search}
                         WITH N, M, H
                     OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
@@ -167,23 +93,21 @@
                         ",
                     ["search"=>$search, "searchContains"=>" " . $search]);
                 } else {
-                $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:HPO)
-                    WHERE toLOWER(H.FSN) STARTS WITH {search}
-                    WITH N, M, H
-                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-                    WHERE (H:Synonym)
-                    WITH N, M, H, T
-                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                    WHERE (N:Synonym)
-                    WITH N, M, H, T, MT
-                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0)
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt
-                    
-                    ",
-                    ["search"=>$search, "searchContains"=>" " . $search]);
+                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
+                        WHERE toLOWER(H.FSN) STARTS WITH {search}
+                        WITH N, M, H
+                        OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                        WHERE (H:Synonym)
+                        WITH N, M, H, T
+                        OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                        WHERE (N:Synonym)
+                        WITH N, M, H, T, MT
+                        WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0)
+                        RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt
+                        
+                        ",
+                        ["search"=>$search, "searchContains"=>" " . $search]);
                 }
-
-            }
 
             $matches = [];
             foreach ($result as $row) {
@@ -234,10 +158,9 @@
 
         public function get_term_descendants($termID, $ontology) {
             $ontology = strtoupper($ontology);
-            $type = $ontology == "MESH" ? "descriptor" : "term";
             $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
-            WHERE n.id = {termID} AND m.isObsolete = 'false' AND m.originalType = {type}
-            RETURN m.id AS descendant", ["termID"=>$termID, "type"=>$type]);
+            WHERE n.id = {termID} AND m.isObsolete = 'false' AND m:Term
+            RETURN m.id AS descendant", ["termID"=>$termID]);
             $descendants = [];
             foreach ($result as $row) {
                 array_push($descendants, $row->get("descendant"));
@@ -249,12 +172,7 @@
             $ontLabel = strtoupper($ontology) == "MESH" ? "MESH" : "HP";
             $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "humanID" => "", "isExactMatch" => False];
             $mouseOntTree = new OntologyTree("MP", "MP", null, true, $ontLabel);
-            $humanOntTree = null;
-
-            if ($ontology == "MESH")
-                $humanOntTree = new MeSHTree(null, true);
-            else
-                $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
+            $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
             $result["mouseTree"] = $mouseOntTree->getTree();
             $result["humanTree"] = $humanOntTree->getTree();
             $result["mouseID"] = $result["mouseTree"]->id;
@@ -297,12 +215,7 @@
                     
 
                 if ($humanID) {
-                    $tree = null;
-                    if ($humanOntology == "MESH") {
-                        $tree = new MeshTree($humanID, false);
-                    } else {
-                        $tree = new OntologyTree($humanOntology, $humanOntLabel, $humanID, false, $mouseOntology);
-                    }
+                    $tree = new OntologyTree($humanOntology, $humanOntLabel, $humanID, false, $mouseOntology);
                     $result["humanTree"] = $tree->getTree();
                 } else {
                     return null;

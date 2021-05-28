@@ -195,11 +195,13 @@ class PhenotypeSearch extends React.Component {
                             freeSolo
                             className={classes.autoComplete}
                             onInputChange={this.retrieveLiveSearch}
+                            defaultValue={this.state.searchInput}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="Phenotype search"
                                     variant="outlined"
+                                    required
                                     helperText={this.state.inputErrorText}
                                     InputProps={{
                                         ...params.InputProps,
