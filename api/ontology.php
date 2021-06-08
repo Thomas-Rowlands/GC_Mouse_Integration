@@ -48,7 +48,7 @@
                     RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt",
                 ["search"=>$search]);
                 }
-
+            
             $matches = [];
             foreach ($result as $row) {
                 $gwas = $row->get("GWAS");
@@ -94,17 +94,16 @@
                     ["search"=>$search, "searchContains"=>" " . $search]);
                 } else {
                     $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
-                        WHERE toLOWER(H.FSN) STARTS WITH {search}
-                        WITH N, M, H
-                        OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-                        WHERE (H:Synonym)
-                        WITH N, M, H, T
-                        OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                        WHERE (N:Synonym)
-                        WITH N, M, H, T, MT
-                        WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0)
-                        RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt
-                        
+                    WHERE toLOWER(H.FSN) STARTS WITH {search}
+                    WITH N, M, H
+                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
+                    WHERE (H:Synonym)
+                    WITH N, M, T
+                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
+                    WHERE (N:Synonym)
+                    WITH N, M, T, MT
+                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND EXISTS(T.id) AND T.gwas_total > 0
+                    RETURN DISTINCT COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, T.id as humanID, T.gwas_total AS GWAS, T.FSN as humanLabel, T.ontology as humanOnt
                         ",
                         ["search"=>$search, "searchContains"=>" " . $search]);
                 }
@@ -244,7 +243,7 @@
             $mappingProperty = $ontLabel == "MP" ? "has" . $mappingOnt . "Mapping" : "hasMPMapping";
             $children = $this->neo->execute("MATCH (n:$ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID}
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
 
             $return_package = [];
@@ -252,7 +251,8 @@
                 $hasMapping = false;
                 if ($child->hasValue("hasMapping"))
                     $hasMapping = $child->get('hasMapping');
-                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasMapping, $child->get('hasChildren'));
+                $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0 ? true : false;
+                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasMapping, $child->get('hasChildren'), $hasData);
                 $return_package[$child->get('id')] = $childNode;
             }
             return $return_package;

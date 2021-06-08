@@ -263,6 +263,10 @@ class PhenotypeResultBreakdown extends React.Component {
         }
     }
 
+    openGenePage(e) {
+        window.open("https://www.mousephenotype.org/data/genes/" + e.target.innerText, "_blank").focus();
+    }
+
     render() {
         const {breakdownData, loading, tabValue, dataTabValue, mappingGraphData} = this.state;
         return (
@@ -305,12 +309,10 @@ class PhenotypeResultBreakdown extends React.Component {
                             </Tabs>
                         </AppBar>
                         <TabPanel value={dataTabValue} index={0}>
-                            {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]}
-                                                          onRowClick={this.gwasStudyClicked}/> : null}
+                            {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]}/> : null}
                         </TabPanel>
                         <TabPanel value={dataTabValue} index={1}>
-                            {breakdownData ? <ResultTable tableData={breakdownData["Gene Knockouts"]}
-                                                          onRowClick={this.experimentClicked}/> : null}
+                            {breakdownData ? <ResultTable cellClickHandlers={{"MGI": this.openGenePage}} tableData={breakdownData["Gene Knockouts"]}/> : null}
                         </TabPanel>
 
                     </TabPanel>

@@ -40,10 +40,14 @@
             $ontology = strtoupper($ontology);
             $result = $neo->execute("MATCH (N:{$ontology})-[r:HAS_SYNONYM]-(S) 
             WHERE N.id = {termID}
-            RETURN ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
+            RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
             $synonyms = [];
+            $usedLabels = [];
             foreach ($result as $row) {
-                array_push($synonyms, ["synonymId" => $row->get("SynonymID"), "synonymLabel" => $row->get("Synonym")]);
+                if (!in_array($row->get("Synonym"), $usedLabels)) {
+                    array_push($synonyms, ["synonymId" => $row->get("SynonymID"), "synonymLabel" => $row->get("Synonym")]);
+                    array_push($usedLabels, $row->get("Synonym"));
+                }
             }
             return $synonyms;
         }

@@ -94,10 +94,7 @@ class PhenotypeSearch extends React.Component {
         this.search();
     }
 
-    searchRowClicked = (row) => {
-        let mouseTerm = $(row.target).attr("data-mouse-term");
-        let humanTerm = $(row.target).attr("data-human-term");
-        let humanOnt = $(row.target).attr("data-human-ont");
+    searchRowClicked = (mouseTerm, humanTerm, humanOnt) => {
         this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
     }
 
@@ -195,7 +192,6 @@ class PhenotypeSearch extends React.Component {
                             freeSolo
                             className={classes.autoComplete}
                             onInputChange={this.retrieveLiveSearch}
-                            defaultValue={this.state.searchInput}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -220,7 +216,7 @@ class PhenotypeSearch extends React.Component {
                                 />
                             )}
                             options={liveSearchResults}
-                            getOptionLabel={(option) => option.FSN ? option.FSN : ""}
+                            getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                             renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                         <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}

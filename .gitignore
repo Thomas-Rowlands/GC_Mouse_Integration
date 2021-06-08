@@ -14,3 +14,5 @@ api/vendor
 package-lock.json
 package-lock.json
 src/Genome/data/
+public/JBrowseData/
+public/images/bootstrap-icons-1.3.0/

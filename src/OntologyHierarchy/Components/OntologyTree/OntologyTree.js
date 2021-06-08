@@ -1,4 +1,4 @@
-import {Button, Paper, withStyles} from "@material-ui/core";
+import {Button, Icon, Paper, SvgIcon, withStyles} from "@material-ui/core";
 import {animated, useSpring} from "react-spring/web.cjs";
 import Collapse from "@material-ui/core/Collapse";
 import PropTypes from "prop-types";
@@ -6,7 +6,6 @@ import React from "react";
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import SearchIcon from '@material-ui/icons/Search';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import StyledTreeItem from "./Components/StyledTreeItem";
 import _ from 'lodash';
@@ -59,6 +58,7 @@ class OntologyTree extends React.Component {
             treeOntology: "",
             onToggle: null,
             onSelect: null,
+            onMappingClick: null,
             onBtnClick: null,
             sourceOntology: "",
             mappingOntology: "",
@@ -70,9 +70,12 @@ class OntologyTree extends React.Component {
     getTreeNodes = (nodes, parentPath) => {
         const {classes} = this.props;
         const btn = nodes.hasMapping ?
-            <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.label)}
+            <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.label)}
                     color="primary" variant="outlined" id={nodes.id}
-            ><SearchIcon fontSize="small"/></Button> : null;
+            ><img width="50px" src={"/images/MappingIcon.svg"}/></Button>
+            : nodes.hasData ? <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
+                    color="primary" variant="outlined" id={nodes.id}
+            ><img width="50px" src={this.props.treeID === "humanTree" ? "/images/GWASDataIcon.svg" : "/images/KnockoutDataIcon.svg"}/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {

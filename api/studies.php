@@ -47,19 +47,31 @@
             array_push($descendants, $termID);
             $result = [];
             $unique_studies = [];
+            $term_string = "";
             foreach ($descendants as $descendant) {
-                $cmd = "CALL gc_mouse.get_gwas_studies_by_term('{$descendant}', 0, 1, 5000)";
-                $gwas = $this->con->execute($cmd, "gc_mouse");
-                if ($gwas) {
-                    $gwas_records = mysqli_fetch_all($gwas, MYSQLI_ASSOC);
-                    foreach ($gwas_records as $record) {
-                        if (!in_array($record["ID"], $unique_studies)) {
-                            array_push($result, $record);
-                            array_push($unique_studies, $record["ID"]);
-                        }
+                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            $cmd = "SELECT DISTINCT(s.Identifier) AS 'ID', s.Title, s.Name
+            FROM GC_study.Study AS s
+              INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
+              INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
+              INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
+              INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
+              INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
+              INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
+              WHERE pa.PhenotypeIdentifier in ($term_string) AND si.NegLogPValue > 0";
+            $gwas = $this->con->execute($cmd, "gc_mouse");
+            if ($gwas) {
+                $gwas_records = mysqli_fetch_all($gwas, MYSQLI_ASSOC);
+                foreach ($gwas_records as $record) {
+                    if (!in_array($record["ID"], $unique_studies)) {
+                        array_push($result, $record);
+                        array_push($unique_studies, $record["ID"]);
                     }
                 }
             }
+            
             if ($result)
                 return $result;
             else
@@ -84,16 +96,31 @@
             $descendants = $ont->get_term_descendants($termID, "MP");
             array_push($descendants, $termID);
             $result = [];
+            $term_string = "";
             foreach ($descendants as $descendant) {
-                $cmd = "CALL gc_mouse.get_mouse_knockouts_by_term('{$descendant}', 0, 1, 5000)";
-                $knockout = $this->con->execute($cmd, "gc_mouse");
-                if ($knockout) {
-                    $knockout_records = mysqli_fetch_all($knockout, MYSQLI_ASSOC);
-                    foreach ($knockout_records as $record) {
-                        array_push($result, $record);
-                    }
+                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            $cmd = "SELECT DISTINCT mg.gene_symbol AS \"Gene\", mm.allele_accession_id AS \"MGI\", e.sex AS \"Sex\", ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS \"-log P-value\", CONCAT(pr.name, \" | \", pa.name) AS \"Procedure Parameter\"
+            FROM experiments AS e
+            INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
+            INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
+            INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
+            INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
+            INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
+            INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
+            INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
+            INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
+            WHERE (mp.mp_term_id in ($term_string) OR mptl.mp_term_id in ($term_string))
+                AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0";
+            $knockout = $this->con->execute($cmd, "gc_mouse");
+            if ($knockout) {
+                $knockout_records = mysqli_fetch_all($knockout, MYSQLI_ASSOC);
+                foreach ($knockout_records as $record) {
+                    array_push($result, $record);
                 }
             }
+            
             if ($result)
                 return $result;
             else

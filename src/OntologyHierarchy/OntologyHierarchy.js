@@ -46,12 +46,13 @@ class OntologyHierarchy extends React.Component {
             selectedHumanNodes: [''],
             selectedSpecies: "Mouse",
             isMappingPresent: false,
+            isDataPresent: false,
             conErrorStatus: false,
             configData: api_server,
             searchInput: "",
             humanLiveSearchResults: [],
             mouseLiveSearchResults: [],
-            humanOntology: "HPO",
+            humanOntology: "MESH",
             mouseSearchInput: "",
             humanSearchInput: ""
         };
@@ -68,6 +69,8 @@ class OntologyHierarchy extends React.Component {
     }
 
     retrieveLiveSearch = (e, x) => {
+        if (!e)
+            return;
         let input = x;
         let ontology = e.target.id === "mouseSearchInput" ? "MP" : this.state.humanOntology;
         if (this.liveCancelToken)
@@ -266,7 +269,7 @@ class OntologyHierarchy extends React.Component {
     }
 
     search = (searchInput, ontology) => {
-        this.setState({loading: true, isMappingPresent: false});
+        this.setState({loading: true, isMappingPresent: false, isDataPresent: false});
         if (searchInput === undefined || searchInput === "") {
             this.getRootTrees(this.state.humanOntology);
             return;
@@ -334,6 +337,7 @@ class OntologyHierarchy extends React.Component {
                         this.setState({
                             treeData: tree,
                             loading: false,
+                            isDataPresent: true,
                             isMappingPresent: true,
                             expandedMouseNodes: expandedMouseNodes,
                             selectedMouseNodes: selectedMouseNodes,
@@ -347,6 +351,7 @@ class OntologyHierarchy extends React.Component {
                     } else {
                         this.setState({
                             loading: false,
+                            isDataPresent: false,
                             isMappingPresent: false,
                             humanSearchFailed: searchOnt !== "MP",
                             mouseSearchFailed: searchOnt === "MP"
@@ -540,7 +545,16 @@ class OntologyHierarchy extends React.Component {
             }, 500);
 
         }
+    }
 
+    getHumanPhenotypeBreakdown = (e) => {
+        this.setState({isDataDataPresent: false, isMappingPresent: false}); //clear breakdown.
+        this.setState({humanID: e, mouseID: null, isDataPresent: true, isMappingPresent: false,});
+    }
+
+    getMousePhenotypeBreakdown = (e) => {
+        this.setState({isDataDataPresent: false, isMappingPresent: false}); //clear breakdown.
+        this.setState({mouseID: e, humanID: null, isDataPresent: true, isMappingPresent: false,});
     }
 
     changeHumanOntology = (e) => {
@@ -551,6 +565,7 @@ class OntologyHierarchy extends React.Component {
             selectedMouseNodes: [''],
             expandedMouseNodes: [''],
             isMappingPresent: false,
+            isDataPresent: false,
         });
         this.getRootTrees(e.target.value);
     }
@@ -622,7 +637,7 @@ class OntologyHierarchy extends React.Component {
                                     />
                                 )}
                                 options={this.state.humanLiveSearchResults}
-                                getOptionLabel={(option) => option.FSN}
+                                getOptionLabel={(option) => option.FSN ? option.FSN : this.state.humanSearchInput}
                                 renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                             <p>Search for terms with mappings to the MP ontology</p>
                             <Button size="large" color="primary" variant="contained" id="search_btn"
@@ -631,7 +646,8 @@ class OntologyHierarchy extends React.Component {
                             {
                                 !humanTree ? null :
                                     <OntologyTree treeID="humanTree" selectedPhenotypeLabel={mappedHumanPhenotype}
-                                                  onBtnClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
+                                                  onMappingClick={this.humanSearchBtnClick} expanded={expandedHumanNodes}
+                                                  onBtnClick={this.getHumanPhenotypeBreakdown}
                                                   selected={selectedHumanNodes} onSelect={this.handleHumanSelect}
                                                   onToggle={this.handleHumanToggle} treeData={humanTree}
                                                   sourceOntology={this.state.humanOntology} mappingOntology="MP"/>
@@ -641,7 +657,7 @@ class OntologyHierarchy extends React.Component {
                     </Grid>
                     <Grid item xs>
                         {
-                            this.state.isMappingPresent ?
+                            this.state.isDataPresent ?
                                 <PhenotypeResultBreakdown mousePhenotype={this.state.treeData.mouseID}
                                                           humanPhenotype={this.state.treeData.humanID}
                                                           humanOntology={this.state.humanOntology}/>
@@ -681,7 +697,7 @@ class OntologyHierarchy extends React.Component {
                                         />
                                     )}
                                     options={this.state.mouseLiveSearchResults}
-                                    getOptionLabel={(option) => option.FSN}
+                                    getOptionLabel={(option) => option.FSN ? option.FSN : this.state.mouseSearchInput}
                                     renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                                 <p>Search for MP terms which map to the selected human ontology.</p>
                                 <Button size="large" color="primary" variant="contained" id="search_btn"
@@ -691,7 +707,8 @@ class OntologyHierarchy extends React.Component {
                             <LoadingSpinner loading={loading}/>
                             {!mouseTree ? null :
                                 <OntologyTree treeID="mouseTree" selectedPhenotypeLabel={mappedMousePhenotype}
-                                              onBtnClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
+                                              onMappingClick={this.mouseSearchBtnClick} expanded={expandedMouseNodes}
+                                              onBtnClick={this.getMousePhenotypeBreakdown}
                                               selected={selectedMouseNodes} onSelect={this.handleMouseSelect}
                                               onToggle={this.handleMouseToggle} treeData={mouseTree}
                                               sourceOntology="MP" mappingOntology="HPO"/>}
