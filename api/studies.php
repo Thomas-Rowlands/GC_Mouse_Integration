@@ -163,7 +163,7 @@
                     } else
                         array_push($humanIDs, $mapping["humanID"]);
                 if (!$skip_duplicate) {
-                    $result = ["Human Ontology"=>$mapping["humanOnt"], "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
+                    $result = ["Human Ontology"=>$mapping["humanOnt"], "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "Human Synonyms"=>$mapping["humanSynonyms"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "Mouse Synonyms"=>$mapping["mouseSynonyms"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
                     array_push($results, $result);
                 }
 

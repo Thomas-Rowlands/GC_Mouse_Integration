@@ -87,8 +87,8 @@
                     
                     UNION
 
-                    MATCH (n:HPO)-[:HAS_SYNONYM*0..1]->(m)
-                        WHERE (toLOWER(n.FSN) STARTS WITH {search} OR toLOWER(m.FSN) STARTS WITH {search} OR toLOWER(n.FSN) CONTAINS {searchContains} OR toLOWER(m.FSN) CONTAINS {searchContains}) AND n.gwas_total > 0 AND EXISTS(n.id)
+                    MATCH (n:".$ont.")-[:HAS_SYNONYM*0..1]->(m)
+                        WHERE (toLOWER(n.FSN) STARTS WITH {search} OR toLOWER(m.FSN) STARTS WITH {search} OR toLOWER(n.FSN) CONTAINS {searchContains} OR toLOWER(m.FSN) CONTAINS {searchContains}) AND n.gwas_total > 0 AND EXISTS(n.id) AND n:Term
                         RETURN null as mouseID, null as mouseLabel, null AS Experiments, null as mouseOnt, null as isExactMatch, n.id as humanID, n.gwas_total AS GWAS, n.FSN as humanLabel, n.ontology as humanOnt
                         ",
                     ["search"=>$search, "searchContains"=>" " . $search]);
@@ -127,10 +127,10 @@
         public function get_term_synonyms($termID, $ontology) {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . $ontology . ")-[r:HAS_SYNONYM]-(S) WHERE N.id = {termID} RETURN ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
+            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} RETURN ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
             $synonyms = [];
             foreach ($result as $row) {
-                array_push($synonyms, ["synonymId" => $row->get("SynonymID"), "synonymLabel" => $row->get("Synonym")]);
+                array_push($synonyms, $row->get("Synonym"));
             }
             return $synonyms;
         }

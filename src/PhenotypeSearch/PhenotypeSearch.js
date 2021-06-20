@@ -171,11 +171,22 @@ class PhenotypeSearch extends React.Component {
         this.setState({selectedSpecies: e.target.value});
     }
 
+    openOntologyTerm = (e) => {
+        let term = e.target.innerText;
+        if (term !== "-")
+            if (term.startsWith("HP:"))
+                window.open("https://hpo.jax.org/app/browse/term/" + term, "_blank").focus();
+            else if (term.startsWith("MP:"))
+                window.open("http://www.informatics.jax.org/vocab/mp_ontology/" + term, "_blank").focus();
+            else if (term.startsWith("D"))
+                window.open("https://meshb.nlm.nih.gov/record/ui?ui=" + term, "_blank").focus();
+    }
+
     displayTable = (tableData) => {
         if (tableData === "No results found.")
             return <p className="center"><br/>{tableData}</p>
         else
-            return <ResultTable isSearchResult={true} tableData={tableData} onRowClick={this.searchRowClicked}/>
+            return <ResultTable hoverDataMap={{"Human Phenotype": "Human Synonyms", "MP Label": "Mouse Synonyms"}} hiddenHeaders={["Human Synonyms", "Mouse Synonyms"]} isSearchResult={true} cellClickHandlers={{"ID": this.openOntologyTerm, "MP ID": this.openOntologyTerm}} tableData={tableData}/>
 
     }
 

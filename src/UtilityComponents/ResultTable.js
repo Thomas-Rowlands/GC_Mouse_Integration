@@ -8,7 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Button, TablePagination, TableSortLabel} from "@material-ui/core";
+import {Button, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
 
 class ResultTable extends React.Component {
 
@@ -23,6 +23,8 @@ class ResultTable extends React.Component {
             order: "asc",
             orderBy: "Gene",
             cellClickHandlers: null,
+            hiddenHeaders: null,
+            hoverDataMap: null,
         }
     }
 
@@ -84,10 +86,6 @@ class ResultTable extends React.Component {
             return null;
     }
 
-    getCellHoverContent = (header) => {
-
-    }
-
     getCellClickHandler = (header) => {
         if (this.props.cellClickHandlers) {
             return this.props.cellClickHandlers[header];
@@ -99,19 +97,55 @@ class ResultTable extends React.Component {
         return (<TableCell align="center" onClick={clickFunc} data-study={row["ID"]}>{row[key]}</TableCell>);
     }
 
+    getCellHoverContent = (row, key) => {
+        if (this.props.hoverDataMap[key]) {
+            let content = row[this.props.hoverDataMap[key]];
+            let tooltipBody = null;
+            if (Array.isArray(content)) {
+                tooltipBody = (
+                    <div>
+                        <div style={{textAlign: "center", fontWeight: "bold"}}>{this.props.hoverDataMap[key]}</div> <br />
+                    {
+                        content.map(syn => {
+                            return <div>-{syn}</div>;
+                        })
+                    }
+                    </div>
+
+                );
+                content = tooltipBody;
+            }
+            return content;
+        } else
+            return null;
+    }
+
     getSearchTableCell = (row, key) => {
         let clickFunc = this.getCellClickHandler(key);
-        console.log(key);
-        return (<TableCell align="center"
+        let hoverText = this.getCellHoverContent(row, key);
+        if (hoverText)
+            return (
+                <Tooltip title={hoverText} arrow>
+                    <TableCell align="center"
+                               onClick={clickFunc}
+                               data-human-ont={row["Human Ontology"]}
+                               data-human-term={row["ID"]}
+                               data-mouse-term={row["MP ID"]}>{row[key] || row[key] === 0 ? row[key] : "-"}</TableCell>
+                </Tooltip>
+            );
+        else
+            return (
+                <TableCell align="center"
                            onClick={clickFunc}
                            data-human-ont={row["Human Ontology"]}
                            data-human-term={row["ID"]}
-                           data-mouse-term={row["MP ID"]}>{row[key] || row[key] === 0 ? row[key] : "-"}</TableCell>);
+                           data-mouse-term={row["MP ID"]}>{row[key] || row[key] === 0 ? row[key] : "-"}</TableCell>
+            );
     }
 
     render() {
         const paddingHeaders = ["Gene", "Procedure Parameter", "Sex"];
-
+        let hiddenHeaders = this.props.hiddenHeaders || [];
         if (typeof this.props.tableData != "undefined" && this.props.tableData !== null)
             if (this.props.tableData.length > 0) {
                 return (<div className="container">
@@ -120,16 +154,17 @@ class ResultTable extends React.Component {
                                 <TableHead>
                                     <TableRow>
                                         {Object.keys(this.props.tableData[0]).map((header, index) => {
-                                            return (<TableCell align="center"
-                                                               padding={paddingHeaders.includes(header) ? "none" : "default"}
-                                                               sortDirection={this.state.orderBy === header ? this.state.order : false}
-                                                               key={index}
-                                                               onClick={() => this.handleRequestSort(header)}>{header}
-                                                <TableSortLabel active={this.state.orderBy === header}
-                                                                direction={this.state.orderBy === header ? this.state.order : "asc"}
-                                                                onClick={() => this.handleRequestSort(header)}>
-                                                </TableSortLabel>
-                                            </TableCell>)
+                                            if (!hiddenHeaders.includes(header))
+                                                return (<TableCell align="center"
+                                                                   padding={paddingHeaders.includes(header) ? "none" : "default"}
+                                                                   sortDirection={this.state.orderBy === header ? this.state.order : false}
+                                                                   key={index}
+                                                                   onClick={() => this.handleRequestSort(header)}>{header}
+                                                    <TableSortLabel active={this.state.orderBy === header}
+                                                                    direction={this.state.orderBy === header ? this.state.order : "asc"}
+                                                                    onClick={() => this.handleRequestSort(header)}>
+                                                    </TableSortLabel>
+                                                </TableCell>)
                                         })}
                                         {this.viewButtonHeader()}
 
@@ -144,7 +179,8 @@ class ResultTable extends React.Component {
                                                           data-human-term={row["ID"]} data-mouse-term={row["MP ID"]}
                                                           key={index}>
                                                     {Object.keys(row).map((key) => {
-                                                        return this.getSearchTableCell(row, key);
+                                                        if (!hiddenHeaders.includes(key))
+                                                            return this.getSearchTableCell(row, key);
                                                     })}<TableCell align="center"><Button size="small" color="primary"
                                                                                          variant="contained"
                                                                                          data-human-ont={row["Human Ontology"]}
@@ -154,9 +190,10 @@ class ResultTable extends React.Component {
                                                 </TableRow>)
                                         else
                                             return (
-                                                <TableRow data-study={row["ID"]} key={index} >
+                                                <TableRow data-study={row["ID"]} key={index}>
                                                     {Object.keys(row).map((key) => {
-                                                        return this.getTableCell(row, key);
+                                                        if (!hiddenHeaders.includes(key))
+                                                            return this.getTableCell(row, key);
                                                     })}
                                                 </TableRow>
                                             )

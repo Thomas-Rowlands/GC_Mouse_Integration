@@ -166,7 +166,7 @@ class CacheBuilder:
 def main():
     cache_builder = CacheBuilder()
     print("Connections established...")
-    #cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
+    cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
     print("Processing HPO terms...")
     hpo_terms = cache_builder.get_ontology_terms("HPO")
     for term in hpo_terms:

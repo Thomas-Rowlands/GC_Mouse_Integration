@@ -80,6 +80,7 @@ class PhenotypeResultBreakdown extends React.Component {
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
+                        let dataTabValue = response.data["GWAS Studies"].length > 0 ? 0 : 1;
                         // graph payload (with minimalist structure)
                         if (!Array.isArray(response.data["Mappings"])) {
                             let humanTermCoords = [50, 214];
@@ -167,9 +168,9 @@ class PhenotypeResultBreakdown extends React.Component {
                                     data.links.push(link);
                                 }
                             }
-                            this.setState({breakdownData: response.data, loading: false, mappingGraphData: data});
+                            this.setState({breakdownData: response.data, dataTabValue: dataTabValue, loading: false, mappingGraphData: data});
                         } else {
-                            this.setState({breakdownData: response.data, loading: false, mappingGraphData: null});
+                            this.setState({breakdownData: response.data, dataTabValue: dataTabValue, loading: false, mappingGraphData: null});
                         }
                     } else {
                         this.setState({breakdownData: null, loading: false, mappingGraphData: null});
