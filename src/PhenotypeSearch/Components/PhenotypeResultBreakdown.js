@@ -4,11 +4,43 @@ import ResultTable from "../../UtilityComponents/ResultTable";
 import $ from "jquery";
 import axios from "axios";
 import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
-import {AppBar, Button, Grid, Paper, Tab, Tabs} from "@material-ui/core";
+import {
+    AppBar,
+    Button,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    Tab,
+    Tabs,
+    withStyles
+} from "@material-ui/core";
 import TabPanel from "../../UtilityComponents/TabPanel";
 import api_server from "../../UtilityComponents/ConfigData";
 import {Graph} from "react-d3-graph";
 import _ from "lodash";
+
+const useStyles = theme => ({
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+    autoComplete: {
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto",
+    },
+    radio: {
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
+});
 
 class PhenotypeResultBreakdown extends React.Component {
 // the graph configuration, just override the ones you need
@@ -53,6 +85,8 @@ class PhenotypeResultBreakdown extends React.Component {
             mappingGraphData: null,
             mappingGraphConfig: null,
             humanOntology: "",
+            mousePval: 0,
+            humanPval: 0,
         };
     }
 
@@ -168,9 +202,19 @@ class PhenotypeResultBreakdown extends React.Component {
                                     data.links.push(link);
                                 }
                             }
-                            this.setState({breakdownData: response.data, dataTabValue: dataTabValue, loading: false, mappingGraphData: data});
+                            this.setState({
+                                breakdownData: response.data,
+                                dataTabValue: dataTabValue,
+                                loading: false,
+                                mappingGraphData: data
+                            });
                         } else {
-                            this.setState({breakdownData: response.data, dataTabValue: dataTabValue, loading: false, mappingGraphData: null});
+                            this.setState({
+                                breakdownData: response.data,
+                                dataTabValue: dataTabValue,
+                                loading: false,
+                                mappingGraphData: null
+                            });
                         }
                     } else {
                         this.setState({breakdownData: null, loading: false, mappingGraphData: null});
@@ -280,8 +324,39 @@ class PhenotypeResultBreakdown extends React.Component {
         window.open("https://web.mousephenotype.org/impress/OntologyInfo?procID=" + procedure_key + "#" + parameter_key, "_blank").focus();
     }
 
+    humanPValChanged = (e) => {
+        this.setState({humanPval: e.target.value});
+    }
+
+    mousePValChanged = (e) => {
+        this.setState({mousePval: e.target.value});
+    }
+
+    getExperimentData() {
+        let data = this.state.breakdownData["Gene Knockouts"];
+        let pval = this.state.mousePval;
+        let filtered = [];
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]["-log P-value"] >= pval)
+                filtered.push(data[i]);
+        }
+        return filtered;
+    }
+
+    getGWASData() {
+        let data = this.state.breakdownData["GWAS Studies"];
+        let pval = this.state.mousePval;
+        let filtered = [];
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]["-log P-value"] >= pval)
+                filtered.push(data[i]);
+        }
+        return filtered;
+    }
+
     render() {
         const {breakdownData, loading, tabValue, dataTabValue, mappingGraphData} = this.state;
+        const {classes} = this.props;
         return (
             <Paper id="phenotypeResultsContainer" className="container">
                 <LoadingSpinner loading={loading}/>
@@ -322,101 +397,152 @@ class PhenotypeResultBreakdown extends React.Component {
                             </Tabs>
                         </AppBar>
                         <TabPanel value={dataTabValue} index={0}>
-                            {breakdownData ? <ResultTable cellClickHandlers={{"ID": this.get}} tableData={breakdownData["GWAS Studies"]}/> : null}
+                            <div style={{width: "100%"}}>
+                                <FormControl style={{marginLeft:"44%"}} className={classes.formControl} onChange={this.humanPValChanged}>
+                                    <InputLabel shrink>Human P-value</InputLabel>
+                                    <Select value={this.state.humanPval} className={classes.selectEmpty}
+                                            id="human_pval_select"
+                                            onChange={this.humanPValChanged}>
+                                        <MenuItem value={0}>0</MenuItem>
+                                        <MenuItem value={1}>1</MenuItem>
+                                        <MenuItem value={2}>2</MenuItem>
+                                        <MenuItem value={3}>3</MenuItem>
+                                        <MenuItem value={4}>4</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                        <MenuItem value={6}>6</MenuItem>
+                                        <MenuItem value={7}>7</MenuItem>
+                                        <MenuItem value={8}>8</MenuItem>
+                                        <MenuItem value={9}>9</MenuItem>
+                                        <MenuItem value={10}>10</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+
+                            {breakdownData ? <ResultTable cellClickHandlers={{"ID": this.get}}
+                                                          tableData={this.getGWASData()}/> : null}
                         </TabPanel>
                         <TabPanel value={dataTabValue} index={1}>
-                            {breakdownData ? <ResultTable orderBy={"Gene"} cellClickHandlers={{"Gene": this.openGenePage, "Procedure": this.openProcedurePage, "Parameter": this.openParameterPage}} dataHeaders={{"Gene": "Gene Key", "Parameter": "Parameter Key", "Procedure": "Procedure Key"}} hiddenHeaders={["Procedure Key", "Parameter Key", "Gene Key"]} tableData={breakdownData["Gene Knockouts"]}/> : null}
+                            <div style={{width:"100%"}}>
+                                <FormControl style={{marginLeft:"44%"}} className={classes.formControl}>
+                                    <InputLabel shrink>Mouse P-value</InputLabel>
+                                    <Select value={this.state.mousePval} className={classes.selectEmpty} id="select"
+                                            onChange={this.mousePValChanged}>
+                                        <MenuItem value={0}>0</MenuItem>
+                                        <MenuItem value={1}>1</MenuItem>
+                                        <MenuItem value={2}>2</MenuItem>
+                                        <MenuItem value={3}>3</MenuItem>
+                                        <MenuItem value={4}>4</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                        <MenuItem value={6}>6</MenuItem>
+                                        <MenuItem value={7}>7</MenuItem>
+                                        <MenuItem value={8}>8</MenuItem>
+                                        <MenuItem value={9}>9</MenuItem>
+                                        <MenuItem value={10}>10</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+
+                            {breakdownData ? <ResultTable orderBy={"Gene"} cellClickHandlers={{
+                                "Gene": this.openGenePage,
+                                "Procedure": this.openProcedurePage,
+                                "Parameter": this.openParameterPage
+                            }} dataHeaders={{
+                                "Gene": "Gene Key",
+                                "Parameter": "Parameter Key",
+                                "Procedure": "Procedure Key"
+                            }} hiddenHeaders={["Procedure Key", "Parameter Key", "Gene Key"]}
+                                                          tableData={this.getExperimentData()}/> : null}
                         </TabPanel>
                     </TabPanel>
                     <TabPanel value={tabValue} index={1}>
                         {
                             breakdownData && !Array.isArray(breakdownData["Mappings"]) ? (<div>
-                                                            <Grid container>
-                                <Grid item xs>
-                                    <h4 className="center">Homo Sapiens</h4>
-                                </Grid>
-                                <Grid item xs>
-                                    <h4 className="center">Mus Musculus</h4>
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>ID</p>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <p id="HPO-Matched-Term">{this.getHumanTermID(breakdownData)}</p>
-                                </Grid>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>ID</p>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
-                                </Grid>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>Term</p>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
-                                </Grid>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>Term</p>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
-                                </Grid>
+                                    <Grid container>
+                                        <Grid item xs>
+                                            <h4 className="center">Homo Sapiens</h4>
+                                        </Grid>
+                                        <Grid item xs>
+                                            <h4 className="center">Mus Musculus</h4>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>ID</p>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <p id="HPO-Matched-Term">{this.getHumanTermID(breakdownData)}</p>
+                                        </Grid>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>ID</p>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <p id="MP-Matched-Term">{this.getMouseTermID(breakdownData)}</p>
+                                        </Grid>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>Term</p>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <p id="HPO-Matched-Term">{this.getHumanTerm(breakdownData)}</p>
+                                        </Grid>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>Term</p>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <p id="MP-Matched-Term">{this.getMouseTerm(breakdownData)}</p>
+                                        </Grid>
 
-                            </Grid>
-                            <Grid container>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>Synonyms</p>
-                                </Grid>
-                                <Grid item xs={3} className="col">
-                                    <ul>
-                                        {this.getHumanSynonyms(breakdownData)}
-                                    </ul>
-                                </Grid>
-                                <Grid item xs={3} className="col highlight">
-                                    <p>Synonyms</p>
-                                </Grid>
-                                <Grid item xs={3} className="col">
-                                    <ul>
-                                        {this.getMouseSynonyms(breakdownData)}
-                                    </ul>
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid item xs={3} className="col">
-                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="5" r="10px" fill="red"/>
-                                    </svg>
-                                    {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
-                                </Grid>
-                                <Grid item xs={3} className="col">
-                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="5" r="10px" fill="blue"/>
-                                    </svg>
-                                    {" MP Term"}
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid item xs={3} className="col">
-                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="5" r="10px" fill="orange"/>
-                                    </svg>
-                                    {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
-                                </Grid>
-                                <Grid item xs={3} className="col">
-                                    <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="5" r="10px" fill="lightblue"/>
-                                    </svg>
-                                    {" MP Synonym"}
-                                </Grid>
-                            </Grid>
-                            <Graph
-                                id="graph-id" // id is mandatory
-                                data={mappingGraphData}
-                                config={this.myConfig}
-                                />
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>Synonyms</p>
+                                        </Grid>
+                                        <Grid item xs={3} className="col">
+                                            <ul>
+                                                {this.getHumanSynonyms(breakdownData)}
+                                            </ul>
+                                        </Grid>
+                                        <Grid item xs={3} className="col highlight">
+                                            <p>Synonyms</p>
+                                        </Grid>
+                                        <Grid item xs={3} className="col">
+                                            <ul>
+                                                {this.getMouseSynonyms(breakdownData)}
+                                            </ul>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={3} className="col">
+                                            <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="5" cy="5" r="10px" fill="red"/>
+                                            </svg>
+                                            {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
+                                        </Grid>
+                                        <Grid item xs={3} className="col">
+                                            <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="5" cy="5" r="10px" fill="blue"/>
+                                            </svg>
+                                            {" MP Term"}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={3} className="col">
+                                            <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="5" cy="5" r="10px" fill="orange"/>
+                                            </svg>
+                                            {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
+                                        </Grid>
+                                        <Grid item xs={3} className="col">
+                                            <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="5" cy="5" r="10px" fill="lightblue"/>
+                                            </svg>
+                                            {" MP Synonym"}
+                                        </Grid>
+                                    </Grid>
+                                    <Graph
+                                        id="graph-id" // id is mandatory
+                                        data={mappingGraphData}
+                                        config={this.myConfig}
+                                    />
                                 </div>
                             ) : <p>No mappings identified.</p>
                         }
@@ -428,4 +554,4 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 }
 
-export default PhenotypeResultBreakdown;
+export default withStyles(useStyles)(PhenotypeResultBreakdown);
