@@ -264,8 +264,20 @@ class PhenotypeResultBreakdown extends React.Component {
         }
     }
 
-    openGenePage(e) {
-        window.open("https://www.mousephenotype.org/data/genes/" + e.target.innerText, "_blank").focus();
+    openGenePage(gene_key) {
+        gene_key = gene_key.currentTarget.getAttribute("data-link");
+        window.open("https://www.mousephenotype.org/data/genes/" + gene_key, "_blank").focus();
+    }
+
+    openProcedurePage(procedure_key) {
+        procedure_key = procedure_key.currentTarget.getAttribute("data-link");
+        window.open("https://web.mousephenotype.org/impress/ProcedureInfo?procID=" + procedure_key, "_blank").focus();
+    }
+
+    openParameterPage(parameter_key) {
+        let procedure_key = parameter_key.currentTarget.previousSibling.getAttribute("data-link");
+        parameter_key = parameter_key.currentTarget.getAttribute("data-link");
+        window.open("https://web.mousephenotype.org/impress/OntologyInfo?procID=" + procedure_key + "#" + parameter_key, "_blank").focus();
     }
 
     render() {
@@ -310,12 +322,11 @@ class PhenotypeResultBreakdown extends React.Component {
                             </Tabs>
                         </AppBar>
                         <TabPanel value={dataTabValue} index={0}>
-                            {breakdownData ? <ResultTable tableData={breakdownData["GWAS Studies"]}/> : null}
+                            {breakdownData ? <ResultTable cellClickHandlers={{"ID": this.get}} tableData={breakdownData["GWAS Studies"]}/> : null}
                         </TabPanel>
                         <TabPanel value={dataTabValue} index={1}>
-                            {breakdownData ? <ResultTable cellClickHandlers={{"MGI": this.openGenePage}} tableData={breakdownData["Gene Knockouts"]}/> : null}
+                            {breakdownData ? <ResultTable orderBy={"Gene"} cellClickHandlers={{"Gene": this.openGenePage, "Procedure": this.openProcedurePage, "Parameter": this.openParameterPage}} dataHeaders={{"Gene": "Gene Key", "Parameter": "Parameter Key", "Procedure": "Procedure Key"}} hiddenHeaders={["Procedure Key", "Parameter Key", "Gene Key"]} tableData={breakdownData["Gene Knockouts"]}/> : null}
                         </TabPanel>
-
                     </TabPanel>
                     <TabPanel value={tabValue} index={1}>
                         {

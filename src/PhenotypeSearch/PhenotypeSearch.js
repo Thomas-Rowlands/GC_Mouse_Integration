@@ -94,7 +94,7 @@ class PhenotypeSearch extends React.Component {
         this.search();
     }
 
-    searchRowClicked = (mouseTerm, humanTerm, humanOnt) => {
+    viewBtnClicked = (mouseTerm, humanTerm, humanOnt) => {
         this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
     }
 
@@ -183,10 +183,11 @@ class PhenotypeSearch extends React.Component {
     }
 
     displayTable = (tableData) => {
+        let orderBy = this.state.selectedSpecies === "Human" ? "GWAS Studies" : "Mouse Knockouts";
         if (tableData === "No results found.")
             return <p className="center"><br/>{tableData}</p>
         else
-            return <ResultTable hoverDataMap={{"Human Phenotype": "Human Synonyms", "MP Label": "Mouse Synonyms"}} hiddenHeaders={["Human Synonyms", "Mouse Synonyms"]} isSearchResult={true} cellClickHandlers={{"ID": this.openOntologyTerm, "MP ID": this.openOntologyTerm}} tableData={tableData}/>
+            return <ResultTable order={"desc"} orderBy={orderBy} hoverDataMap={{"Human Phenotype": "Human Synonyms", "MP Label": "Mouse Synonyms"}} viewBtnClicked={this.viewBtnClicked} hiddenHeaders={["Human Synonyms", "Mouse Synonyms", "Procedure Key", "Parameter Key"]} isSearchResult={true} cellClickHandlers={{"ID": this.openOntologyTerm, "MP ID": this.openOntologyTerm}} tableData={tableData}/>
 
     }
 

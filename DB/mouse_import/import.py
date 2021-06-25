@@ -52,6 +52,7 @@ if __name__ == '__main__':
     # else:
     #     load_ensemble_orthology("mart_export.txt")
     #
-    IMPC.begin_import()
+    # IMPC.begin_import()
+    IMPC.update_marker_keys()
     print("done!")
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

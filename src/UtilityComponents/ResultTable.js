@@ -25,6 +25,7 @@ class ResultTable extends React.Component {
             cellClickHandlers: null,
             hiddenHeaders: null,
             hoverDataMap: null,
+            dataHeaders: null,
         }
     }
 
@@ -94,7 +95,11 @@ class ResultTable extends React.Component {
 
     getTableCell = (row, key) => {
         let clickFunc = this.getCellClickHandler(key);
-        return (<TableCell align="center" onClick={clickFunc} data-study={row["ID"]}>{row[key]}</TableCell>);
+        let dataLink = this.props.dataHeaders ? row[this.props.dataHeaders[key]] : null
+        if (dataLink)
+            return (<TableCell align="center" data-link={dataLink} onClick={clickFunc} data-study={row["ID"]} style={{textDecoration: 'underline blue'}}>{row[key]}</TableCell>);
+        else
+            return (<TableCell align="center" data-study={row["ID"]} style={{textDecoration: 'none'}}>{row[key]}</TableCell>);
     }
 
     getCellHoverContent = (row, key) => {
@@ -157,11 +162,11 @@ class ResultTable extends React.Component {
                                             if (!hiddenHeaders.includes(header))
                                                 return (<TableCell align="center"
                                                                    padding={paddingHeaders.includes(header) ? "none" : "default"}
-                                                                   sortDirection={this.state.orderBy === header ? this.state.order : false}
+                                                                   sortDirection={this.state.orderBy === header ? this.props.order : false}
                                                                    key={index}
                                                                    onClick={() => this.handleRequestSort(header)}>{header}
-                                                    <TableSortLabel active={this.state.orderBy === header}
-                                                                    direction={this.state.orderBy === header ? this.state.order : "asc"}
+                                                    <TableSortLabel active={this.props.orderBy === header}
+                                                                    direction={this.props.orderBy === header ? this.props.order : "asc"}
                                                                     onClick={() => this.handleRequestSort(header)}>
                                                     </TableSortLabel>
                                                 </TableCell>)
@@ -186,7 +191,7 @@ class ResultTable extends React.Component {
                                                                                          data-human-ont={row["Human Ontology"]}
                                                                                          data-human-term={row["ID"]}
                                                                                          data-mouse-term={row["MP ID"]}
-                                                                                         onClick={() => this.props.onRowClick(row["MP ID"], row["ID"], row["Human Ontology"])}>View</Button></TableCell>
+                                                                                         onClick={() => this.props.viewBtnClicked ? this.props.viewBtnClicked(row["MP ID"], row["ID"], row["Human Ontology"]) : null}>View</Button></TableCell>
                                                 </TableRow>)
                                         else
                                             return (

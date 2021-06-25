@@ -16,6 +16,16 @@ def begin_import():
             input_impc_data([row])
 
 
+def update_marker_keys():
+    con = mysql.connector.connect(user=config.username, password=config.password, host=config.host,
+                                  database=config.mouse_db)
+    cursor = con.cursor()
+    with open(config.impc_file) as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            DB.update_marker_keys([row["marker_symbol"], row["marker_accession_id"]], cursor=cursor, con=con)
+
+
 def input_impc_data(data):
     """
     Inserts IMPC data into the configured MySQL database.
@@ -74,7 +84,8 @@ def input_impc_data(data):
               primary_key="phenotyping_center_id", cursor=cursor, con=con, unique_cols=phenotyping_center_keys)
     # Import experiments
     # TODO: Sort out the possible multi-value cell cases (e.g. phenotypes)
-    experiment_keys = ["male_mutant_count", "female_mutant_count", "marker_symbol", "zygosity", "p_value", "pipeline_name",
+    experiment_keys = ["male_mutant_count", "female_mutant_count", "marker_symbol", "zygosity", "p_value",
+                       "pipeline_name",
                        "procedure_name", "procedure_stable_key", "parameter_stable_key", "parameter_name",
                        "phenotyping_center", "mp_term_name", "top_level_mp_term_name"]
     experiments = {experiment_key: [x[experiment_key] for x in data] for experiment_key in experiment_keys}

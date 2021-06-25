@@ -101,7 +101,8 @@
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT mg.gene_symbol AS \"Gene\", mm.allele_accession_id AS \"MGI\", e.sex AS \"Sex\", ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS \"-log P-value\", CONCAT(pr.name, \" | \", pa.name) AS \"Procedure Parameter\"
+            $cmd = "SELECT DISTINCT mg.gene_symbol AS \"Gene\", mm.marker_accession_id AS \"Gene Key\", e.male_count AS \"Males\", e.female_count AS \"Females\", ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS \"-log P-value\", pr.name AS \"Procedure\", pa.name AS \"Parameter\",
+            expa.parameter_stable_key AS \"Parameter Key\", expr.procedure_stable_key AS \"Procedure Key\"
             FROM experiments AS e
             INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
             INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
@@ -110,7 +111,9 @@
             INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
             INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
             INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
+            INNER JOIN experiment_parameter AS expa ON expa.experiment_id = e.experiments_id
             INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
+            INNER JOIN experiment_procedure AS expr ON expr.experiment_id = e.experiments_id
             WHERE (mp.mp_term_id in ($term_string) OR mptl.mp_term_id in ($term_string))
                 AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0";
             $knockout = $this->con->execute($cmd, "gc_mouse");
@@ -137,11 +140,11 @@
             
             $ont = new Ontology();
             if (strtolower($species) == "mouse") {
-                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true);
-                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH", true);
+                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH", true, $human_pval, $mouse_pval);
             } else {
-                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true);
-                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH", true);
+                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH", true, $human_pval, $mouse_pval);
             }
             $mapped_terms = array_merge($mapped_hpo_terms, $mapped_mesh_terms);
             $results = [];

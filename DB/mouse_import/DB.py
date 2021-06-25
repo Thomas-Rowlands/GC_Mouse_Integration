@@ -134,14 +134,15 @@ def insert_experiment(data, cursor, con):
             sys.exit("Database does not exist")
         else:
             print(err)
-            #sys.exit(cursor.statement)  # Ignore warning, it IS actually in scope.
+            # sys.exit(cursor.statement)  # Ignore warning, it IS actually in scope.
     except IndexError as err:
         print("Index error: Reached the end of clean data. Only rows with missing values remaining.")
 
 
 def insert_human_markers(data):
     try:
-        con = mysql.connector.connect(user=config.username, password=config.password, host=config.host, database=config.mouse_db)
+        con = mysql.connector.connect(user=config.username, password=config.password, host=config.host,
+                                      database=config.mouse_db)
         cursor = con.cursor()
         for i in range(len(data)):
             symbol = data[i]
@@ -188,6 +189,22 @@ def insert_homolog_links(human_markers, mouse_markers):
         else:
             cursor.close()
             con.close()
+
+
+def update_marker_keys(data, cursor, con):
+    try:
+        marker_symbol = data[0]
+        marker_accession = data[1]
+        query = "UPDATE mouse_markers SET marker_accession_id = '" + marker_accession + "' WHERE marker_symbol = '" + marker_symbol + "'"
+        cursor.execute(query)
+        con.commit()
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            sys.exit("Access denied")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            sys.exit("Database does not exist")
+        else:
+            print(err)
 
 
 def __filter_duplicate_values(input, unique_keys):
