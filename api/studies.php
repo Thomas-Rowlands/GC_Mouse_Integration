@@ -53,11 +53,11 @@
             }
             $term_string = rtrim($term_string, ",");
             $cmd = "SELECT DISTINCT(s.Identifier) AS 'ID', s.Title, s.Name
-            FROM GC_study.Study AS s
-              INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
-              INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
-              INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
-              INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
+            FROM gc_study.study AS s
+              INNER JOIN GC_study.experiment AS e ON e.StudyID = s.StudyID
+              INNER JOIN GC_study.phenotypemethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
+              INNER JOIN GC_study.pppa AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
+              INNER JOIN GC_study.phenotypeannotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
               INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
               INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
               WHERE pa.PhenotypeIdentifier in ($term_string) AND si.NegLogPValue > 0";

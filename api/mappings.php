@@ -2,10 +2,7 @@
     class Mapper {
 
         public static function getMappings($mouseID, $humanID, $ontology, $neo) {
-            $result = null;
-
-                // $result = $this->neo->execute("MATCH (N)-[M:LOOM_MAPPING]->(H) WHERE N.id = \"{$termID}\" RETURN N.id as mouseID, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, M.is_synonym_match as isSynonymMatch, H.id as humanID, H.FSN as humanLabel, H.ontology as humanOnt");
-                $result = $neo->execute("MATCH (mouseTerm:MP)-[:HAS_SYNONYM*0..]->(mouseSyn)
+            $result = $neo->execute("MATCH (mouseTerm:MP)-[:HAS_SYNONYM*0..]->(mouseSyn)
                 WHERE mouseTerm.id = {mouseID}
                 WITH mouseTerm, COLLECT(mouseSyn) AS mouseSyns
             MATCH (humanTerm:" . $ontology . ")-[:HAS_SYNONYM*0..]->(humanSyn)

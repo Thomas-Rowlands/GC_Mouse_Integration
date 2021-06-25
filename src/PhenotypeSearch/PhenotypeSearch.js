@@ -65,6 +65,7 @@ class PhenotypeSearch extends React.Component {
             searchInput: "",
             configData: api_server,
             displayError: false,
+            tableOrder: ""
         };
         this.page_num = 1;
         this.liveCancelToken = null;
@@ -137,7 +138,8 @@ class PhenotypeSearch extends React.Component {
             this.setState({displayError: true});
             return;
         }
-        this.setState({loading: true, displayError: false});
+        let ordering = this.state.selectedSpecies === "Human" ? "GWAS Studies" : "Mouse Knockouts";
+        this.setState({loading: true, displayError: false, tableData: null, tableOrder: ordering});
         let human_pval = this.state.humanPval;
         let mouse_pval = this.state.mousePval;
         let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
@@ -183,7 +185,7 @@ class PhenotypeSearch extends React.Component {
     }
 
     displayTable = (tableData) => {
-        let orderBy = this.state.selectedSpecies === "Human" ? "GWAS Studies" : "Mouse Knockouts";
+        let orderBy = this.state.tableOrder;
         if (tableData === "No results found.")
             return <p className="center"><br/>{tableData}</p>
         else

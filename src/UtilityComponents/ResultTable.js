@@ -20,8 +20,8 @@ class ResultTable extends React.Component {
             onCellClick: null,
             rowsPerPage: 10,
             page: 0,
-            order: "asc",
-            orderBy: "Gene",
+            order: this.props.order ? this.props.order : "asc",
+            orderBy: this.props.orderBy ? this.props.orderBy : "Gene",
             cellClickHandlers: null,
             hiddenHeaders: null,
             hoverDataMap: null,
@@ -162,11 +162,11 @@ class ResultTable extends React.Component {
                                             if (!hiddenHeaders.includes(header))
                                                 return (<TableCell align="center"
                                                                    padding={paddingHeaders.includes(header) ? "none" : "default"}
-                                                                   sortDirection={this.state.orderBy === header ? this.props.order : false}
+                                                                   sortDirection={this.state.orderBy === header ? this.state.order : false}
                                                                    key={index}
                                                                    onClick={() => this.handleRequestSort(header)}>{header}
-                                                    <TableSortLabel active={this.props.orderBy === header}
-                                                                    direction={this.props.orderBy === header ? this.props.order : "asc"}
+                                                    <TableSortLabel active={this.state.orderBy === header}
+                                                                    direction={this.state.orderBy === header ? this.state.order : "asc"}
                                                                     onClick={() => this.handleRequestSort(header)}>
                                                     </TableSortLabel>
                                                 </TableCell>)
