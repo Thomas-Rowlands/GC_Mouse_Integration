@@ -345,7 +345,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getGWASData() {
         let data = this.state.breakdownData["GWAS Studies"];
-        let pval = this.state.mousePval;
+        let pval = this.state.humanPval;
         let filtered = [];
         for (var i = 0; i < data.length; i++) {
             if (data[i]["-log P-value"] >= pval)

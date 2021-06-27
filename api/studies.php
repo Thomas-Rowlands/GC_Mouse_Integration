@@ -52,30 +52,15 @@
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT(s.Identifier) AS 'ID', s.Title, s.Name
-            FROM gc_study.study AS s
-              INNER JOIN GC_study.experiment AS e ON e.StudyID = s.StudyID
-              INNER JOIN GC_study.phenotypemethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
-              INNER JOIN GC_study.pppa AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
-              INNER JOIN GC_study.phenotypeannotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
-              INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
-              INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
-              WHERE pa.PhenotypeIdentifier in ($term_string) AND si.NegLogPValue > 0";
-            $gwas = $this->con->execute($cmd, "gc_mouse");
-            if ($gwas) {
-                $gwas_records = mysqli_fetch_all($gwas, MYSQLI_ASSOC);
-                foreach ($gwas_records as $record) {
-                    if (!in_array($record["ID"], $unique_studies)) {
-                        array_push($result, $record);
-                        array_push($unique_studies, $record["ID"]);
-                    }
-                }
-            }
-            
+            $result = $this->neo->execute("MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n:" . $ontology . ")
+            WHERE n.id in [" . $term_string . "]
+            RETURN DISTINCT s.id AS id, s.Name AS name, MAX(g.value) AS p_value", []);
+            $studies = [];
             if ($result)
-                return $result;
-            else
-                return [];
+                foreach ($result as $row) {
+                    array_push($studies, ["id"=>$row->get("id"), "name"=>$row->get("name"), "-log P-value"=>$row->get("p_value")]);
+                }
+            return $studies;
         }
 
         public function get_mesh_id_from_db($termID) {
