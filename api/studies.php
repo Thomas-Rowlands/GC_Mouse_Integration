@@ -46,7 +46,6 @@
             $descendants = $ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
             $result = [];
-            $unique_studies = [];
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
