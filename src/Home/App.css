@@ -4,6 +4,10 @@ html, body, .App{
     font-family: "Trebuchet MS", serif;
 }
 
+.App{
+    margin-top: 5em;
+}
+
 #subdocument-iframe {
     width: 100%;
     height: 100%;

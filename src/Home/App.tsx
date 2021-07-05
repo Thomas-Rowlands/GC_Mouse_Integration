@@ -1,6 +1,7 @@
 import React from 'react';
-import './App.css';
 import './gwascentral.css';
+import './App.css';
+
 // @ts-ignore
 import Home from "./Home.js";
 // @ts-ignore
@@ -12,8 +13,9 @@ import OntologyHierarchy from "../OntologyHierarchy/OntologyHierarchy";
 import Genome from "../Genome/Genome";
 
 function App() {
-    return (<div className="App">
-            <header className="App-header">
+    return (
+        <div>
+                        <header className="App-header">
                 <div style={{width: "100%"}}>
                     <img src="/images/gwas-central-logo.png" alt=""
                          style={{
@@ -147,6 +149,7 @@ function App() {
                     </div>
                 </div>
             </header>
+            <div className="App">
             <HashRouter>
                 <Switch>
                     <Route exact path="/">
@@ -164,6 +167,8 @@ function App() {
                 </Switch>
             </HashRouter>
         </div>
+        </div>
+
     );
 }
 

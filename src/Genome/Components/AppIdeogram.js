@@ -1,18 +1,21 @@
 import React, {Component} from "react";
 import Ideogram from "ideogram";
+import './AppIdeogram.css'
 
 class AppIdeogram extends Component {
 
   componentDidMount() {
     return new Ideogram({
-      organism: 'human',
-      container: '#ideo-container'
+      organism: this.props.organism,
+      container: '#ideo-container',
+      chrHeight:600,
+      chrWidth:15
     });
   }
 
   render() {
     return (
-      <div id="ideo-container"></div>
+      <div id="ideo-container"/>
     );
   }
 }
