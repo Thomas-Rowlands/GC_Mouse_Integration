@@ -9,8 +9,8 @@ from py2neo.wiring import Wire, WireError
 class CacheBuilder:
 
     def __init__(self):
-        self.db_connection = mysql.connector.connect(host="localhost", database="gc_mouse", user="root",
-                                                     password="Maggie7803GB!")
+        self.db_connection = mysql.connector.connect(host="localhost", database="gc_mouse", user="lampuser",
+                                                     password="changeme")
         self.db = self.db_connection.cursor()
         self.neo = Graph(scheme="bolt", host="localhost", password="12345", port="7687")
 
@@ -41,7 +41,7 @@ class CacheBuilder:
 
     def get_ontology_terms(self, ontology):
         cmd = F"""MATCH (n:{ontology})
-    WHERE n.isObsolete = "false" AND n:Term AND n.id = "D005227"
+    WHERE n.isObsolete = "false" AND n:Term
     RETURN n.id AS termID"""
         terms = []
         try:
@@ -336,29 +336,28 @@ class CacheBuilder:
 
 
 def set_study_counts(cache_builder):
-    # cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
-    # print("Processing HPO terms...")
-    # hpo_terms = cache_builder.get_ontology_terms("HPO")
-    # for term in hpo_terms:
-    #     mesh_term = cache_builder.get_mapped_mesh_term(term)
-    #     children = [x for x in cache_builder.get_descendant_terms(mesh_term, "MESH") if x is not None]
-    #     count = cache_builder.get_term_GWAS_count(children)
-    #     cache_builder.set_neo_gwas_count(term, count)
+    cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
+    print("Processing HPO terms...")
+    hpo_terms = cache_builder.get_ontology_terms("HPO")
+    for term in hpo_terms:
+        mesh_term = cache_builder.get_mapped_mesh_term(term)
+        children = [x for x in cache_builder.get_descendant_terms(mesh_term, "MESH") if x is not None]
+        count = cache_builder.get_term_GWAS_count(children)
+        cache_builder.set_neo_gwas_count(term, count)
     print("Processing MeSH terms...")
     mesh_terms = cache_builder.get_ontology_terms("MESH")
     for term in mesh_terms:
         children = [x for x in cache_builder.get_descendant_terms(term, "MESH") if x is not None]
         children.append(term)
         count = cache_builder.get_term_GWAS_count(children)
-        print(count)
-    #     cache_builder.set_neo_gwas_count(term, count)
-    # print("Processing MP terms...")
-    # mp_terms = cache_builder.get_ontology_terms("MP")
-    # for term in mp_terms:
-    #     children = [x for x in cache_builder.get_descendant_terms(term, "MP") if x is not None]
-    #     children.append(term)
-    #     count = cache_builder.get_term_experiment_count(children)
-    #     cache_builder.set_neo_experiment_count(term, count)
+        cache_builder.set_neo_gwas_count(term, count)
+    print("Processing MP terms...")
+    mp_terms = cache_builder.get_ontology_terms("MP")
+    for term in mp_terms:
+        children = [x for x in cache_builder.get_descendant_terms(term, "MP") if x is not None]
+        children.append(term)
+        count = cache_builder.get_term_experiment_count(children)
+        cache_builder.set_neo_experiment_count(term, count)
 
 
 def build_study_cache():
@@ -388,7 +387,7 @@ def main():
     cache_builder = CacheBuilder()
     print("Connections established...")
     set_study_counts(cache_builder)
-    # build_study_cache()
+    build_study_cache()
     print("Cache generated.")
     cache_builder.close_connection()
 

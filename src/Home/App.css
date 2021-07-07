@@ -3,6 +3,9 @@ html, body, .App{
     transition: background-color ease-in-out 500ms;
     font-family: "Trebuchet MS", serif;
 }
+.App-header {
+    height: 10em;
+}
 
 .App{
     margin-top: 5em;
@@ -14,6 +17,7 @@ html, body, .App{
     border: none;
     display: none;
 }
+
 
 svg {
     background-color: rgb(255, 255, 255);

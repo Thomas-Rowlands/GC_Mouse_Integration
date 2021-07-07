@@ -3,6 +3,7 @@
     include_once 'utility.php';
     include_once 'ontology.php';
     include_once 'mappings.php';
+    include_once 'genome.php';
 
     class StudySearch {
 

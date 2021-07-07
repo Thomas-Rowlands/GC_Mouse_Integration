@@ -99,6 +99,10 @@ class PhenotypeSearch extends React.Component {
         this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
     }
 
+    onBreakdownFinish = (e) => {
+        this.setState({loading: false});
+    }
+
     retrieveLiveSearch = (e, x) => {
         let input = x;
         if (this.liveCancelToken)
@@ -206,6 +210,7 @@ class PhenotypeSearch extends React.Component {
                             freeSolo
                             className={classes.autoComplete}
                             onInputChange={this.retrieveLiveSearch}
+                            id="phenotypeSearchInput"
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -222,15 +227,16 @@ class PhenotypeSearch extends React.Component {
                                             </React.Fragment>
                                         ),
                                     }}
-                                    onKeyDown={e => {
-                                        if (e.keyCode === 13) {
-                                            this.searchClick();
-                                        }
-                                    }}
+                                    // onKeyDown={e => {
+                                    //     if (e.keyCode === 13) {
+                                    //         this.searchClick();
+                                    //     }
+                                    // }}
                                 />
                             )}
                             options={liveSearchResults}
                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
+                            selectOnFocus={false}
                             renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                         <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}
@@ -296,7 +302,8 @@ class PhenotypeSearch extends React.Component {
                                 mousePhenotype={this.state.mouseTerm}
                                 humanPhenotype={this.state.humanTerm}
                                 humanOntology={this.state.humanOntology}
-                                breakdownData={this.state.breakdownData}/>
+                                breakdownData={this.state.breakdownData}
+                                onBreakdownFinish={this.onBreakdownFinish}/>
                         </div>
                     </DialogContent>
                     <DialogActions>

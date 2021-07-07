@@ -35,7 +35,7 @@ class Genome extends React.Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={tabValue} index={0} className="subTabMenu">
-                    <AppIdeogram organism="human"/>
+                    <AppIdeogram termID="D005227" ontology="mesh" organism="human"/>
                 </TabPanel>
                 <TabPanel value={tabValue} index={1} className="subTabMenu">
                 </TabPanel>

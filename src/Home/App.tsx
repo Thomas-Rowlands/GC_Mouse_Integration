@@ -27,10 +27,10 @@ function App() {
                          }}/>
                     <div id="header_menulinks">
                         <div id="h_menulinks" style={{paddingRight: "0.5em"}}>
-                            <a href="/info/data/database-content">Data</a>&nbsp;&nbsp;
-                            <a href="/info/how-to/submit-data">Submit</a>&nbsp;&nbsp;
-                            <a href="/info/data/download">Download</a>&nbsp;&nbsp;
-                            <a href="/info">Help</a>
+                            <a href="https://www.gwascentral.org/info/data/database-content">Data</a>&nbsp;&nbsp;
+                            <a href="https://www.gwascentral.org/info/how-to/submit-data">Submit</a>&nbsp;&nbsp;
+                            <a href="https://www.gwascentral.org/info/data/download">Download</a>&nbsp;&nbsp;
+                            <a href="https://www.gwascentral.org/info">Help</a>
                         </div>
                     </div>
                     <div style={{float: "right", paddingTop: "1.5em", paddingRight: "1em", clear: "right"}}>
@@ -50,9 +50,9 @@ function App() {
                             <div style={{float: "right", width: "100%"}}>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{"width": "106px"}}><a href="/gwasphenomap"
+                                        <div style={{"width": "106px"}}><a href="https://www.gwascentral.org/gwasphenomap"
                                                                            style={{fontSize: "0.8em"}}/></div>
-                                        <a href="/gwasphenomap" style={{fontSize: "0.8em"}}>
+                                        <a href="https://www.gwascentral.org/gwasphenomap" style={{fontSize: "0.8em"}}>
                                             <img src="/images/section/compass.png" alt=""
                                                  style={{width: "32px", height: "32px"}}/> <br/>
                                             <div style={{height: "2em", marginTop: "0.5em"}}>PhenoMap</div>
@@ -61,9 +61,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/biomart" style={{fontSize: "0.8em"}}/>
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/biomart" style={{fontSize: "0.8em"}}/>
                                         </div>
-                                        <a href="/biomart" style={{fontSize:"0.8em"}}>
+                                        <a href="https://www.gwascentral.org/biomart" style={{fontSize:"0.8em"}}>
                                             <img src="/images/section/gwasmart.png" alt=""
                                                  style={{width:"32px", height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>GWAS Mart</div>
@@ -71,9 +71,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/browser" style={{fontSize: "0.8em"}}/>
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/browser" style={{fontSize: "0.8em"}}/>
                                         </div>
-                                        <a href="/browser" style={{fontSize:"0.8em"}}>
+                                        <a href="https://www.gwascentral.org/browser" style={{fontSize:"0.8em"}}>
                                             <img src="/images/section/browser.png" alt=""
                                                  style={{width:"32px", height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>Browser</div>
@@ -81,9 +81,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/markers" style={{fontSize: "0.8em"}}/>
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/markers" style={{fontSize: "0.8em"}}/>
                                         </div>
-                                        <a href="/markers" style={{fontSize:"0.8em"}}>
+                                        <a href="https://www.gwascentral.org/markers" style={{fontSize:"0.8em"}}>
                                             <img src="/images/section/markers.png" alt=""
                                                  style={{width:"32px", height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>Markers</div>
@@ -91,9 +91,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/studies" style={{fontSize: "0.8em"}}/>
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/studies" style={{fontSize: "0.8em"}}/>
                                         </div>
-                                        <a href="/studies" style={{fontSize:"0.8em"}}>
+                                        <a href="https://www.gwascentral.org/studies" style={{fontSize:"0.8em"}}>
                                             <img src="/images/section/studies.png" alt=""
                                                  style={{width:"32px", height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>Study List</div>
@@ -101,9 +101,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/generegion"
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/generegion"
     style={{fontSize: "0.8em"}}/></div>
-                                        <a href="/generegion" style={{fontSize:"0.8em"}}>
+                                        <a href="https://www.gwascentral.org/generegion" style={{fontSize:"0.8em"}}>
                                             <img src="/images/section/genes.png" alt=""
                                                  style={{width:"32px",height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>Gene/Region</div>
@@ -111,9 +111,9 @@ function App() {
                                 </div>
                                 <div className="main-tab-container">
                                     <div className="main-tab">
-                                        <div style={{width:"106px"}}><a href="/phenotypes"
+                                        <div style={{width:"106px"}}><a href="https://www.gwascentral.org/phenotypes"
     style={{fontSize: "0.8em"}}/></div>
-                                        <a href="/phenotypes" style={{fontSize: "0.8em"}}>
+                                        <a href="https://www.gwascentral.org/phenotypes" style={{fontSize: "0.8em"}}>
                                             <img src="/images/section/phenotypes.png" alt=""
                                                  style={{width:"32px", height:"32px"}}/><br/>
                                             <div style={{height:"2em", marginTop:"0.5em"}}>Phenotypes</div>

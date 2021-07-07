@@ -20,26 +20,23 @@
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT mg.gene_symbol AS \"Gene\", mm.marker_accession_id AS \"Gene Key\", e.male_count AS \"Males\", e.female_count AS \"Females\", ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS \"-log P-value\", pr.name AS \"Procedure\", pa.name AS \"Parameter\",
-            expa.parameter_stable_key AS \"Parameter Key\", expr.procedure_stable_key AS \"Procedure Key\"
-            FROM experiments AS e
-            INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
-            INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
-            INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
-            INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
-            INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
-            INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
-            INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
-            INNER JOIN experiment_parameter AS expa ON expa.experiment_id = e.experiments_id
-            INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
-            INNER JOIN experiment_procedure AS expr ON expr.experiment_id = e.experiments_id
-            WHERE (mp.mp_term_id in ($term_string) OR mptl.mp_term_id in ($term_string))
-                AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0";
-            $knockout = $this->con->execute($cmd, "gc_mouse");
-            if ($knockout) {
-                $knockout_records = mysqli_fetch_all($knockout, MYSQLI_ASSOC);
-                foreach ($knockout_records as $record) {
-                    array_push($result, $record);
+            $cmd = "SELECT DISTINCT mc.MarkerID AS 'name', mc.Chr AS 'chr', mc.Start AS 'start', mc.Stop AS 'stop'
+            FROM gc_study.study AS s
+            INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
+            INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
+            INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
+            INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
+            INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
+            INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
+            INNER JOIN GC_study.usedmarkerset AS us ON us.UsedmarkersetID = si.UsedmarkersetID
+            INNER JOIN gc_marker.marker AS m ON m.Identifier = us.MarkerIdentifier
+            INNER JOIN gc_marker.markercoord AS mc ON mc.MarkerID = m.MarkerID
+            WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0";
+            $markers_result = $this->con->execute($cmd, "gc_mouse");
+            if ($markers_result) {
+                $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                foreach ($markers as $marker) {
+                    array_push($result, $marker);
                 }
             }
             

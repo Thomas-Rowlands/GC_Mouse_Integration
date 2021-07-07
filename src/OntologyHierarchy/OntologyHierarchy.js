@@ -548,13 +548,21 @@ class OntologyHierarchy extends React.Component {
     }
 
     getHumanPhenotypeBreakdown = (e) => {
-        this.setState({isDataDataPresent: false, isMappingPresent: false}); //clear breakdown.
-        this.setState({humanID: e, mouseID: null, isDataPresent: true, isMappingPresent: false,});
+        let treeData = this.state.treeData;
+        treeData.humanID = e;
+        treeData.mouseID = null;
+        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, loading: true});
     }
 
     getMousePhenotypeBreakdown = (e) => {
-        this.setState({isDataDataPresent: false, isMappingPresent: false}); //clear breakdown.
-        this.setState({mouseID: e, humanID: null, isDataPresent: true, isMappingPresent: false,});
+        let treeData = this.state.treeData;
+        treeData.humanID = null;
+        treeData.mouseID = e;
+        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, loading: true});
+    }
+
+    onBreakdownFinish = (e) => {
+        this.setState({loading: false});
     }
 
     changeHumanOntology = (e) => {
@@ -660,7 +668,8 @@ class OntologyHierarchy extends React.Component {
                             this.state.isDataPresent ?
                                 <PhenotypeResultBreakdown mousePhenotype={this.state.treeData.mouseID}
                                                           humanPhenotype={this.state.treeData.humanID}
-                                                          humanOntology={this.state.humanOntology}/>
+                                                          humanOntology={this.state.humanOntology}
+                                                          onBreakdownFinish={this.onBreakdownFinish}/>
                                 : null
                         }
                     </Grid>

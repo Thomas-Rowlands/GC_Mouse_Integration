@@ -49,13 +49,9 @@
                     OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
                     WHERE (N:Synonym)
                     WITH N, M, H, T, MT
-                    OPTIONAL MATCH (N)-[:hasExperimentResult*0..1]->(R)<-[:hasExperimentResult*0..1]-(MT)
-                    WITH N, M, H, T, MT, R
-                    OPTIONAL MATCH (N)-[:hasGWASResult*0..1]->(Q)<-[:hasGWASResult*0..1]-(MT)
-                    WITH N, M, H, T, MT, R, Q
-                    WHERE Q.value >= {humanPval} AND R.value >= {mousePval} AND (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, R.value AS experiment_pval, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt, Q.value AS gwas_pval",
-                ["search"=>$search, "mousePval"=>intval($mouse_pval), "humanPval"=>intval($human_pval)]);
+                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
+                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt",
+                ["search"=>$search]);
                 }
             $matches = [];
             foreach ($result as $row) {
@@ -112,15 +108,10 @@
                     OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
                     WHERE (N:Synonym)
                     WITH N, M, T, MT, H
-                    OPTIONAL MATCH (N)-[:hasExperimentResult*0..1]->(R)<-[:hasExperimentResult*0..1]-(MT)
-                    WITH N, M, H, T, MT, R
-                    OPTIONAL MATCH (N)-[:hasGWASResult*0..1]->(Q)<-[:hasGWASResult*0..1]-(MT)
-                    WITH N, M, H, T, MT, R, Q
-                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND EXISTS(T.id) AND T.gwas_total > 0
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, R.value AS experiment_pval, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt, Q.value AS gwas_pval",
+                    WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND EXISTS(T.id)
+                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt",
                     ["search"=>$search, "searchContains"=>" " . $search, "humanPval"=>intval($human_pval), "mousePval"=>intval($mouse_pval)]);
                 }
-
             $matches = [];
             foreach ($result as $row) {
                 $gwas = $row->get("GWAS");
@@ -196,9 +187,9 @@
         }
 
         public function get_ontology_trees($term, $humanOntology, $mouseOntology, $searchOntology) {
-            $humanOntology = strtoupper($humanOntology);
-            $mouseOntology = strtoupper($mouseOntology);
-            $searchOntology = strtoupper($searchOntology);
+            $humanOntology = $humanOntology;
+            $mouseOntology = $mouseOntology;
+            $searchOntology = $searchOntology;
             $humanOntLabel = $humanOntology == "MESH" ? "MESH" : "HP";
             $mouseID = "";
             $humanID = "";
@@ -210,6 +201,7 @@
             } else {
                 $match = $this->search_human_term($term, $searchOntology);
             }
+
             if ($match) {
                 $mouseID = $match[0]["mouseID"];
                 $mouseLabel = $match[0]["mouseLabel"];
@@ -240,7 +232,6 @@
                 $result["humanLabel"] = $humanLabel;
                 $result["isExactMatch"] = $match[0]["isExactMatch"];
                 
-
                 if ($result["mouseTree"] || $result["humanTree"])
                     return $result;
                 else

@@ -48,7 +48,7 @@
                 if (validate_ontology($_GET["ontology"]) && validate_ontology($_GET["mappingOnt"])) {
                     $ont = new Ontology();
                     $result = null;
-                    $result = $ont->get_root_ontology_tree($_GET["ontology"], $_GET["mappingOnt"]);
+                    $result = $ont->get_root_ontology_tree(strtoupper($_GET["ontology"]), strtoupper($_GET["mappingOnt"]));
                     if ($result)
                         echo json_encode($result);
                     else
@@ -74,7 +74,7 @@
                 if (validate_ontology($_GET["humanOntology"]) && validate_ontology($_GET["mouseOntology"]) && validate_ontology($_GET["searchOntology"])) {
                     $ont = new Ontology();
                     $result = null;
-                    $result = $ont->get_ontology_trees($_GET["term"], $_GET["humanOntology"], $_GET["mouseOntology"], $_GET["searchOntology"]);
+                    $result = $ont->get_ontology_trees($_GET["term"], strtoupper($_GET["humanOntology"]), strtoupper($_GET["mouseOntology"]), strtoupper($_GET["searchOntology"]));
                     if ($result)
                         echo json_encode($result);
                     else
@@ -96,6 +96,15 @@
                     echo "invalid ontology specified";
                 }
 
+            }
+        } else if ($_GET['type'] == "genome") {
+            if (validate_ontology($_GET["ontology"]) && $_GET["phenotype"]) {
+                $genome = new Genome();
+                $result = $genome->getPhenotypeMarkers($_GET["phenotype"]);
+                if ($result)
+                    echo json_encode($result);
+                else
+                    echo null;
             }
         }
     }

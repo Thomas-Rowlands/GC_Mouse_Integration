@@ -94,8 +94,14 @@ class PhenotypeResultBreakdown extends React.Component {
         this.getBreakdownData();
     }
 
-    gwasStudyClicked(row) {
-        let studyID = $(row.currentTarget).attr("data-study");
+    componentWillUpdate(nextProps, nextState) {
+        if (this.props.mousePhenotype !== nextProps.mousePhenotype || this.props.humanPhenotype !== nextProps.humanPhenotype) {
+            this.getBreakdownData();
+        }
+    }
+
+    gwasStudyClicked(study) {
+        let studyID = study.currentTarget.getAttribute("data-link");
         var win = window.open("https://www.gwascentral.org/study/" + studyID, "_blank");
         if (win)
             win.focus();
@@ -220,9 +226,12 @@ class PhenotypeResultBreakdown extends React.Component {
                         this.setState({breakdownData: null, loading: false, mappingGraphData: null});
                     }
                 }
+                this.props.onBreakdownFinish();
             })
             .catch((error) => {
                 console.log("An error occurred retrieving phenotype data.");
+                this.setState({loading: false, breakdownData: null, mappingGraphData: null});
+                this.props.onBreakdownFinish();
             });
     }
 
@@ -418,7 +427,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 </FormControl>
                             </div>
 
-                            {breakdownData ? <ResultTable cellClickHandlers={{"ID": this.get}}
+                            {breakdownData ? <ResultTable orderBy={"name"} hiddenHeaders={["id"]} dataHeaders={{"name": "id"}} cellClickHandlers={{"name": this.gwasStudyClicked}}
                                                           tableData={this.getGWASData()}/> : null}
                         </TabPanel>
                         <TabPanel value={dataTabValue} index={1}>
