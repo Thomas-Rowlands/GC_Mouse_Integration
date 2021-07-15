@@ -9,33 +9,35 @@ import {
 
 class GenomeBrowser extends React.Component {
 
+    export
+    default
+    GenomeBrowser;
+
     constructor(props) {
         super(props);
     }
 
     assembly = () => {
         return {
-            assemblies: [{
-                name: "hg19",
-                aliases: ["GRCh37"],
-                sequence: {
-                    type: "ReferenceSequenceTrack",
-                    trackId: "refseq_track",
-                    adapter: {
-                        type: "BgzipFastaAdapter",
-                        fastaLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz"},
-                        faiLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.fai"},
-                        gziLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.gzi"}
-                    },
-                    rendering: {type: "DivSequenceRenderer"}
+            name: "hg19",
+            aliases: ["GRCh37"],
+            sequence: {
+                type: "ReferenceSequenceTrack",
+                trackId: "refseq_track",
+                adapter: {
+                    type: "BgzipFastaAdapter",
+                    fastaLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz"},
+                    faiLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.fai"},
+                    gziLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.gzi"}
                 },
-                refNameAliases: {
-                    adapter: {
-                        type: "RefNameAliasAdapter",
-                        location: {"uri": "https://s3.amazonaws.com/jbrowse.org/genomes/hg19/hg19_aliases.txt"}
-                    }
+                rendering: {type: "DivSequenceRenderer"}
+            },
+            refNameAliases: {
+                adapter: {
+                    type: "RefNameAliasAdapter",
+                    location: {uri: "https://s3.amazonaws.com/jbrowse.org/genomes/hg19/hg19_aliases.txt"}
                 }
-            }]
+            }
         };
     }
 
@@ -86,61 +88,46 @@ class GenomeBrowser extends React.Component {
         };
     }
 
+    configuration = () => {
+        return {
+            theme: {
+                palette: {
+                    primary: {
+                        main: '#311b92',
+                    },
+                    secondary: {
+                        main: '#004ba7',
+                    },
+                    tertiary: {
+                        main: '#f57c00',
+                    },
+                    quaternary: {
+                        main: '#d50000',
+                    },
+                    bases: {
+                        A: {main: '#98FB98'},
+                        C: {main: '#87CEEB'},
+                        G: {main: '#DAA520'},
+                        T: {main: '#DC143C'},
+                    },
+                },
+            },
+        };
+    };
+
+
     render() {
         const assembly = this.assembly();
         const tracks = this.tracks();
         const defaultSession = this.defaultSession();
-        const state = createViewState({
-    assembly,
-    tracks,
-    defaultSession: {
-      ...defaultSession,
-      view: {
-        ...defaultSession.view,
-        bpPerPx: 0.1,
-        offsetPx: 10000,
-        tracks: [
-          {
-            id: 'q3UA86xQA',
-            type: 'ReferenceSequenceTrack',
-            configuration: 'volvox_refseq',
-            displays: [
-              {
-                id: '6JCCxQScPJ',
-                type: 'LinearReferenceSequenceDisplay',
-                configuration: 'volvox_refseq-LinearReferenceSequenceDisplay',
-                height: 210,
-              },
-            ],
-          },
-        ],
-      },
-    },
-    configuration: {
-      theme: {
-        palette: {
-          primary: {
-            main: '#311b92',
-          },
-          secondary: {
-            main: '#0097a7',
-          },
-          tertiary: {
-            main: '#f57c00',
-          },
-          quaternary: {
-            main: '#d50000',
-          },
-          bases: {
-            A: { main: '#98FB98' },
-            C: { main: '#87CEEB' },
-            G: { main: '#DAA520' },
-            T: { main: '#DC143C' },
-          },
-        },
-      },
-    },
-  });
+        const configuration = this.configuration();
+        const state = createViewState(
+            {
+                configuration: configuration,
+                assembly,
+                tracks,
+            }
+        );
         return (
             < JBrowseLinearGenomeView viewState={state}/>
         )
