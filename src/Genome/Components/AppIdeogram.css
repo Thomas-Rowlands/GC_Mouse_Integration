@@ -5,6 +5,25 @@
     margin-top: 1%;
     height:95%;
 }
-.chromosome-border {
-    cursor: pointer;
+
+#brush-marker-container {
+    width:95%;
 }
+
+.brush-marker {
+    padding: 0.3em;
+    background-color: blue;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid black;
+    margin-right: 0.5em;
+    margin-top: 0.5em;
+    cursor: pointer;
+    display: inline-grid;
+}
+
+/*.brush-marker-slider {*/
+/*    width: 50%;*/
+/*    margin-left:auto;*/
+/*    margin-right:auto;*/
+/*}*/

@@ -20,7 +20,7 @@
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT m.Accession AS 'name', mc.Chr AS 'chr', mc.Start AS 'start', mc.Stop AS 'stop'
+            $cmd = "SELECT DISTINCT m.Accession AS 'name', mc.Chr AS 'chr', mc.Start AS 'start', mc.Stop AS 'stop', si.NegLogPValue AS 'pval'
             FROM GC_study.Study AS s
             INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
             INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
