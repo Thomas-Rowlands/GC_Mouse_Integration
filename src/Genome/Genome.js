@@ -7,11 +7,7 @@ import axios from "axios";
 import * as qs from 'query-string';
 import {withRouter} from "react-router";
 import {api_server} from "../UtilityComponents/ConfigData";
-import 'fontsource-roboto';
-import {
-    createViewState,
-    JBrowseLinearGenomeView,
-} from '@jbrowse/react-linear-genome-view';
+import GenomeBrowser from "./Components/GenomeBrowser";
 
 
 class Genome extends React.Component {
@@ -57,117 +53,8 @@ class Genome extends React.Component {
         });
     }
 
-    assembly = () => {
-        return {
-            name: 'GRCh38',
-            sequence: {
-                type: 'ReferenceSequenceTrack',
-                trackId: 'GRCh38-ReferenceSequenceTrack',
-                adapter: {
-                    type: 'BgzipFastaAdapter',
-                    fastaLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz',},
-                    faiLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.fai',},
-                    gziLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.gzi',},
-                },
-            },
-            aliases: ['hg38'],
-            refNameAliases: {adapter: {type: 'RefNameAliasAdapter', location: {uri: 'GRCh38.aliases.txt',},},},
-        };
-    }
-
-    tracks = () => {
-        return [{
-            type: 'BasicTrack',
-            trackId: 'GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff',
-            name: 'NCBI RefSeq Genes',
-            category: ['Genes'],
-            assemblyNames: ['GRCh38'],
-            adapter: {
-                type: 'Gff3TabixAdapter',
-                gffGzLocation: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz',},
-                index: {
-                    location: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz.tbi',},
-                    indexType: 'TBI',
-                },
-            },
-            renderer: {type: 'SvgFeatureRenderer',},
-        }, {
-            type: 'AlignmentsTrack',
-            trackId: 'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome',
-            name: 'NA12878 Exome',
-            category: ['1000 Genomes', 'Alignments'],
-            assemblyNames: ['GRCh38'],
-            adapter: {
-                type: 'CramAdapter',
-                cramLocation: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/alignments/NA12878/NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram',},
-                craiLocation: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/alignments/NA12878/NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram.crai',},
-                sequenceAdapter: {
-                    type: 'BgzipFastaAdapter',
-                    fastaLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz',},
-                    faiLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.fai',},
-                    gziLocation: {uri: 'http://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna_index/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.gzi',},
-                },
-            },
-        }, {
-            type: 'VariantTrack',
-            trackId: 'ALL.wgs.shapeit2_integrated_snvindels_v2a.GRCh38.27022019.sites.vcf',
-            name: '1000 Genomes Variant Calls',
-            category: ['1000 Genomes', 'Variants'],
-            assemblyNames: ['GRCh38'],
-            adapter: {
-                type: 'VcfTabixAdapter',
-                vcfGzLocation: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/variants/ALL.wgs.shapeit2_integrated_snvindels_v2a.GRCh38.27022019.sites.vcf.gz',},
-                index: {
-                    location: {uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/variants/ALL.wgs.shapeit2_integrated_snvindels_v2a.GRCh38.27022019.sites.vcf.gz.tbi',},
-                    indexType: 'TBI',
-                },
-            },
-        },];
-    }
-
-    defaultSession = () => {
-        return {
-            name: 'My session',
-            view: {
-                id: 'linearGenomeView',
-                type: 'LinearGenomeView',
-                tracks: [
-                    {
-                        type: 'ReferenceSequenceTrack',
-                        configuration: 'GRCh38-ReferenceSequenceTrack',
-                        displays: [
-                            {
-                                type: 'LinearReferenceSequenceDisplay',
-                                configuration:
-                                    'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
-                            },
-                        ],
-                    },
-                    {
-                        type: 'FeatureTrack',
-                        configuration: 'ncbi_refseq_109_hg38',
-                        displays: [
-                            {
-                                type: 'LinearBasicDisplay',
-                                configuration: 'ncbi_refseq_109_hg38-LinearBasicDisplay',
-                            },
-                        ],
-                    },
-                ],
-            },
-        };
-    }
-
     render() {
         let {loading, tabValue, termID, ontology, markerData} = this.state;
-        const assembly = this.assembly();
-        const tracks = this.tracks();
-        const defaultSession = this.defaultSession();
-        const viewState = createViewState({
-            assembly,
-            tracks,
-            location: 'ctgA:1105..1221',
-        });
         return termID && ontology ?
             (
                 <div>
@@ -192,7 +79,7 @@ class Genome extends React.Component {
                         }
                     </TabPanel>
                     <TabPanel value={tabValue} index={1} className="subTabMenu">
-                        <JBrowseLinearGenomeView viewState={viewState}/>
+                        <GenomeBrowser />
                     </TabPanel>
                 </div>
             ) : null;
