@@ -82,7 +82,7 @@ class Genome extends React.Component {
                         <GenomeBrowser />
                     </TabPanel>
                 </div>
-            ) : null;
+            ) : <GenomeBrowser />;
     }
 }
 

@@ -1,20 +1,19 @@
 import React from "react";
 import * as qs from "query-string";
-import {api_server} from "../../UtilityComponents/ConfigData";
 import 'fontsource-roboto';
 import {
     createViewState,
     JBrowseLinearGenomeView,
 } from '@jbrowse/react-linear-genome-view';
+import {api_server} from "../../UtilityComponents/ConfigData";
 
 class GenomeBrowser extends React.Component {
 
-    export
-    default
-    GenomeBrowser;
-
     constructor(props) {
         super(props);
+        this.state = {
+            configData: api_server
+        }
     }
 
     assembly = () => {
@@ -23,19 +22,19 @@ class GenomeBrowser extends React.Component {
             aliases: ["GRCh37"],
             sequence: {
                 type: "ReferenceSequenceTrack",
-                trackId: "refseq_track",
+                trackId: "assembly_track",
                 adapter: {
                     type: "BgzipFastaAdapter",
-                    fastaLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz"},
-                    faiLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.fai"},
-                    gziLocation: {uri: "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.gzi"}
+                    fastaLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz"},
+                    faiLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.fai"},
+                    gziLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.gzi"}
                 },
                 rendering: {type: "DivSequenceRenderer"}
             },
             refNameAliases: {
                 adapter: {
                     type: "RefNameAliasAdapter",
-                    location: {uri: "https://s3.amazonaws.com/jbrowse.org/genomes/hg19/hg19_aliases.txt"}
+                    location: {uri: this.state.configData.api_server + "JBrowseData/hg19_aliases.txt"}
                 }
             }
         };
@@ -47,17 +46,17 @@ class GenomeBrowser extends React.Component {
             trackId: "refseq_track",
             adapter: {
                 type: "BgzipFastaAdapter",
-                fastaLocation: {"uri": "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz"},
-                faiLocation: {"uri": "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.fai"},
-                gziLocation: {"uri": "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.gzi"}
+                fastaLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz"},
+                faiLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.fai"},
+                gziLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.gzi"}
             },
             rendering: {type: "DivSequenceRenderer"}
-        }];
+        },];
     }
 
     defaultSession = () => {
         return {
-            name: 'My session',
+            name: 'Default Session',
             view: {
                 id: 'linearGenomeView',
                 type: 'LinearGenomeView',
@@ -69,17 +68,7 @@ class GenomeBrowser extends React.Component {
                             {
                                 type: 'LinearReferenceSequenceDisplay',
                                 configuration:
-                                    'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
-                            },
-                        ],
-                    },
-                    {
-                        type: 'FeatureTrack',
-                        configuration: 'ncbi_refseq_109_hg38',
-                        displays: [
-                            {
-                                type: 'LinearBasicDisplay',
-                                configuration: 'ncbi_refseq_109_hg38-LinearBasicDisplay',
+                                    'refseq_track-LinearReferenceSequenceDisplay',
                             },
                         ],
                     },
@@ -112,6 +101,7 @@ class GenomeBrowser extends React.Component {
                     },
                 },
             },
+            disableAnalytics: true,
         };
     };
 
@@ -126,6 +116,8 @@ class GenomeBrowser extends React.Component {
                 configuration: configuration,
                 assembly,
                 tracks,
+                // defaultSession: defaultSession,
+                location: "1:100,987,269..100,987,368"
             }
         );
         return (
