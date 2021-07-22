@@ -1,5 +1,6 @@
 <?php
     include_once 'database.php';
+    include_once 'studies.php';
 
     class Genome {
 
@@ -46,6 +47,25 @@
                 return [];
 
         }
+
+        public function getMouseKnockouts($termID)
+        {
+            $ont = new Ontology();
+            $mp_term = $ont->get_mp_mapping_by_id($termID);
+            if ($mp_term)
+                $mp_term = $mp_term[0];
+
+            if ($mp_term) {
+                $study = new StudySearch();
+                $experiments = $study->get_mouse_knockouts($mp_term);
+                if ($experiments)
+                    return $experiments;
+                else
+                    return [];
+            }
+            return [];
+        }
+
     }
 
 ?>

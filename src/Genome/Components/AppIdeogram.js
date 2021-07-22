@@ -72,9 +72,12 @@ class AppIdeogram extends Component {
                     container: '#ideo-container',
                     chrHeight: 600,
                     chrWidth: 15,
-                    annotationsLayout: 'histogram',
+                    annotationsLayout: 'heatmap',
+                    annotationTracks: this.getAnnotationTracks(),
                     barWidth: 3,
+                    legend: this.getHeatmapLegend(),
                     annotations: this.props.markerData,
+                    heatmaps: this.getHeatmaps(),
                     onDidRotate: this.onDidRotate,
                     onBrushMove: () => this.writeSelectedRange(this),
                 });
@@ -125,6 +128,37 @@ class AppIdeogram extends Component {
         $("#brush-menu-container").hide();
     }
 
+    getAnnotationTracks = () => {
+        return [
+            {id: 'humanMarkerTrack', displayName: 'Human Markers'}
+        ];
+    }
+
+    getHeatmapLegend = () => {
+        return [
+            {
+                name: 'Human Markers',
+                rows: [
+                    {color: '#88F', name: '< 10'},
+                    {color: '#CCC', name: 'Between 10 & 100'},
+                    {color: '#F33', name: '> 100'}
+                ]
+            }
+        ];
+    }
+
+    getHeatmaps = () => {
+        return [
+            {
+                key: 'pval',
+                thresholds: [
+                    ["0", '#88F'],
+                    ["1", '#CCC'],
+                    ["2", '#F33']]
+            },
+        ];
+    }
+
     render() {
         this.getIdeogram();
         const {classes} = this.props;
@@ -141,23 +175,23 @@ class AppIdeogram extends Component {
 
                 <div id="brush-menu-container">
                     <br/>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel shrink>Mouse P-value</InputLabel>
-                            <Select value={this.state.brushMarkerPval} className={classes.selectEmpty} id="select"
-                                    onChange={(e) => this.setState({brushMarkerPval: e.target.value})}>
-                                <MenuItem value={0}>0</MenuItem>
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                                <MenuItem value={6}>6</MenuItem>
-                                <MenuItem value={7}>7</MenuItem>
-                                <MenuItem value={8}>8</MenuItem>
-                                <MenuItem value={9}>9</MenuItem>
-                                <MenuItem value={10}>10</MenuItem>
-                            </Select>
-                        </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink>Mouse P-value</InputLabel>
+                        <Select value={this.state.brushMarkerPval} className={classes.selectEmpty} id="select"
+                                onChange={(e) => this.setState({brushMarkerPval: e.target.value})}>
+                            <MenuItem value={0}>0</MenuItem>
+                            <MenuItem value={1}>1</MenuItem>
+                            <MenuItem value={2}>2</MenuItem>
+                            <MenuItem value={3}>3</MenuItem>
+                            <MenuItem value={4}>4</MenuItem>
+                            <MenuItem value={5}>5</MenuItem>
+                            <MenuItem value={6}>6</MenuItem>
+                            <MenuItem value={7}>7</MenuItem>
+                            <MenuItem value={8}>8</MenuItem>
+                            <MenuItem value={9}>9</MenuItem>
+                            <MenuItem value={10}>10</MenuItem>
+                        </Select>
+                    </FormControl>
                     <hr/>
                     <div id="brush-marker-container">
                     </div>

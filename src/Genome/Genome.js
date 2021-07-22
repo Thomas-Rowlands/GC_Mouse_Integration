@@ -36,13 +36,14 @@ class Genome extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         let result = [];
-                        response.data.forEach(marker =>
+                        response.data.markers.forEach(marker =>
                             result.push({
                                 "name": marker.name,
                                 "chr": marker.chr,
                                 "start": parseInt(marker.start),
                                 "stop": parseInt(marker.stop),
-                                "pval": parseFloat(marker.pval)
+                                "pval": parseFloat(marker.pval),
+                                "track": "humanMarkerTrack",
                             })
                         );
                         this.setState({markerData: result, loading: false});

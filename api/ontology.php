@@ -126,7 +126,14 @@
             return $matches;
         }
 
-
+        public function get_mp_mapping_by_id($termID) {
+            $result = $this->neo->execute("MATCH (N {id: '" . $termID . "'})-[r:LOOM_MAPPING]->(S:MP) RETURN S.id;", []);
+            $result = [];
+            foreach ($result as $row) {
+                array_push($result, $row->get("s.id"));
+            }
+            return $result;
+        }
 
         public function get_term_synonyms($termID, $ontology) {
             if (!$ontology)

@@ -63,7 +63,7 @@ class GenomeBrowser extends React.Component {
                 tracks: [
                     {
                         type: 'ReferenceSequenceTrack',
-                        configuration: 'refseq_track',
+                        configuration: 'assembly_track',
                         displays: [
                             {
                                 type: 'LinearReferenceSequenceDisplay',
@@ -116,7 +116,7 @@ class GenomeBrowser extends React.Component {
                 configuration: configuration,
                 assembly,
                 tracks,
-                // defaultSession: defaultSession,
+                defaultSession: defaultSession,
                 location: "1:100,987,269..100,987,368"
             }
         );
