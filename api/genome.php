@@ -48,6 +48,25 @@
 
         }
 
+        public function getHumanGenes() {
+            $result = [];
+            $cmd = "SELECT hg.gene_symbol, ch.name AS 'chr', hg.start, hg.stop
+             FROM gc_mouse.human_genes AS hg
+             INNER JOIN gc_mouse.chromosomes AS ch ON ch.id = hg.chromosome_id;";
+            $genes_result = $this->con->execute($cmd, "gc_mouse");
+            if ($genes_result) {
+                $markers = mysqli_fetch_all($genes_result, MYSQLI_ASSOC);
+                foreach ($markers as $gene) {
+                    array_push($result, $gene);
+                }
+            }
+            
+            if ($result)
+                return $result;
+            else
+                return [];
+        }
+
         public function getMouseKnockouts($termID)
         {
             $ont = new Ontology();

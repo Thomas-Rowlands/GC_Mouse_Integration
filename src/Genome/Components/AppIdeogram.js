@@ -73,7 +73,10 @@ class AppIdeogram extends Component {
                     chrHeight: 600,
                     chrWidth: 15,
                     annotationsLayout: 'heatmap',
-                    annotationTracks: this.getAnnotationTracks(),
+                    // annotationTracks: this.getAnnotationTracks(),
+                    annotationsNumTracks: 2,
+                    annotationsDisplayedTracks: [1, 2],
+                    geometry: "parallel",
                     barWidth: 3,
                     legend: this.getHeatmapLegend(),
                     annotations: this.props.markerData,
@@ -104,7 +107,7 @@ class AppIdeogram extends Component {
 
     getBrushMarkers = (self) => {
         let markerContainer = document.getElementById("brush-marker-container");
-        self.props.markerData.forEach((marker) => {
+        self.props.markerData.markers.forEach((marker) => {
             if (marker.chr === self.state.openChromosome && marker.start >= self.brushStart && marker.stop <= self.brushStop) {
                 if (marker.pval >= self.state.brushMarkerPval)
                     markerContainer.innerHTML += "<div class='brush-marker'>" + marker.name + "</div>";
@@ -130,7 +133,8 @@ class AppIdeogram extends Component {
 
     getAnnotationTracks = () => {
         return [
-            {id: 'humanMarkerTrack', displayName: 'Human Markers'}
+            {id: 'humanMarkerTrack', displayName: 'Human Markers'},
+            {id: "humanGeneTrack", displayName: "Human Genes"}
         ];
     }
 
@@ -143,6 +147,12 @@ class AppIdeogram extends Component {
                     {color: '#CCC', name: 'Between 10 & 100'},
                     {color: '#F33', name: '> 100'}
                 ]
+            },
+            {
+                name: "Human Genes",
+                rows: [
+                    {color: '#F33', name: "Gene"}
+                ]
             }
         ];
     }
@@ -150,12 +160,19 @@ class AppIdeogram extends Component {
     getHeatmaps = () => {
         return [
             {
-                key: 'pval',
+                key: 'count',
                 thresholds: [
-                    ["0", '#88F'],
-                    ["1", '#CCC'],
-                    ["2", '#F33']]
+                    ["low", '#88F'],
+                    ["mid", '#CCC'],
+                    ["high", '#F33']
+                ]
             },
+            {
+                key: 'count',
+                thresholds: [
+                    ["test", '#F33'],
+                ]
+            }
         ];
     }
 
