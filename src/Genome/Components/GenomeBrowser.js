@@ -51,7 +51,17 @@ class GenomeBrowser extends React.Component {
                 gziLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.gzi"}
             },
             rendering: {type: "DivSequenceRenderer"}
-        },];
+        },
+            // {
+            //     type: "BasicTrack",
+            //     trackId: "ensembl_genes_track",
+            //     adapter: {
+            //         type: "GffTabixAdapter",
+            //         gffGzLocation: {"uri": this.state.configData.api_server + "JBrowseData/Homo_sapiens.GRCh37.87.gff3.gz"},
+            //     },
+            //     rendering: {type: "SvgFeatureRenderer"}
+            // },
+        ];
     }
 
     defaultSession = () => {

@@ -127,12 +127,13 @@
         }
 
         public function get_mp_mapping_by_id($termID) {
-            $result = $this->neo->execute("MATCH (N {id: '" . $termID . "'})-[r:LOOM_MAPPING]->(S:MP) RETURN S.id;", []);
-            $result = [];
-            foreach ($result as $row) {
-                array_push($result, $row->get("s.id"));
-            }
-            return $result;
+            $result = $this->neo->execute("MATCH (N {id: '" . $termID . "'})-[r:LOOM_MAPPING]-(S:MP) RETURN DISTINCT S.id AS mappedID;", []);
+            $mappings = [];
+            if ($result)
+                foreach ($result as $row) {
+                    array_push($mappings, $row->get("mappedID"));
+                }
+            return $mappings;
         }
 
         public function get_term_synonyms($termID, $ontology) {
@@ -169,8 +170,8 @@
         public function get_term_descendants($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
-            WHERE n.id = {termID} AND m.isObsolete = 'false' AND m:Term
-            RETURN m.id AS descendant", ["termID"=>$termID]);
+            WHERE n.id = {termID} AND m.isObsolete = 'false'
+            RETURN DISTINCT m.id AS descendant", ["termID"=>$termID]);
             $descendants = [];
             foreach ($result as $row) {
                 array_push($descendants, $row->get("descendant"));

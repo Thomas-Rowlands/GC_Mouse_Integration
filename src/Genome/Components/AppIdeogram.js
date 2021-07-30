@@ -73,7 +73,7 @@ class AppIdeogram extends Component {
                     chrHeight: 600,
                     chrWidth: 15,
                     annotationsLayout: 'heatmap',
-                    // annotationTracks: this.getAnnotationTracks(),
+                    annotationTracks: this.getAnnotationTracks(),
                     annotationsNumTracks: 2,
                     annotationsDisplayedTracks: [1, 2],
                     geometry: "parallel",
@@ -134,7 +134,7 @@ class AppIdeogram extends Component {
     getAnnotationTracks = () => {
         return [
             {id: 'humanMarkerTrack', displayName: 'Human Markers'},
-            {id: "humanGeneTrack", displayName: "Human Genes"}
+            {id: "mouseKnockoutTrack", displayName: "Mouse Knockouts"}
         ];
     }
 
@@ -149,9 +149,9 @@ class AppIdeogram extends Component {
                 ]
             },
             {
-                name: "Human Genes",
+                name: "Mouse Knockouts",
                 rows: [
-                    {color: '#F33', name: "Gene"}
+                    {color: '#099100', name: "Knockout"}
                 ]
             }
         ];
@@ -170,7 +170,7 @@ class AppIdeogram extends Component {
             {
                 key: 'count',
                 thresholds: [
-                    ["test", '#F33'],
+                    ["test", '#099100'],
                 ]
             }
         ];

@@ -42,7 +42,7 @@ class Genome extends React.Component {
                                     "numTracks": 2,
                                     "trackLabels": [
                                         "Human Markers",
-                                        "Human Genes"
+                                        "Mouse Knockouts"
                                     ]
                                 },
                                 "keys": [
@@ -248,12 +248,12 @@ class Genome extends React.Component {
                                 }
                             )
                         )
-                        response.data.genes.forEach(gene =>
+                        response.data.knockouts.forEach(gene =>
                             result.annots.forEach(
                                 subset => {
                                     if (subset.chr === gene.chr) {
                                         subset.annots.push([
-                                            gene.gene_symbol,
+                                            gene.Gene,
                                             parseInt(gene.start),
                                             Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
                                             0,

@@ -100,7 +100,7 @@
         } else if ($_GET['type'] == "genome") {
             if (validate_ontology($_GET["ontology"]) && $_GET["phenotype"]) {
                 $genome = new Genome();
-                $result = ["markers" => $genome->getPhenotypeMarkers($_GET["phenotype"]), "knockouts" => $genome->getMouseKnockouts($_GET["phenotype"]), "genes" => $genome->getHumanGenes()];
+                $result = ["markers" => $genome->getPhenotypeMarkers($_GET["phenotype"], $_GET["ontology"]), "knockouts" => $genome->getMouseKnockouts($_GET["phenotype"], $_GET["ontology"])];
                 if ($result)
                     echo json_encode($result);
                 else

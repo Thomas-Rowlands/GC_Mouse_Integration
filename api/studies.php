@@ -35,7 +35,7 @@
 
         public function get_human_term_breakdown($humanID, $ont) {
             $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
-            // Get Mouse Knockouts
+            // Get GWAS Records
             $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($ont, $humanID);
             return $return_package;
         }
