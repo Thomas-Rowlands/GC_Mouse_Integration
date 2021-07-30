@@ -107,6 +107,8 @@ class AppIdeogram extends Component {
 
     getBrushMarkers = (self) => {
         let markerContainer = document.getElementById("brush-marker-container");
+        if (!self.props.markerData.markers)
+            return;
         self.props.markerData.markers.forEach((marker) => {
             if (marker.chr === self.state.openChromosome && marker.start >= self.brushStart && marker.stop <= self.brushStop) {
                 if (marker.pval >= self.state.brushMarkerPval)
@@ -144,7 +146,7 @@ class AppIdeogram extends Component {
                 name: 'Human Markers',
                 rows: [
                     {color: '#88F', name: '< 10'},
-                    {color: '#CCC', name: 'Between 10 & 100'},
+                    {color: '#ff8200', name: 'Between 10 & 100'},
                     {color: '#F33', name: '> 100'}
                 ]
             },
@@ -163,7 +165,7 @@ class AppIdeogram extends Component {
                 key: 'count',
                 thresholds: [
                     ["low", '#88F'],
-                    ["mid", '#CCC'],
+                    ["mid", '##ff8200'],
                     ["high", '#F33']
                 ]
             },

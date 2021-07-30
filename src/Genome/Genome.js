@@ -242,28 +242,28 @@ class Genome extends React.Component {
                                             Math.max(parseInt(marker.stop) - parseInt(marker.start), 1),
                                             parseFloat(marker.pval),
                                             cat,
-                                            0
-                                        ]);
-                                    }
-                                }
-                            )
-                        )
-                        response.data.knockouts.forEach(gene =>
-                            result.annots.forEach(
-                                subset => {
-                                    if (subset.chr === gene.chr) {
-                                        subset.annots.push([
-                                            gene.Gene,
-                                            parseInt(gene.start),
-                                            Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
-                                            0,
-                                            "gene",
                                             1
                                         ]);
                                     }
                                 }
                             )
-                        )
+                        );
+                        response.data.knockouts.forEach(gene =>
+                            result.annots.forEach(
+                                subset => {
+                                    // if (subset.chr === gene.chr) {
+                                        subset.annots.push([
+                                            gene.Gene,
+                                            200000,//parseInt(gene.start),
+                                            1000000,//Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
+                                            0,
+                                            "test",
+                                            2
+                                        ]);
+                                    // }
+                                }
+                            )
+                        );
                         this.setState({markerData: result, loading: false});
                     }
                 }
