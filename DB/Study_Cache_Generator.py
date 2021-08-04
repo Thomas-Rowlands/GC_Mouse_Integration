@@ -183,8 +183,8 @@ class CacheBuilder:
             print("Connected, resuming processing...")
 
     def get_significant_study_pval(self, termID):
-        cmd = """
-            SELECT s.Identifier AS 'ID', s.Name, si.NegLogPValue
+        cmd = F"""
+            SELECT s.Identifier AS 'ID', s.Name, MAX(si.NegLogPValue) AS 'NegLogPValue'
         FROM GC_study.Study AS s
           INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
           INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
@@ -192,15 +192,14 @@ class CacheBuilder:
           INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
           INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
           INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
-          WHERE pa.PhenotypeIdentifier = '""" + termID + """'
-          ORDER BY NegLogPValue DESC
-          LIMIT 1;
+          WHERE pa.PhenotypeIdentifier = "{termID}" AND si.NegLogPValue >= 0
+          GROUP BY s.Identifier;
         """
         self.db.execute(cmd)
-        result = None
+        result = []
         for (id, name, pval) in self.db:
             if id and name and pval:
-                result = (id, name, pval)
+                result.append((id, name, pval))
         if result:
             return result
         else:
@@ -208,15 +207,14 @@ class CacheBuilder:
 
     def get_significant_experiment_pval(self, termID):
         cmd = """
-            SELECT e.experiments_id, ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS 'p_value'
+            SELECT e.experiments_id, MAX(ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3)) AS 'p_value'
                 FROM gc_mouse.experiments AS e
                 INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
                 INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
                 INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
                 INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
                 WHERE mp.mp_term_id = '""" + termID + """' OR mptl.mp_term_id = '""" + termID + """'
-                ORDER BY e.p_value DESC
-                LIMIT 1;
+                GROUP BY e.experiments_id
         """
         self.db.execute(cmd)
         result = None
@@ -370,10 +368,11 @@ def build_study_cache():
     mesh_terms = cache_builder.get_all_ontology_terms("MESH")
     # Get studies linked to every phenotype currently listed in Neo4J
     for term in mesh_terms:
-        significant_study_pval = cache_builder.get_significant_study_pval(term)
-        if significant_study_pval:
-            cache_builder.add_gwas_study(significant_study_pval[0], significant_study_pval[1])
-            cache_builder.add_study_p_value(significant_study_pval[2], term, significant_study_pval[0])
+        significant_study_pvals = cache_builder.get_significant_study_pval(term)
+        if significant_study_pvals:
+            for study in significant_study_pvals:
+                cache_builder.add_gwas_study(study[0], study[1])
+                cache_builder.add_study_p_value(study[2], term, study[0])
     # Get mouse knockouts linked to every MP phenotype currently listed in Neo4J
     mp_terms = cache_builder.get_all_ontology_terms("MP")
     for term in mp_terms:
@@ -390,6 +389,8 @@ def main():
     build_study_cache()
     print("Cache generated.")
     cache_builder.close_connection()
+    # test = cache_builder.get_term_GWAS_count(["D005227", "D013229", "D005231", "D015777", "D001095", "D016718", "D015118", "D005229", "D009829", "D019301", "D015525", "D017962", "D004281", "D015118", "D044242", "D005228", "D008041", "D001095", "D016718", "D008042", "D017962", "D017965", "D043371", "D008041", "D017965", "D010169", "D019308", "D005232", "D000085", "D002087", "D058610", "D006885", "D020155"])
+    # print(test)
 
 
 if __name__ == "__main__":

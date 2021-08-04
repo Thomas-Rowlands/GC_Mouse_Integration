@@ -3,6 +3,7 @@ import Ideogram from "ideogram";
 import './AppIdeogram.css'
 import {Button, FormControl, InputLabel, MenuItem, Select, withStyles} from "@material-ui/core";
 import $ from "jquery";
+import {api_server} from "../../UtilityComponents/ConfigData";
 
 const useStyles = theme => ({
     formControl: {
@@ -31,7 +32,8 @@ class AppIdeogram extends Component {
         super(props);
         this.state = {
             openChromosome: null,
-            brushMarkerPval: 0
+            brushMarkerPval: 0,
+            configData: api_server,
         }
         this.brushStart = 17487076;
         this.brushStop = 41901071;
@@ -44,6 +46,12 @@ class AppIdeogram extends Component {
         this.getIdeogram();
     }
 
+    getShape() {
+        let annotHeight = 3.5;
+        return 'm0,0 l 0 ' + (2 * annotHeight) +
+        'l ' + annotHeight/2 + ' 0' +
+        'l 0 -' + (2 * annotHeight) + 'z';
+    }
 
     getIdeogram = () => {
         this.ideogram = null;
@@ -66,23 +74,36 @@ class AppIdeogram extends Component {
                     onDidRotate: this.onDidRotate
                 });
             } else {
+                // this.ideogram = new Ideogram({
+                //     organism: this.props.organism,
+                //     assembly: "GRCh37",
+                //     container: '#ideo-container',
+                //     chrHeight: 600,
+                //     chrWidth: 15,
+                //     annotationsLayout: 'heatmap',
+                //     annotationTracks: this.getAnnotationTracks(),
+                //     annotationsNumTracks: 2,
+                //     annotationsDisplayedTracks: [1, 2],
+                //     geometry: "parallel",
+                //     barWidth: 3,
+                //     legend: this.getHeatmapLegend(),
+                //     annotationPath: this.state.configData.api_server + "JBrowseData/1000_virtual_snvs.json", //this.props.markerData,
+                //     heatmaps: this.getHeatmaps(),
+                //     onDidRotate: this.onDidRotate,
+                //     onBrushMove: () => this.writeSelectedRange(this),
+                // });
                 this.ideogram = new Ideogram({
-                    organism: this.props.organism,
+                  organism: 'human',
                     assembly: "GRCh37",
-                    container: '#ideo-container',
-                    chrHeight: 600,
-                    chrWidth: 15,
-                    annotationsLayout: 'heatmap',
-                    annotationTracks: this.getAnnotationTracks(),
-                    annotationsNumTracks: 2,
-                    annotationsDisplayedTracks: [1, 2],
-                    geometry: "parallel",
-                    barWidth: 3,
-                    legend: this.getHeatmapLegend(),
-                    annotations: this.props.markerData,
-                    heatmaps: this.getHeatmaps(),
-                    onDidRotate: this.onDidRotate,
-                    onBrushMove: () => this.writeSelectedRange(this),
+                  orientation: 'vertical',
+                  chrWidth: 8,
+                  annotations: this.props.markerData,
+                  annotationTracks: [
+                            {id: 'pathogenicTrack', displayName: 'Pathogenic', shape: this.getShape()},
+      {id: 'uncertainSignificanceTrack', displayName: 'Uncertain significance', shape: this.getShape()}
+                  ],
+                  annotationHeight: 3.5,
+                  // legend: legend
                 });
             }
             return this.ideogram;

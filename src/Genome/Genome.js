@@ -36,22 +36,13 @@ class Genome extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         let result = {
-                                "metadata": {
-                                    "species": "human",
-                                    "assembly": "GRCh37",
-                                    "numTracks": 2,
-                                    "trackLabels": [
-                                        "Human Markers",
-                                        "Mouse Knockouts"
-                                    ]
-                                },
                                 "keys": [
                                     "name",
                                     "start",
                                     "length",
+                                    "trackIndex",
                                     "pval",
-                                    "count",
-                                    "trackIndex"
+                                    "count"
                                 ],
                                 "annots": [
                                     {
@@ -240,9 +231,9 @@ class Genome extends React.Component {
                                             marker.name,
                                             parseInt(marker.start),
                                             Math.max(parseInt(marker.stop) - parseInt(marker.start), 1),
+                                            0,
                                             parseFloat(marker.pval),
                                             cat,
-                                            1
                                         ]);
                                     }
                                 }
@@ -256,9 +247,9 @@ class Genome extends React.Component {
                                             gene.Gene,
                                             200000,//parseInt(gene.start),
                                             1000000,//Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
+                                            1,
                                             0,
                                             "test",
-                                            2
                                         ]);
                                     // }
                                 }
