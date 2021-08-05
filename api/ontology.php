@@ -77,27 +77,13 @@
             $ont = strtoupper($ontology);
             $search = strtolower($search);
                 if ($is_open_search) {
-                    $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
-                        WITH N, M, H
-                    OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-                        WHERE (H:Synonym) AND (toLOWER(H.FSN) STARTS WITH {search} OR toLOWER(T.FSN) STARTS WITH {search})
-                        WITH N, M, H, T
-                    OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                        WHERE (N:Synonym)
-                        WITH N, M, H, T, MT
-                    OPTIONAL MATCH (N)-[:hasExperimentResult*0..1]->(R)<-[:hasExperimentResult*0..1]-(MT)
-                        WITH N, M, H, T, MT, R
-                    OPTIONAL MATCH (H)-[:hasGWASResult*0..1]->(Q)<-[:hasGWASResult*0..1]-(T)
-                        WITH N, M, H, T, MT, R, Q
-                        WHERE Q.value >= {humanPval} AND R.value >= {mousePval} AND (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id)) AND (T.gwas_total > 0 OR H.gwas_total > 0)
-                    RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, R.value AS experiment_pval, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(H.id, T.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt, Q.value AS gwas_pval
-                    
-                    UNION
-
-                    MATCH (R)<-[:hasGWASResult]-(n:". $ont . ")-[:HAS_SYNONYM*0..1]->(m)
-                        WHERE R.value >= {humanPval} AND (toLOWER(n.FSN) STARTS WITH {search} OR toLOWER(m.FSN) STARTS WITH {search} OR toLOWER(n.FSN) CONTAINS {searchContains} OR toLOWER(m.FSN) CONTAINS {searchContains}) AND n.gwas_total > 0 AND EXISTS(n.id) AND n:Term
-                        RETURN null as mouseID, null as mouseLabel, null AS Experiments, null AS experiment_pval, null as mouseOnt, null as isExactMatch, n.id as humanID, n.gwas_total AS GWAS, n.FSN as humanLabel, n.ontology as humanOnt, R.value AS gwas_pval
-                        ",
+                    $result = $this->neo->execute("MATCH (humanSyn)<-[:HAS_SYNONYM*0..1]-(humanTerm)-[:hasGWASResult]->(R:Result)<-[:containsGWASResult]-(S:Study)
+    WHERE (humanSyn:MESH OR humanSyn:HPO OR humanTerm:MESH OR humanTerm:HPO) AND (toLOWER(humanSyn.FSN) STARTS WITH {search} OR toLOWER(humanSyn.FSN) CONTAINS {searchContains} OR toLOWER(humanTerm.FSN) STARTS WITH {search} OR toLOWER(humanTerm.FSN) CONTAINS {searchContains}) AND R.value >= {humanPval}
+WITH humanTerm, S
+OPTIONAL MATCH p=(E)-[:containsExperimentResult]->(P:Result)<-[:hasExperimentResult]-(mouseTerm:MP)-[:HAS_SYNONYM*0..1]->(mouseSyn:MP)-[M:LOOM_MAPPING]->(humanTerm)
+                    WHERE P.value >= {mousePval}
+WITH mouseTerm, humanTerm, E, M, S
+RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.experiment_total AS Experiments, mouseTerm.ontology AS mouseOnt, M.is_exact_match AS isExactMatch, humanTerm.id AS humanID, humanTerm.FSN AS humanLabel, humanTerm.ontology AS humanOnt, humanTerm.gwas_total AS GWAS;",
                     ["search"=>$search, "searchContains"=>" " . $search, "humanPval"=>intval($human_pval), "mousePval"=>intval($mouse_pval)]);
                 } else {
                     $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
