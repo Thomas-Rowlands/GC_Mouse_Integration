@@ -46,6 +46,10 @@ class AppIdeogram extends Component {
         this.getIdeogram();
     }
 
+    componentWillUnmount() {
+        $("#_ideogramOuterWrap").remove();
+    }
+
     getShape() {
         let annotHeight = 3.5;
         return 'm0,0 l 0 ' + (2 * annotHeight) +
@@ -96,7 +100,8 @@ class AppIdeogram extends Component {
                   organism: 'human',
                     assembly: "GRCh37",
                   orientation: 'vertical',
-                  chrWidth: 8,
+                  chrWidth: 15,
+                    chrHeight: 600,
                   annotations: this.props.markerData,
                   annotationTracks: [
                             {id: 'pathogenicTrack', displayName: 'Pathogenic', shape: this.getShape()},

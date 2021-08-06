@@ -17,8 +17,8 @@ class Genome extends React.Component {
         this.state = {
             loading: true,
             tabValue: 0,
-            termID: qs.parse(this.props.location.search).termID,
-            ontology: qs.parse(this.props.location.search).ontology,
+            termID: props.genotypeTermID ? props.genotypeTermID : qs.parse(this.props.location.search).termID,
+            ontology: props.genotypeOntology ? props.genotypeOntology : qs.parse(this.props.location.search).ontology,
             markerData: null,
             configData: api_server
         };

@@ -1,7 +1,7 @@
 html, body, .App{
     background-color: rgb(255, 255, 255);
     transition: background-color ease-in-out 500ms;
-    font-family: "Trebuchet MS", serif;
+    font-family: Roboto, "Trebuchet MS", serif;
 }
 .App-header {
     height: 10em;

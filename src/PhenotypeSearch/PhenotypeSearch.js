@@ -24,6 +24,9 @@ import axios from "axios";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import api_server from "../UtilityComponents/ConfigData";
 import Grow from '@material-ui/core/Grow';
+import Typography from "@material-ui/core/Typography";
+import Genome from "../Genome/Genome";
+import {CSSTransition, SwitchTransition} from "react-transition-group";
 
 const useStyles = theme => ({
     formControl: {
@@ -65,7 +68,9 @@ class PhenotypeSearch extends React.Component {
             searchInput: "",
             configData: api_server,
             displayError: false,
-            tableOrder: ""
+            tableOrder: "",
+            genotypeTermID: "",
+            genotypeOntology: ""
         };
         this.page_num = 1;
         this.liveCancelToken = null;
@@ -97,6 +102,10 @@ class PhenotypeSearch extends React.Component {
 
     viewBtnClicked = (mouseTerm, humanTerm, humanOnt) => {
         this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
+    }
+
+    genotypeBtnClicked = (term, ontology) => {
+        this.setState({genotypeTermID: term, genotypeOntology: ontology});
     }
 
     onBreakdownFinish = (e) => {
@@ -155,7 +164,11 @@ class PhenotypeSearch extends React.Component {
                         if (result_total > 0) {
                             this.setState({tableData: response.data[0], loading: false, searchOpen: true});
                         } else {
-                            this.setState({tableData: "No results found.", loading: false, searchOpen: true});
+                            this.setState({
+                                tableData: "No results found for " + search_input + ".",
+                                loading: false,
+                                searchOpen: true
+                            });
                         }
                     } else {
                         this.setState({loading: false, searchOpen: true, tableData: null});
@@ -191,130 +204,160 @@ class PhenotypeSearch extends React.Component {
     displayTable = (tableData) => {
         let orderBy = this.state.tableOrder;
         if (tableData === "No results found.")
-            return <p className="center"><br/>{tableData}</p>
+            return
         else
-            return <ResultTable order={"desc"} orderBy={orderBy} hoverDataMap={{"Human Phenotype": "Human Synonyms", "MP Label": "Mouse Synonyms"}} viewBtnClicked={this.viewBtnClicked} hiddenHeaders={["Human Synonyms", "Mouse Synonyms", "Procedure Key", "Parameter Key"]} isSearchResult={true} cellClickHandlers={{"ID": this.openOntologyTerm, "MP ID": this.openOntologyTerm}} tableData={tableData}/>
+            return <ResultTable order={"desc"} orderBy={orderBy}
+                                hoverDataMap={{"Human Phenotype": "Human Synonyms", "MP Label": "Mouse Synonyms"}}
+                                genotypeBtnClicked={this.genotypeBtnClicked} viewBtnClicked={this.viewBtnClicked}
+                                hiddenHeaders={["Human Synonyms", "Mouse Synonyms", "Procedure Key", "Parameter Key"]}
+                                isSearchResult={true}
+                                cellClickHandlers={{"ID": this.openOntologyTerm, "MP ID": this.openOntologyTerm}}
+                                tableData={tableData}/>
 
     }
 
     render() {
         const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
-        return (<div className="PhenotypeSearch">
-                <LoadingSpinner loading={loading}/>
-                <div className="searchResultsContainer">
-                    {/* Orthology Selection */}
-                    <div className="orthology-menu">
-                        <h4>Comparative data on human-mouse orthologues.</h4>
-                        <Autocomplete
-                            freeSolo
-                            className={classes.autoComplete}
-                            onInputChange={this.retrieveLiveSearch}
-                            id="phenotypeSearchInput"
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Phenotype search"
-                                    variant="outlined"
-                                    required
-                                    helperText={this.state.inputErrorText}
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <React.Fragment>
-                                                {liveLoading ? <CircularProgress color="inherit" size={20}/> : null}
-                                                {params.InputProps.endAdornment}
-                                            </React.Fragment>
-                                        ),
-                                    }}
-                                    // onKeyDown={e => {
-                                    //     if (e.keyCode === 13) {
-                                    //         this.searchClick();
-                                    //     }
-                                    // }}
-                                />
-                            )}
-                            options={liveSearchResults}
-                            getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
-                            selectOnFocus={false}
-                            renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
-                        {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
-                        <RadioGroup row className={classes.radio} name="speciesRadio" value={this.state.selectedSpecies}
-                                    onChange={this.speciesRadioChanged}>
-                            <FormControlLabel value="Human" label="Human" control={<Radio/>} id="human-radio"/>
-                            <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>} id="mouse-radio"/>
-                        </RadioGroup>
-                        <FormControl className={classes.formControl} onChange={this.humanPValChanged}>
-                            <InputLabel shrink>Human P-value</InputLabel>
-                            <Select value={this.state.humanPval} className={classes.selectEmpty} id="human_pval_select"
-                                    onChange={this.humanPValChanged}>
-                                <MenuItem value={0}>0</MenuItem>
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                                <MenuItem value={6}>6</MenuItem>
-                                <MenuItem value={7}>7</MenuItem>
-                                <MenuItem value={8}>8</MenuItem>
-                                <MenuItem value={9}>9</MenuItem>
-                                <MenuItem value={10}>10</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel shrink>Mouse P-value</InputLabel>
-                            <Select value={this.state.mousePval} className={classes.selectEmpty} id="select"
-                                    onChange={this.mousePValChanged}>
-                                <MenuItem value={0}>0</MenuItem>
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                                <MenuItem value={6}>6</MenuItem>
-                                <MenuItem value={7}>7</MenuItem>
-                                <MenuItem value={8}>8</MenuItem>
-                                <MenuItem value={9}>9</MenuItem>
-                                <MenuItem value={10}>10</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <div className="input-group-inline">
-                            <Button size="large" color="primary" variant="contained" id="search_btn"
-                                    onClick={this.searchClick}>Search</Button>
-                        </div>
-                    </div>
-                    <div className="table-container">
-                        {tableData ? this.displayTable(tableData) : null}
-                    </div>
-                </div>
-                {/*Phenotype selection results drill down*/
-                }
-                <Dialog
-                    fullWidth={true}
-                    maxWidth="lg"
-                    open={!searchOpen}
-                    aria-labelledby="max-width-dialog-title"
-                    TransitionComponent={Grow}
+        return (
+            <SwitchTransition>
+                <CSSTransition
+                    key={this.state.genotypeTermID}
+                    addEndListener={(node, done) => node.addEventListener("transitionend", done, false)}
+                    classNames='fade'
                 >
-                    <DialogContent>
-                        <div className="table-container">
-                            <PhenotypeResultBreakdown
-                                mousePhenotype={this.state.mouseTerm}
-                                humanPhenotype={this.state.humanTerm}
-                                humanOntology={this.state.humanOntology}
-                                breakdownData={this.state.breakdownData}
-                                onBreakdownFinish={this.onBreakdownFinish}/>
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => this.setState({searchOpen: true})} color="primary">
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        )
-            ;
+                    {
+                        !this.state.genotypeTermID ? <div className="PhenotypeSearch">
+                                <LoadingSpinner loading={loading}/>
+                                <div className="searchResultsContainer">
+                                    {/* Orthology Selection */}
+                                    <div className="orthology-menu">
+                                        <Typography variant="h6">Comparative data on human-mouse orthologues.</Typography>
+                                        <br/>
+                                        <Autocomplete
+                                            freeSolo
+                                            className={classes.autoComplete}
+                                            onInputChange={this.retrieveLiveSearch}
+                                            id="phenotypeSearchInput"
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Phenotype search"
+                                                    variant="outlined"
+                                                    required
+                                                    helperText={this.state.inputErrorText}
+                                                    InputProps={{
+                                                        ...params.InputProps,
+                                                        endAdornment: (
+                                                            <React.Fragment>
+                                                                {liveLoading ?
+                                                                    <CircularProgress color="inherit" size={20}/> : null}
+                                                                {params.InputProps.endAdornment}
+                                                            </React.Fragment>
+                                                        ),
+                                                    }}
+                                                    // onKeyDown={e => {
+                                                    //     if (e.keyCode === 13) {
+                                                    //         this.searchClick();
+                                                    //     }
+                                                    // }}
+                                                />
+                                            )}
+                                            options={liveSearchResults}
+                                            getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
+                                            selectOnFocus={false}
+                                            renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
+                                        {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
+                                        <RadioGroup row className={classes.radio} name="speciesRadio"
+                                                    value={this.state.selectedSpecies}
+                                                    onChange={this.speciesRadioChanged}>
+                                            <FormControlLabel value="Human" label="Human" control={<Radio/>}
+                                                              id="human-radio"/>
+                                            <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>}
+                                                              id="mouse-radio"/>
+                                        </RadioGroup>
+                                        <FormControl className={classes.formControl} onChange={this.humanPValChanged}>
+                                            <InputLabel shrink>Human P-value</InputLabel>
+                                            <Select value={this.state.humanPval} className={classes.selectEmpty}
+                                                    id="human_pval_select"
+                                                    onChange={this.humanPValChanged}>
+                                                <MenuItem value={0}>0</MenuItem>
+                                                <MenuItem value={1}>1</MenuItem>
+                                                <MenuItem value={2}>2</MenuItem>
+                                                <MenuItem value={3}>3</MenuItem>
+                                                <MenuItem value={4}>4</MenuItem>
+                                                <MenuItem value={5}>5</MenuItem>
+                                                <MenuItem value={6}>6</MenuItem>
+                                                <MenuItem value={7}>7</MenuItem>
+                                                <MenuItem value={8}>8</MenuItem>
+                                                <MenuItem value={9}>9</MenuItem>
+                                                <MenuItem value={10}>10</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel shrink>Mouse P-value</InputLabel>
+                                            <Select value={this.state.mousePval} className={classes.selectEmpty} id="select"
+                                                    onChange={this.mousePValChanged}>
+                                                <MenuItem value={0}>0</MenuItem>
+                                                <MenuItem value={1}>1</MenuItem>
+                                                <MenuItem value={2}>2</MenuItem>
+                                                <MenuItem value={3}>3</MenuItem>
+                                                <MenuItem value={4}>4</MenuItem>
+                                                <MenuItem value={5}>5</MenuItem>
+                                                <MenuItem value={6}>6</MenuItem>
+                                                <MenuItem value={7}>7</MenuItem>
+                                                <MenuItem value={8}>8</MenuItem>
+                                                <MenuItem value={9}>9</MenuItem>
+                                                <MenuItem value={10}>10</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <div className="input-group-inline">
+                                            <Button size="large" color="primary" variant="contained" id="search_btn"
+                                                    onClick={this.searchClick}>Search</Button>
+                                        </div>
+                                    </div>
+                                    <div className="table-container">
+                                        {tableData ? this.displayTable(tableData) : null}
+                                    </div>
+                                </div>
+                                {/*Phenotype selection results drill down*/}
+                                <Dialog
+                                    fullWidth={true}
+                                    maxWidth="lg"
+                                    open={!searchOpen}
+                                    aria-labelledby="max-width-dialog-title"
+                                    TransitionComponent={Grow}
+                                >
+                                    <DialogContent>
+                                        <div className="table-container">
+                                            <PhenotypeResultBreakdown
+                                                mousePhenotype={this.state.mouseTerm}
+                                                humanPhenotype={this.state.humanTerm}
+                                                humanOntology={this.state.humanOntology}
+                                                breakdownData={this.state.breakdownData}
+                                                onBreakdownFinish={this.onBreakdownFinish}/>
+                                        </div>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={() => this.setState({searchOpen: true})} color="primary">
+                                            Close
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div> :
+                            <div>
+                                <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
+                                    genotypeTermID: null,
+                                    genotypeOntology: null
+                                })}>Back</Button><br />
+                                <Genome genotypeTermID={this.state.genotypeTermID}
+                                        genotypeOntology={this.state.genotypeOntology}/>
+                            </div>
+                    }
+
+                </CSSTransition>
+            </SwitchTransition>
+        );
     }
 }
 

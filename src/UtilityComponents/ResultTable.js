@@ -1,6 +1,5 @@
 import React, {useCallback} from 'react';
 import './ResultTable.css';
-import $ from 'jquery';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {Button, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
 
 class ResultTable extends React.Component {
 
@@ -152,7 +152,7 @@ class ResultTable extends React.Component {
         const paddingHeaders = ["Gene", "Procedure Parameter", "Sex"];
         let hiddenHeaders = this.props.hiddenHeaders || [];
         if (typeof this.props.tableData != "undefined" && this.props.tableData !== null)
-            if (this.props.tableData.length > 0) {
+            if (this.props.tableData.length > 0 && typeof this.props.tableData === "object") {
                 return (<div className="container">
                         <TableContainer component={Paper} className="info" id="searchResults">
                             <Table size="small" aria-label="a dense table">
@@ -172,7 +172,7 @@ class ResultTable extends React.Component {
                                                 </TableCell>)
                                         })}
                                         {this.viewButtonHeader()}
-
+                                        {this.viewButtonHeader()}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -192,6 +192,12 @@ class ResultTable extends React.Component {
                                                                                          data-human-term={row["ID"]}
                                                                                          data-mouse-term={row["MP ID"]}
                                                                                          onClick={() => this.props.viewBtnClicked ? this.props.viewBtnClicked(row["MP ID"], row["ID"], row["Human Ontology"]) : null}>View</Button></TableCell>
+                                                    <TableCell align="center"><Button size="small" color="primary"
+                                                                                         variant="contained"
+                                                                                         data-human-ont={row["Human Ontology"]}
+                                                                                         data-human-term={row["ID"]}
+                                                                                         data-mouse-term={row["MP ID"]}
+                                                                                         onClick={() => this.props.genotypeBtnClicked ? this.props.genotypeBtnClicked(row["ID"], row["Human Ontology"] ? row["Human Ontology"] : "MP") : null}>Genotype</Button></TableCell>
                                                 </TableRow>)
                                         else
                                             return (
@@ -219,7 +225,7 @@ class ResultTable extends React.Component {
                 );
             } else {
                 return (
-                    <span className="center">No results found.</span>
+                        <Typography variant="body1" className="center">{this.props.tableData}</Typography>
                 );
             }
         else
