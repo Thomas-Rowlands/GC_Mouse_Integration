@@ -14,6 +14,16 @@ import Genome from "../Genome/Genome";
 
 class App extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.routes = [{path: '/', name: 'Home', Component: Home},
+            {path: '/PhenotypeSearch', name: 'Phenotype', Component: PhenotypeSearch},
+            {path: '/OntologyHierarchy', name: 'Ontology', Component: OntologyHierarchy},
+            {path: '/Genome', name: 'Genome', Component: Genome},
+            {path: '/Genome/:termID', name: 'Genome', Component: Genome},
+        ];
+    }
+
     render() {
         return (
             <div>
@@ -163,19 +173,23 @@ class App extends React.Component {
                 </header>
                 <div className="App">
                     <HashRouter>
-                        <Switch>
-                            <Route exact path="/">
-                                <Home/>
-                            </Route>
-                            <Route exact path="/PhenotypeSearch">
-                                <PhenotypeSearch/>
-                            </Route>
-                            <Route exact path="/OntologyHierarchy">
-                                <OntologyHierarchy location={this.props.location}/>
-                            </Route>
-                            <Route path="/Genome" children={<Genome />}/>
-                            <Route path="/Genome/:termID" children={<Genome />}/>
-                        </Switch>
+                            {this.routes.map(({path, Component}) => (
+                                <Route key={path} exact path={path}>
+                                    {({match}) => (
+                                        <CSSTransition
+                                            in={match != null}
+                                            timeout={300}
+                                            classNames="page"
+                                            unmountOnExit
+                                        >
+                                            <div className="page">
+                                                <Component/>
+                                            </div>
+                                        </CSSTransition>
+                                    )}
+                                </Route>
+                            ))}
+
                     </HashRouter>
                 </div>
             </div>

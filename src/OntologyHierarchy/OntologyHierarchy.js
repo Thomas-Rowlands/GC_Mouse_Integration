@@ -599,7 +599,7 @@ class OntologyHierarchy extends React.Component {
         if (conErrorStatus)
             throw new Error("A connection error occurred retrieving ontology trees.");
 
-        return <div>
+        return <div class="pageContainer">
             <ErrorBoundary>
                 <Grid container spacing={2}>
                     <Grid item xs>
