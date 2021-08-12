@@ -62,6 +62,18 @@ class App extends React.Component {
                                 <div style={{float: "right", width: "100%"}}>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
+                                            <div style={{width: "106px"}}><a
+                                                href="https://www569.lamp.le.ac.uk/#/"
+                                                style={{fontSize: "0.8em"}}/></div>
+                                            <a href="https://www569.lamp.le.ac.uk/#/"
+                                               style={{fontSize: "0.8em"}}>
+                                                <img src="/images/mouse.svg" alt=""
+                                                     style={{width: "32px", height: "32px"}}/><br/>
+                                                <div style={{height: "2em", marginTop: "0.5em"}}>Homology</div>
+                                            </a></div>
+                                    </div>
+                                    <div className="main-tab-container">
+                                        <div className="main-tab">
                                             <div style={{"width": "106px"}}><a
                                                 href="https://www.gwascentral.org/gwasphenomap"
                                                 style={{fontSize: "0.8em"}}/></div>
