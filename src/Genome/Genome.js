@@ -8,6 +8,7 @@ import * as qs from 'query-string';
 import {withRouter} from "react-router";
 import {api_server} from "../UtilityComponents/ConfigData";
 import GenomeBrowser from "./Components/GenomeBrowser";
+import Typography from "@material-ui/core/Typography";
 
 
 class Genome extends React.Component {
@@ -29,6 +30,7 @@ class Genome extends React.Component {
             this.getHumanMarkerData(this.state.termID, this.state.ontology);
     }
 
+
     getHumanMarkerData = (termID, ontology) => {
         let url_string = this.state.configData.api_server + "controller.php?type=genome&phenotype=" + termID + "&ontology=" + ontology;
         axios.get(url_string)
@@ -41,8 +43,7 @@ class Genome extends React.Component {
                                     "start",
                                     "length",
                                     "trackIndex",
-                                    "pval",
-                                    "count"
+                                    "color"
                                 ],
                                 "annots": [
                                     {
@@ -219,42 +220,70 @@ class Genome extends React.Component {
                             result.annots.forEach(
                                 subset => {
                                     if (subset.chr === marker.chr) {
-                                        let num = parseInt(Math.floor(Math.random() * 150) + 1);
+                                        let chrom_ranges = {
+                                            1: 249250621,
+                                            2: 243199373,
+                                            3: 198022430,
+                                            4: 191154276,
+                                            5: 180915260,
+                                            6: 171115067,
+                                            7: 159138663,
+                                            8: 146364022,
+                                            9: 141213431,
+                                            10: 135534747,
+                                            11: 135006516,
+                                            12: 133851895,
+                                            13: 115169878,
+                                            14: 107349540,
+                                            15: 102531392,
+                                            16: 90354753,
+                                            17: 81195210,
+                                            18: 78077248,
+                                            19: 59128983,
+                                            20: 63025520,
+                                            21: 48129895,
+                                            22: 51304566,
+                                            "X": 155270560,
+                                            "Y": 59373566
+                                        };
+                                        let val = parseInt(marker.value);
+                                        let bin = parseInt(marker.bin);
+                                        let start = ((parseInt(marker.bin) * 3000000) - 3000000) + 1;
+                                        let length = (start + 3000000) - 1 > chrom_ranges[marker.chr] ? chrom_ranges[marker.chr] - start : 3000000;
                                         let cat = "";
-                                        if (1 <= num && num <= 50)
-                                            cat = "low";
-                                        else if (51 <= num && num <= 99)
-                                            cat = "mid";
-                                        else if (num >= 100)
-                                            cat = "high";
+                                        if (val <= 10)
+                                            cat = '#88F';
+                                        else if (val > 10 && val <= 100)
+                                            cat = '#ff8200';
+                                        else if (val > 100)
+                                            cat = '#F33';
                                         subset.annots.push([
-                                            marker.name,
-                                            parseInt(marker.start),
-                                            Math.max(parseInt(marker.stop) - parseInt(marker.start), 1),
+                                            val.toString() + (val > 1 ? " markers" : " marker"),
+                                            start,
+                                            length,
                                             0,
-                                            parseFloat(marker.pval),
                                             cat,
                                         ]);
                                     }
                                 }
                             )
                         );
-                        response.data.knockouts.forEach(gene =>
-                            result.annots.forEach(
-                                subset => {
-                                    // if (subset.chr === gene.chr) {
-                                        subset.annots.push([
-                                            gene.Gene,
-                                            200000,//parseInt(gene.start),
-                                            1000000,//Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
-                                            1,
-                                            0,
-                                            "test",
-                                        ]);
-                                    // }
-                                }
-                            )
-                        );
+                        // response.data.knockouts.forEach(gene =>
+                        //     result.annots.forEach(
+                        //         subset => {
+                        //             if (subset.chr === gene.chr) {
+                        //                 subset.annots.push([
+                        //                     gene.Gene,
+                        //                     200000,//parseInt(gene.start),
+                        //                     1000000,//Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
+                        //                     1,
+                        //                     0,
+                        //                     "low",
+                        //                 ]);
+                        //             // }
+                        //         }
+                        //     )
+                        // )
                         this.setState({markerData: result, loading: false});
                     }
                 }
@@ -267,7 +296,9 @@ class Genome extends React.Component {
         let {loading, tabValue, termID, ontology, markerData} = this.state;
         return termID && ontology ?
             (
-                <div>
+                <div><br/>
+                    <Typography className="center">{ontology}: {termID}</Typography>
+                    <br/>
                     <AppBar position="static" color="default">
                         <Tabs
                             value={tabValue}

@@ -51,7 +51,7 @@ class AppIdeogram extends Component {
     }
 
     getShape() {
-        let annotHeight = 3.5;
+        let annotHeight = 5.5;
         return 'm0,0 l 0 ' + (2 * annotHeight) +
         'l ' + annotHeight/2 + ' 0' +
         'l 0 -' + (2 * annotHeight) + 'z';
@@ -64,7 +64,7 @@ class AppIdeogram extends Component {
                 this.ideogram = new Ideogram({
                     organism: this.props.organism,
                     assembly: "GRCh37",
-                    container: '#ideo-container',
+                    container: '.ideo-container',
                     chrHeight: 1500,
                     chrWidth: 35,
                     chromosome: this.state.openChromosome,
@@ -99,16 +99,18 @@ class AppIdeogram extends Component {
                 this.ideogram = new Ideogram({
                   organism: 'human',
                     assembly: "GRCh37",
+                    container: ".ideo-container",
                   orientation: 'vertical',
                   chrWidth: 15,
                     chrHeight: 600,
                   annotations: this.props.markerData,
                   annotationTracks: [
-                            {id: 'pathogenicTrack', displayName: 'Pathogenic', shape: this.getShape()},
-      {id: 'uncertainSignificanceTrack', displayName: 'Uncertain significance', shape: this.getShape()}
+                            {id: 'markerTrack', displayName: 'Markers', shape: this.getShape()},
+      {id: 'knockoutTrack', displayName: 'Knockouts', shape: this.getShape()}
                   ],
-                  annotationHeight: 3.5,
-                  // legend: legend
+                  annotationHeight: 7.5,
+                  legend: this.getHeatmapLegend(),
+                    // heatmaps: this.getHeatmaps(),
                 });
             }
             return this.ideogram;
@@ -171,15 +173,17 @@ class AppIdeogram extends Component {
             {
                 name: 'Human Markers',
                 rows: [
-                    {color: '#88F', name: '< 10'},
-                    {color: '#ff8200', name: 'Between 10 & 100'},
-                    {color: '#F33', name: '> 100'}
+                    {color: '#88F', name: '< 10', shape: this.getShape()},
+                    {color: '#ff8200', name: 'Between 10 & 100', shape: this.getShape()},
+                    {color: '#F33', name: '> 100', shape: this.getShape()}
                 ]
             },
             {
                 name: "Mouse Knockouts",
                 rows: [
-                    {color: '#099100', name: "Knockout"}
+                    {color: '#88F', name: '< 10', shape: this.getShape()},
+                    {color: '#ff8200', name: 'Between 10 & 100', shape: this.getShape()},
+                    {color: '#F33', name: '> 100', shape: this.getShape()}
                 ]
             }
         ];
@@ -216,7 +220,7 @@ class AppIdeogram extends Component {
                     this.state.openChromosome ? <Button size="small" color="primary" variant="contained"
                                                         onClick={() => this.expandIdeogram(this)}>Back</Button> : null
                 }
-                <div id="ideo-container"/>
+                <div className="ideo-container"/>
 
                 <div id="brush-menu-container">
                     <br/>

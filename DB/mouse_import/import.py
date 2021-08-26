@@ -33,6 +33,11 @@ def import_to_mysql(orthology_data):
         con.close()
         sys.exit()
 
+def generate_binned_markers():
+    con = DB.Connection(config.host, config.mouse_db, config.username, config.password)
+    cursor = con.cursor
+    try:
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

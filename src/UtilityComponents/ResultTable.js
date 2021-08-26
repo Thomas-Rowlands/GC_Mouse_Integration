@@ -7,8 +7,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Button, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
+import {Button, IconButton, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import SearchIcon from "@material-ui/icons/Search";
+import {Equalizer} from "@material-ui/icons";
 
 class ResultTable extends React.Component {
 
@@ -171,8 +173,9 @@ class ResultTable extends React.Component {
                                                     </TableSortLabel>
                                                 </TableCell>)
                                         })}
-                                        {this.viewButtonHeader()}
-                                        {this.viewButtonHeader()}
+                                        {this.props.isSearchResult ? <TableCell align="center" padding="default">Results</TableCell> : null }
+                                        {this.props.isSearchResult ? <TableCell align="center" padding="default">Genome View</TableCell> : null }
+
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -186,18 +189,20 @@ class ResultTable extends React.Component {
                                                     {Object.keys(row).map((key) => {
                                                         if (!hiddenHeaders.includes(key))
                                                             return this.getSearchTableCell(row, key);
-                                                    })}<TableCell align="center"><Button size="small" color="primary"
+                                                    })}<TableCell align="center"><IconButton size="medium" color="primary"
                                                                                          variant="contained"
                                                                                          data-human-ont={row["Human Ontology"]}
                                                                                          data-human-term={row["ID"]}
                                                                                          data-mouse-term={row["MP ID"]}
-                                                                                         onClick={() => this.props.viewBtnClicked ? this.props.viewBtnClicked(row["MP ID"], row["ID"], row["Human Ontology"]) : null}>View</Button></TableCell>
-                                                    <TableCell align="center"><Button size="small" color="primary"
+                                                                                         onClick={() => this.props.viewBtnClicked ? this.props.viewBtnClicked(row["MP ID"], row["ID"], row["Human Ontology"]) : null}>
+                                                    <SearchIcon />
+                                                </IconButton></TableCell>
+                                                    <TableCell align="center"><IconButton size="medium" color="primary"
                                                                                          variant="contained"
                                                                                          data-human-ont={row["Human Ontology"]}
                                                                                          data-human-term={row["ID"]}
                                                                                          data-mouse-term={row["MP ID"]}
-                                                                                         onClick={() => this.props.genotypeBtnClicked ? this.props.genotypeBtnClicked(row["ID"], row["Human Ontology"] ? row["Human Ontology"] : "MP") : null}>Genotype</Button></TableCell>
+                                                                                         onClick={() => this.props.genotypeBtnClicked ? this.props.genotypeBtnClicked(row["ID"], row["Human Ontology"] ? row["Human Ontology"] : "MP") : null}><Equalizer/></IconButton></TableCell>
                                                 </TableRow>)
                                         else
                                             return (

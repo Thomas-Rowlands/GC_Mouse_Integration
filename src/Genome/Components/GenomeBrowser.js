@@ -52,15 +52,37 @@ class GenomeBrowser extends React.Component {
             },
             rendering: {type: "DivSequenceRenderer"}
         },
-            // {
-            //     type: "BasicTrack",
-            //     trackId: "ensembl_genes_track",
-            //     adapter: {
-            //         type: "GffTabixAdapter",
-            //         gffGzLocation: {"uri": this.state.configData.api_server + "JBrowseData/Homo_sapiens.GRCh37.87.gff3.gz"},
-            //     },
-            //     rendering: {type: "SvgFeatureRenderer"}
-            // },
+            {
+                type: 'FeatureTrack',
+                trackId: 'gene_track',
+                name: 'Features',
+                category: ['Annotation'],
+                assemblyNames: ['GRCh37'],
+                adapter: {
+                    type: 'Gff3TabixAdapter',
+                    gffGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz',},
+                    index: {
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz.tbi',},
+                        indexType: 'TBI',
+                    },
+                    renderer: {type: 'SvgFeatureRenderer',},
+                },
+            },
+            {
+                type: 'VariantTrack',
+                trackId: 'variant_track',
+                name: 'Variants',
+                category: ['Annotation'],
+                assemblyNames: ['GRCh37'],
+                adapter: {
+                    type: 'VcfTabixAdapter',
+                    VcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz',},
+                    index: {
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi',},
+                    },
+                },
+            },
+
         ];
     }
 
@@ -82,7 +104,23 @@ class GenomeBrowser extends React.Component {
                             },
                         ],
                     },
+                    {
+                        type: 'FeatureTrack',
+                        configuration: 'gene_track',
+                        displays: [
+                            {
+                                type: 'LinearBasicDisplay',
+                                height: 200,
+                                configuration:
+                                    'gene_track-LinearBasicDisplay',
+                            }
+                        ]
+                    }
                 ],
+                hideHeader: false,
+                hideCloseButton: true,
+                hideControls: false,
+                trackSelectorType: "hierarchical"
             },
         };
     }

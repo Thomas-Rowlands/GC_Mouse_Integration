@@ -2,7 +2,12 @@
     include_once 'database.php';
     include_once 'studies.php';
 
+    
+
     class Genome {
+
+        private static $chromosomes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, "X", "Y"];
 
         public function __construct()
         {
@@ -40,6 +45,39 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     array_push($result, $marker);
                 }
             }
+            
+            if ($result)
+                return $result;
+            else
+                return [];
+
+        }
+
+        public function getPhenotypeMarkerBins($termID, $search_ont)
+        {
+            $ont = new Ontology();
+            $descendants = $ont->get_term_descendants($termID, "MESH");
+            array_push($descendants, $termID);
+            $result = [];
+            $term_string = "";
+            foreach ($descendants as $descendant) {
+                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            foreach (Genome::$chromosomes as $chromosome) {
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
+                FROM human_markers_chr".$chromosome." AS hm
+                WHERE hm.mesh_id in (" . $term_string . ")";
+                $markers_result = $this->con->execute($cmd, "gc_bin");
+                if ($markers_result) {
+                    $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                    foreach ($markers as $marker) {
+                        array_push($result, $marker);
+                    }
+                }
+            }
+
+
             
             if ($result)
                 return $result;

@@ -203,11 +203,11 @@ a.btn {
     stroke-width: 1px;
 }
 
-svg {
-    background-color: transparent;
-    width: 100%;
-    height: 100%;
-}
+/*svg {*/
+/*    background-color: transparent;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*}*/
 
 rect.selected {
     fill: lightskyblue;

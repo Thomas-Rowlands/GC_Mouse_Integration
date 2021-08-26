@@ -101,7 +101,7 @@ ini_set('display_errors', '1');
                             foreach ($sibs as $sib) {
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
                                     $hasMapping = $sib->hasValue($mappingProperty) ? true : false;
-                                    $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0 ? true : false;
+                                    $hasData = ($sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0) ? true : false;
                                     if ($sib->hasValue("hasMapping"))
                                         $hasMapping = $sib->get('hasMapping');
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasMapping, $sib->get('hasChildren'), $hasData);
