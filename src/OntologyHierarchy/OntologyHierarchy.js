@@ -274,11 +274,11 @@ class OntologyHierarchy extends React.Component {
     }
 
     search = (searchInput, ontology) => {
-        this.setState({loading: true, isMappingPresent: false, isDataPresent: false});
         if (searchInput === undefined || searchInput === "") {
             this.getRootTrees(this.state.humanOntology);
             return;
         }
+        this.setState({loading: true});
         let humanOnt = this.state.humanOntology;
         let mouseOnt = "MP";
         let searchOnt = ontology;
@@ -581,14 +581,14 @@ class OntologyHierarchy extends React.Component {
         let treeData = this.state.treeData;
         treeData.humanID = e;
         treeData.mouseID = null;
-        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, loading: true});
+        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, breakdownType: 1});
     }
 
     getMousePhenotypeBreakdown = (e) => {
         let treeData = this.state.treeData;
         treeData.humanID = null;
         treeData.mouseID = e;
-        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, loading: true});
+        this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, breakdownType: 2});
     }
 
     onBreakdownFinish = (e) => {

@@ -15,30 +15,18 @@
             $result = null;
             $ont = strtoupper($mappingOnt);
             $search = strtolower($search);
-                // if ($is_open_search) {
                     $result = $this->neo->execute("
-                    MATCH (mouseSyn:MP)<-[:HAS_SYNONYM*0..1]-(mouseTerm:MP)-[:hasExperimentResult]->(R:Result)<-[:containsExperimentResult]-(S:Experiment)
+                    MATCH (mouseSyn:MP)<-[:HAS_SYNONYM*0..1]-(mouseTerm:MP)
+    WHERE (toLOWER(mouseSyn.FSN) STARTS WITH {search} OR toLOWER(mouseSyn.FSN) CONTAINS {searchContains} OR toLOWER(mouseTerm.FSN) STARTS WITH {search} OR toLOWER(mouseTerm.FSN) CONTAINS {searchContains}) AND mouseTerm.id IS NOT NULL
+WITH mouseSyn, mouseTerm
+                    OPTIONAL MATCH (mouseSyn:MP)<-[:HAS_SYNONYM*0..1]-(mouseTerm:MP)-[:hasExperimentResult]->(R:Result)<-[:containsExperimentResult]-(S:Experiment)
     WHERE (toLOWER(mouseSyn.FSN) STARTS WITH {search} OR toLOWER(mouseSyn.FSN) CONTAINS {searchContains} OR toLOWER(mouseTerm.FSN) STARTS WITH {search} OR toLOWER(mouseTerm.FSN) CONTAINS {searchContains}) AND R.value >= {mousePval}
 WITH mouseTerm, S
-OPTIONAL MATCH p=(E)-[:containsGWASResult]->(P:Result)<-[:hasGWASResult]-(humanTerm)-[:HAS_SYNONYM*0..1]->(humanSyn)-[M:LOOM_MAPPING]->(mouseTerm)
+OPTIONAL MATCH p=(E)-[:containsGWASResult]->(P:Result)<-[:hasGWASResult]-(humanTerm)-[:HAS_SYNONYM*0..1]->(humanSyn)<-[M:LOOM_MAPPING]-(mouseTerm)
                     WHERE (humanSyn:MESH OR humanSyn:HPO OR humanTerm:MESH OR humanTerm:HPO) AND P.value >= {humanPval}
 WITH mouseTerm, humanTerm, E, M, S
 RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.experiment_total AS Experiments, mouseTerm.ontology AS mouseOnt, M.is_exact_match AS isExactMatch, humanTerm.id AS humanID, humanTerm.FSN AS humanLabel, humanTerm.ontology AS humanOnt, humanTerm.gwas_total AS GWAS;",
                     ["search"=>$search, "searchContains"=>" " . $search, "mousePval"=>intval($mouse_pval), "humanPval"=>intval($human_pval)]);
-                // } else {
-                //     $result = $this->neo->execute("MATCH (N:MP)-[M:LOOM_MAPPING]->(H:".$ont.")
-                //     WHERE toLOWER(N.FSN) STARTS WITH {search}
-                //     WITH N, M, H
-                //     OPTIONAL MATCH (H)<-[:HAS_SYNONYM]-(T)
-                //     WHERE (H:Synonym)
-                //     WITH N, M, H, T
-                //     OPTIONAL MATCH (N)<-[:HAS_SYNONYM]-(MT)
-                //     WHERE (N:Synonym)
-                //     WITH N, M, H, T, MT
-                //     WHERE (EXISTS(N.id) OR EXISTS(MT.id)) AND (EXISTS(H.id) OR EXISTS(T.id))
-                //     RETURN COALESCE(N.id, MT.id) as mouseID, COALESCE(MT.FSN, N.FSN) as mouseLabel, COALESCE(N.experiment_total, MT.experiment_total) AS Experiments, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, COALESCE(T.id, H.id) as humanID, COALESCE(T.gwas_total, H.gwas_total) AS GWAS, COALESCE(T.FSN, H.FSN) as humanLabel, H.ontology as humanOnt",
-                // ["search"=>$search]);
-                // }
             $matches = [];
             foreach ($result as $row) {
                 $gwas = $row->get("GWAS");
@@ -53,7 +41,10 @@ RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.
                 $humanSyns = $humanID ? $this->get_term_synonyms($row->get("humanID"), $humanOnt) : null;
                 $humanLabel = $humanID ? $row->get("humanLabel") : null;
                 $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "experiments"=>$experiments, "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "gwas"=>$gwas, "humanID"=> $row->get("humanID"), "humanSynonyms"=>$humanSyns,"humanLabel"=> $humanLabel, "humanOnt"=> $humanOnt];
-                array_push($matches, $parsed);
+                if (strtolower($row->get("mouseLabel")) == $search)
+                    array_unshift($matches, $parsed);
+                else
+                    array_push($matches, $parsed);
             }
             return $matches;
         }

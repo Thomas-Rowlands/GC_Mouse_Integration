@@ -96,8 +96,12 @@ class PhenotypeResultBreakdown extends React.Component {
         this.getBreakdownData();
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        if (this.props.mousePhenotype !== nextProps.mousePhenotype || this.props.humanPhenotype !== nextProps.humanPhenotype) {
+    getSnapshotBeforeUpdate(prevProps) {
+        return{updateRequired: (this.props.mousePhenotype !== prevProps.mousePhenotype || this.props.humanPhenotype !== prevProps.humanPhenotype)};
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (snapshot.updateRequired) {
             this.getBreakdownData();
         }
     }
@@ -114,6 +118,7 @@ class PhenotypeResultBreakdown extends React.Component {
     }
 
     getBreakdownData() {
+        this.setState({loading:true});
         let mousePhenotype = this.props.mousePhenotype ? this.props.mousePhenotype : "";
         let humanPhenotype = this.props.humanPhenotype ? this.props.humanPhenotype : "";
         let humanOntology = this.props.humanOntology ? this.props.humanOntology : "";
