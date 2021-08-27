@@ -130,16 +130,32 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
         public function getMouseKnockouts($termID, $ontology)
         {
             $ont = new Ontology();
-            $mp_term = $ont->get_mp_mapping_by_id($termID);
+            $mp_term = [$termID];
+            if (strtoupper($ontology) != "MP")
+                $mp_term = $ont->get_mp_mapping_by_id($termID);
             if ($mp_term)
                 $mp_term = $mp_term[0];
             if ($mp_term) {
-                $study = new StudySearch();
-                $experiments = $study->get_mouse_knockouts($mp_term);
-                if ($experiments)
-                    return $experiments;
-                else
-                    return [];
+                $descendants = $ont->get_term_descendants($termID, strtoupper($ontology));
+                array_push($descendants, $termID);
+                $result = [];
+                $term_string = "";
+                foreach ($descendants as $descendant) {
+                    $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
+                }
+                $term_string = rtrim($term_string, ",");
+                foreach (Genome::$chromosomes as $chromosome) {
+                    $cmd = "SELECT '".$chromosome."' AS chr, start, stop, name, pval
+                    FROM human_markers_chr".$chromosome." AS hm
+                    WHERE hm.mesh_id in (" . $term_string . ")";
+                    $markers_result = $this->con->execute($cmd, "gc_bin");
+                    if ($markers_result) {
+                        $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                        foreach ($markers as $marker) {
+                            array_push($result, $marker);
+                        }
+                    }
+                }
             }
             return [];
         }

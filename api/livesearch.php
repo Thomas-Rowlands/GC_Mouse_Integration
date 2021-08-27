@@ -9,9 +9,9 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $entry = strtolower($_GET["entry"]);
     $cmd = "MATCH (n)
     WHERE n.ontology = {ont} AND toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\" 
-    RETURN n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology
+    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology
     ORDER BY FSN
-    LIMIT 5;";
+    ;";
     $neo = new Neo_Connection();
     $result = $neo->execute($cmd, ['entry' => $entry, 'ont' => $ont]);
     $matches = [];

@@ -27,11 +27,11 @@ class Genome extends React.Component {
 
     componentDidMount() {
         if (!this.state.markerData && this.state.termID && this.state.ontology)
-            this.getHumanMarkerData(this.state.termID, this.state.ontology);
+            this.getKaryotypeData(this.state.termID, this.state.ontology);
     }
 
 
-    getHumanMarkerData = (termID, ontology) => {
+    getKaryotypeData = (termID, ontology) => {
         let url_string = this.state.configData.api_server + "controller.php?type=genome&phenotype=" + termID + "&ontology=" + ontology;
         axios.get(url_string)
             .then((response) => {
