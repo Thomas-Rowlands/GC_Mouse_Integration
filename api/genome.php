@@ -13,12 +13,12 @@
         {
             $this->con = new GC_Connection("gc_mouse");
             $this->neo = new Neo_Connection();
+            $this->ont = new Ontology();
         }
 
         public function getPhenotypeMarkers($termID, $search_ont)
         {
-            $ont = new Ontology();
-            $descendants = $ont->get_term_descendants($termID, "MESH");
+            $descendants = $this->ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
             $result = [];
             $term_string = "";
@@ -53,10 +53,15 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
 
         }
 
-        public function getPhenotypeMarkerBins($termID, $search_ont)
+        public function getPhenotypeMarkerBins($termID, $searchOnt)
         {
-            $ont = new Ontology();
-            $descendants = $ont->get_term_descendants($termID, "MESH");
+            if (strtoupper($searchOnt) !== "MESH") {
+                $study = new StudySearch();
+                $termID = $study->get_mesh_id_from_db($termID);
+                if (!$termID)
+                    return [];
+            }
+            $descendants = $this->ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
             $result = [];
             $term_string = "";
@@ -127,37 +132,42 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 return [];
         }
 
-        public function getMouseKnockouts($termID, $ontology)
+        public function getMouseKnockoutBins($termID, $searchOnt)
         {
-            $ont = new Ontology();
-            $mp_term = [$termID];
-            if (strtoupper($ontology) != "MP")
-                $mp_term = $ont->get_mp_mapping_by_id($termID);
-            if ($mp_term)
-                $mp_term = $mp_term[0];
-            if ($mp_term) {
-                $descendants = $ont->get_term_descendants($termID, strtoupper($ontology));
-                array_push($descendants, $termID);
-                $result = [];
-                $term_string = "";
-                foreach ($descendants as $descendant) {
-                    $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
-                }
-                $term_string = rtrim($term_string, ",");
-                foreach (Genome::$chromosomes as $chromosome) {
-                    $cmd = "SELECT '".$chromosome."' AS chr, start, stop, name, pval
-                    FROM human_markers_chr".$chromosome." AS hm
-                    WHERE hm.mesh_id in (" . $term_string . ")";
-                    $markers_result = $this->con->execute($cmd, "gc_bin");
-                    if ($markers_result) {
-                        $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
-                        foreach ($markers as $marker) {
-                            array_push($result, $marker);
-                        }
+            if (strtoupper($searchOnt) != "MP") {
+                $termID = $this->ont->get_mp_mapping_by_id($termID);
+                if (!$termID)
+                    return [];
+                if (is_array($termID))
+                    $termID = $termID[0];
+            }
+            $descendants = $this->ont->get_term_descendants($termID, "MP");
+            array_push($descendants, $termID);
+            $result = [];
+            $term_string = "";
+            foreach ($descendants as $descendant) {
+                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            foreach (Genome::$chromosomes as $chromosome) {
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
+                FROM mouse_knockouts_chr".$chromosome." AS mk
+                WHERE mk.mp_id in (" . $term_string . ")";
+                $markers_result = $this->con->execute($cmd, "gc_bin");
+                if ($markers_result) {
+                    $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                    foreach ($markers as $marker) {
+                        array_push($result, $marker);
                     }
                 }
             }
-            return [];
+
+
+            
+            if ($result)
+                return $result;
+            else
+                return [];
         }
 
     }

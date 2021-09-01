@@ -61,6 +61,42 @@ class BinBuilder:
                 terms = [x for [(x)] in result.fetchall()]
         return terms
 
+    def get_used_mp_phenotypes(self):
+        cmd = """
+            SELECT DISTINCT terms.mp_term_id
+            FROM (
+                    SELECT DISTINCT mp.mp_term_id
+                FROM gc_mouse.human_genes AS hg
+                    INNER JOIN gc_mouse.chromosomes AS chr ON chr.id = hg.chromosome_id
+                    INNER JOIN gc_mouse.homologs AS hom ON hom.human_gene_id = hg.id
+                    INNER JOIN gc_mouse.mouse_genes AS mg ON mg.id = hom.mouse_gene_id
+                    INNER JOIN gc_mouse.mouse_markers AS mm ON mm.mouse_gene_id = mg.id
+                    INNER JOIN gc_mouse.experiments AS exp ON exp.mouse_marker_id = mm.mouse_marker_id
+                    INNER JOIN gc_mouse.experiment_phenotypes AS ephen ON ephen.experiment_id = exp.experiments_id
+                    INNER JOIN gc_mouse.experiment_top_level_phenotypes AS etphen ON etphen.experiment_id = exp.experiments_id
+                    INNER JOIN gc_mouse.mp_phenotypes AS mp ON mp.mp_phenotype_id = ephen.phenotype_id
+                    INNER JOIN gc_mouse.mp_phenotypes AS tmp ON tmp.mp_phenotype_id = etphen.phenotype_id
+                UNION
+                    SELECT DISTINCT tmp.mp_term_id
+                    FROM gc_mouse.human_genes AS hg
+                        INNER JOIN gc_mouse.chromosomes AS chr ON chr.id = hg.chromosome_id
+                        INNER JOIN gc_mouse.homologs AS hom ON hom.human_gene_id = hg.id
+                        INNER JOIN gc_mouse.mouse_genes AS mg ON mg.id = hom.mouse_gene_id
+                        INNER JOIN gc_mouse.mouse_markers AS mm ON mm.mouse_gene_id = mg.id
+                        INNER JOIN gc_mouse.experiments AS exp ON exp.mouse_marker_id = mm.mouse_marker_id
+                        INNER JOIN gc_mouse.experiment_phenotypes AS ephen ON ephen.experiment_id = exp.experiments_id
+                        INNER JOIN gc_mouse.experiment_top_level_phenotypes AS etphen ON etphen.experiment_id = exp.experiments_id
+                        INNER JOIN gc_mouse.mp_phenotypes AS mp ON mp.mp_phenotype_id = ephen.phenotype_id
+                        INNER JOIN gc_mouse.mp_phenotypes AS tmp ON tmp.mp_phenotype_id = etphen.phenotype_id
+            ) AS terms;
+        """
+        results = self.db.execute(cmd, multi=True)
+        terms = []
+        for result in results:
+            if result.with_rows:
+                terms = [x for [(x)] in result.fetchall()]
+        return terms
+
     def get_chromosome_id(self, chromosome):
         cmd = F"SELECT id FROM gc_mouse.chromosomes WHERE name = '{chromosome}'"
         results = self.db.execute(cmd, multi=True)
@@ -93,6 +129,29 @@ class BinBuilder:
         self.db.execute(cmd)
         self.db_connection.commit()
 
+    def insert_mouse_phenotype_bin_value(self, term_id, chromosome, bin):
+        start = (bin - 1) * 3000000
+        stop = bin * 3000000 if bin * 3000000 < self.__chromosomes[chromosome] else self.__chromosomes[chromosome]
+        cmd = F"""
+        INSERT IGNORE INTO GC_bin.mouse_knockouts_chr{chromosome} (bin, value, mp_id, highest_significance) 
+        (
+            SELECT {bin}, COUNT(*) AS value, '{term_id}', MAX(ROUND(LOG((CONVERT(exp.p_value, DECIMAL(30, 30)) + 0)) * -1, 3)) AS "highest_significance"
+            FROM gc_mouse.human_genes AS hg
+                INNER JOIN gc_mouse.chromosomes AS chr ON chr.id = hg.chromosome_id
+                INNER JOIN gc_mouse.homologs AS hom ON hom.human_gene_id = hg.id
+                INNER JOIN gc_mouse.mouse_genes AS mg ON mg.id = hom.mouse_gene_id
+                INNER JOIN gc_mouse.mouse_markers AS mm ON mm.mouse_gene_id = mg.id
+                INNER JOIN gc_mouse.experiments AS exp ON exp.mouse_marker_id = mm.mouse_marker_id
+                INNER JOIN gc_mouse.experiment_phenotypes AS ephen ON ephen.experiment_id = exp.experiments_id
+                INNER JOIN gc_mouse.experiment_top_level_phenotypes AS etphen ON etphen.experiment_id = exp.experiments_id
+                INNER JOIN gc_mouse.mp_phenotypes AS mp ON mp.mp_phenotype_id = ephen.phenotype_id
+                INNER JOIN gc_mouse.mp_phenotypes AS tmp ON tmp.mp_phenotype_id = etphen.phenotype_id
+            WHERE (mp.mp_term_id = '{term_id}' OR tmp.mp_term_id = '{term_id}') AND chr.name = '{chromosome}' AND hg.start BETWEEN {start} AND {stop}
+            HAVING COUNT(*) > 0
+        );"""
+        self.db.execute(cmd)
+        self.db_connection.commit()
+
     def build_marker_bins(self):
         mesh_terms = self.get_used_mesh_phenotypes()
         for chromosome in self.__chromosomes:
@@ -102,6 +161,19 @@ class BinBuilder:
             print(F"Finished processing chromosome {chromosome}")
 
 
+    def build_knockout_bins(self):
+        mp_terms = self.get_used_mp_phenotypes()
+        for chromosome in self.__chromosomes:
+            print(F"Processing chromosome {chromosome}")
+            for term in mp_terms:
+                bin = 1
+                while (bin - 1) * 3000000 < self.__chromosomes[chromosome]:
+                    self.insert_mouse_phenotype_bin_value(term, chromosome, bin)
+                    bin += 1
+            print(F"Finished processing chromosome {chromosome}")
+
+
 if __name__ == "__main__":
     builder = BinBuilder()
-    builder.build_marker_bins()
+    # builder.build_marker_bins()
+    builder.build_knockout_bins()

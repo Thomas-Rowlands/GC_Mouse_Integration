@@ -59,7 +59,7 @@ class OntologyHierarchy extends React.Component {
             humanSearchInput: "",
             genotypeTermID: null,
             genotypeOntology: null,
-            breakdownType: 0,
+            breakdownType: 0, // 0 = both, 1 = human only, 2 = mouse only
         };
         this.tempExpandedmouseIds = [];
         this.tempExpandedhumanIds = [];
@@ -484,7 +484,7 @@ class OntologyHierarchy extends React.Component {
     }
 
     genotypeHandler = () => {
-        this.setState({genotypeTermID: this.state.treeData.humanID, genotypeOntology: this.state.humanOntology});
+        this.setState({genotypeTermID: this.state.breakdownType !== 2 ? this.state.treeData.humanID : this.state.treeData.mouseID, genotypeOntology: this.state.breakdownType !== 2 ? this.state.humanOntology : "MP"});
     }
 
     mouseSearchBtnClick = (e) => {

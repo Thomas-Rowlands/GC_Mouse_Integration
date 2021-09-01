@@ -268,22 +268,58 @@ class Genome extends React.Component {
                                 }
                             )
                         );
-                        // response.data.knockouts.forEach(gene =>
-                        //     result.annots.forEach(
-                        //         subset => {
-                        //             if (subset.chr === gene.chr) {
-                        //                 subset.annots.push([
-                        //                     gene.Gene,
-                        //                     200000,//parseInt(gene.start),
-                        //                     1000000,//Math.max(parseInt(gene.stop) - parseInt(gene.start), 1),
-                        //                     1,
-                        //                     0,
-                        //                     "low",
-                        //                 ]);
-                        //             // }
-                        //         }
-                        //     )
-                        // )
+                        response.data.knockouts.forEach(knockout =>
+                            result.annots.forEach(
+                                subset => {
+                                    if (subset.chr === knockout.chr) {
+                                        let chrom_ranges = {
+                                            1: 249250621,
+                                            2: 243199373,
+                                            3: 198022430,
+                                            4: 191154276,
+                                            5: 180915260,
+                                            6: 171115067,
+                                            7: 159138663,
+                                            8: 146364022,
+                                            9: 141213431,
+                                            10: 135534747,
+                                            11: 135006516,
+                                            12: 133851895,
+                                            13: 115169878,
+                                            14: 107349540,
+                                            15: 102531392,
+                                            16: 90354753,
+                                            17: 81195210,
+                                            18: 78077248,
+                                            19: 59128983,
+                                            20: 63025520,
+                                            21: 48129895,
+                                            22: 51304566,
+                                            "X": 155270560,
+                                            "Y": 59373566
+                                        };
+                                        let val = parseInt(knockout.value);
+                                        let bin = parseInt(knockout.bin);
+                                        let start = ((parseInt(knockout.bin) * 3000000) - 3000000) + 1;
+                                        let length = (start + 3000000) - 1 > chrom_ranges[knockout.chr] ? chrom_ranges[knockout.chr] - start : 3000000;
+                                        let cat = "";
+                                        if (val <= 10)
+                                            cat = '#88F';
+                                        else if (val > 10 && val <= 100)
+                                            cat = '#ff8200';
+                                        else if (val > 100)
+                                            cat = '#F33';
+                                        subset.annots.push([
+                                            val.toString() + (val > 1 ? " knockouts" : " knockouts"),
+                                            start,
+                                            length,
+                                            1,
+                                            cat,
+                                        ]);
+                                    }
+                                }
+                            )
+                        );
                         this.setState({markerData: result, loading: false});
                     }
                 }
