@@ -40,11 +40,10 @@
             if (!$matches)
                 return [];
             for ($i = 0; $i < sizeof($matches); $i++) {
-                $mapping = $this->get_mp_mapping_by_id($matches[$i]["id"]);
+                $mapping = $this->get_human_mapping_by_id($matches[$i]["id"], $mappingOnt);
                 if ($mapping) {
-                    $matches[$i]["mappedID"] = $mapping["mappedID"];
-                    $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
-                    $matches[$i]["isExactMatch"] = $mapping["isExactMatch"];
+                    $matches[$i]["mappedID"] = $mapping[0]["mappedID"];
+                    $matches[$i]["mappedLabel"] = $mapping[0]["mappedLabel"];
                 }
                     
             }
@@ -53,40 +52,53 @@
 
         public function search_human_term($search, $ontology, $is_open_search=false, $human_pval=0, $mouse_pval=0) {
             $result = null;
-            $ont = strtoupper($ontology);
+            $ont = strtoupper($mappingOnt);
             $search = strtolower($search);
-                    $result = $this->neo->execute("MATCH (humanSyn)<-[:HAS_SYNONYM*0..1]-(humanTerm)-[:hasGWASResult]->(R:Result)<-[:containsGWASResult]-(S:Study)
-    WHERE (humanSyn:MESH OR humanSyn:HPO OR humanTerm:MESH OR humanTerm:HPO) AND (toLOWER(humanSyn.FSN) STARTS WITH {search} OR toLOWER(humanSyn.FSN) CONTAINS {searchContains} OR toLOWER(humanTerm.FSN) STARTS WITH {search} OR toLOWER(humanTerm.FSN) CONTAINS {searchContains}) AND R.value >= {humanPval}
-WITH humanTerm, S
-OPTIONAL MATCH p=(E)-[:containsExperimentResult]->(P:Result)<-[:hasExperimentResult]-(mouseTerm:MP)-[:HAS_SYNONYM*0..1]->(mouseSyn:MP)-[M:LOOM_MAPPING]->(humanTerm)
-                    WHERE P.value >= {mousePval}
-WITH mouseTerm, humanTerm, E, M, S
-RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.experiment_total AS Experiments, mouseTerm.ontology AS mouseOnt, M.is_exact_match AS isExactMatch, humanTerm.id AS humanID, humanTerm.FSN AS humanLabel, humanTerm.ontology AS humanOnt, humanTerm.gwas_total AS GWAS;",
-                    ["search"=>$search, "searchContains"=>" " . $search, "humanPval"=>intval($human_pval), "mousePval"=>intval($mouse_pval)]);
-
-            $matches = [];
-            foreach ($result as $row) {
-                $gwas = $row->get("GWAS");
-                $experiments = $row->get("Experiments");
-                if (!$gwas)
-                    $gwas = 0;
-                if (!$experiments)
-                    $experiments = 0;
-                $parsed = ["mouseID"=> $row->get("mouseID"), "mouseSynonyms"=>$this->get_term_synonyms($row->get("mouseID"), $row->get("mouseOnt")), "mouseLabel"=> $row->get("mouseLabel"), "experiments"=>$experiments, "mouseOnt"=> $row->get("mouseOnt"), "isExactMatch"=> $row->get("isExactMatch"), "gwas"=>$gwas, "humanID"=> $row->get("humanID"), "humanSynonyms"=>$this->get_term_synonyms($row->get("humanID"), $row->get("humanOnt")),"humanLabel"=> $row->get("humanLabel"), "humanOnt"=> $row->get("humanOnt")];
-                if (strtolower($row->get("humanLabel")) == $search)
-                    array_unshift($matches, $parsed);
-                else
-                    array_push($matches, $parsed);
+            $matches = $this->term_search($search, $ontology);
+            if (!$matches)
+                return [];
+            for ($i = 0; $i < sizeof($matches); $i++) {
+                $mapping = $this->get_mp_mapping_by_id($matches[$i]["id"])[0];
+                if ($mapping) {
+                    $matches[$i]["mappedID"] = $mapping["mappedID"];
+                    $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
+                }
+                    
             }
             return $matches;
         }
 
         public function get_mp_mapping_by_id($termID) {
-            $result = $this->neo->execute("MATCH (N {id: '" . $termID . "'})-[r:LOOM_MAPPING]-(S:MP) RETURN DISTINCT S.id AS mappedID, S.FSN AS mappedLabel, r.is_exact_match AS isExactMatch;", []);
+            $result = $this->neo->execute("
+            MATCH (n {id: '".$termID."'})
+            WITH n
+            OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
+            WITH n, COLLECT(syns) AS syns
+            MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn:MP)<-[:HAS_SYNONYM*0..1]-(mappedTerm:MP)
+            WHERE (o in syns or o = n) AND mappedTerm:Term
+            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel"), "isExactMatch" => $row->get("isExactMatch")];
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel")];
+                    array_push($mappings, $record);
+                }
+            return $mappings;
+        }
+
+        public function get_human_mapping_by_id($termID, $targetOnt) {
+            $result = $this->neo->execute("
+            MATCH (n {id: '".$termID."'})
+            WITH n
+            OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
+            WITH n, COLLECT(syns) AS syns
+            MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
+            WHERE (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
+            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel", []);
+            $mappings = [];
+            if ($result)
+                foreach ($result as $row) {
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel")];
                     array_push($mappings, $record);
                 }
             return $mappings;
@@ -184,7 +196,7 @@ RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.
                     }
                 }
                 
-                $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => "", "isExactMatch" => False];
+                $result = ["mouseTree" => [], "humanTree" => [], "mouseID" => "", "mouseLabel" => "", "humanID" => "", "humanLabel" => ""];
 
                 if ($mouseID) {
                     $tree = new OntologyTree($mouseOntology, $mouseOntology, $mouseID, false, $humanOntology);
@@ -198,15 +210,11 @@ RETURN DISTINCT mouseTerm.id AS mouseID, mouseTerm.FSN AS mouseLabel, mouseTerm.
                 if (!$humanID && !$mouseID)
                     return null;
 
-                if ($mouseID && $humanID)
-                    $isExactMatch = $match[0]["isExactMatch"];
-
 
                 $result["mouseID"] = $mouseID;
                 $result["mouseLabel"] = $mouseLabel;
                 $result["humanID"] = $humanID;
                 $result["humanLabel"] = $humanLabel;
-                $result["isExactMatch"] = $isExactMatch;
 
                 if ($result["mouseTree"] || $result["humanTree"])
                     return $result;

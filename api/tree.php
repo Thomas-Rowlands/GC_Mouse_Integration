@@ -91,7 +91,7 @@ ini_set('display_errors', '1');
                         if ($i == 0)//first node will be the root which is already added.
                             continue;
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
-                            $hasMapping = $nodes[$i]->hasValue($mappingProperty) ? true : false;
+                            $hasMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
                             $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0 ? true : false;
 
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
@@ -100,7 +100,7 @@ ini_set('display_errors', '1');
                             $parentTreeNode->children[$nodes[$i]->value('id')] = $childNode;
                             foreach ($sibs as $sib) {
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
-                                    $hasMapping = $sib->hasValue($mappingProperty) ? true : false;
+                                    $hasMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasData = ($sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0) ? true : false;
                                     if ($sib->hasValue("hasMapping"))
                                         $hasMapping = $sib->get('hasMapping');
