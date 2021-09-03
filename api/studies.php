@@ -122,36 +122,64 @@
             $human_pval = $this->con->escape_input($human_pval);
             $mouse_pval = $this->con->escape_input($mouse_pval);
             $species = strtolower($species);
-            
+            $mapped_terms = [];
             $ont = new Ontology();
-            if (strtolower($species) == "mouse") {
-                $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                $mapped_mesh_terms = $ont->search_mouse_term($user_input, "MESH", true, $human_pval, $mouse_pval);
+            $mapped_terms = [];
+            if ($species == "mouse") {
+                //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+                $mapped_terms = $ont->search_mouse_term($user_input, "MESH", true, $human_pval, $mouse_pval);
             } else {
-                $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                $mapped_mesh_terms = $ont->search_human_term($user_input, "MESH", true, $human_pval, $mouse_pval);
+                //$mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+                $mapped_terms = $ont->search_human_term($user_input, "MESH", true, $human_pval, $mouse_pval);
             }
-            $mapped_terms = array_merge($mapped_hpo_terms, $mapped_mesh_terms);
+            //$mapped_terms = array_merge($mapped_hpo_terms, $mapped_mesh_terms);
             $results = [];
             $mouseIDs = [];
             $humanIDs = [];
+
             foreach ($mapped_terms as $mapping) {
                 $skip_duplicate = false; //filter out duplicates which do not have a mapped ID
                 // Check if at least 1 GWAS or Knockout is present for this phenotype
                 if ($species == "mouse")
-                    if (in_array($mapping["mouseID"], $mouseIDs)) {
-                        if (!$mapping["humanID"]) 
+                    if (in_array($mapping["id"], $mouseIDs)) {
+                        if (!$mapping["mappedID"]) 
                             $skip_duplicate = true;
                     } else
-                        array_push($mouseIDs, $mapping["mouseID"]);
+                        array_push($mouseIDs, $mapping["id"]);
                 else
-                    if (in_array($mapping["humanID"], $humanIDs)) {
-                        if (!$mapping["mouseID"]) 
+                    if (in_array($mapping["id"], $humanIDs)) {
+                        if (!$mapping["mappedID"]) 
                             $skip_duplicate = true;
                     } else
-                        array_push($humanIDs, $mapping["humanID"]);
+                        array_push($humanIDs, $mapping["id"]);
                 if (!$skip_duplicate) {
-                    $result = ["Human Ontology"=>$mapping["humanOnt"], "ID"=>$mapping["humanID"], "Human Phenotype"=>$mapping["humanLabel"], "Human Synonyms"=>$mapping["humanSynonyms"], "MP ID"=>$mapping["mouseID"], "MP Label"=>$mapping["mouseLabel"], "Mouse Synonyms"=>$mapping["mouseSynonyms"], "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
+                    $humanOnt = "";
+                    $humanID = "";
+                    $humanLabel = "";
+                    $humanSynonyms = [];
+                    $mouseID = "";
+                    $mouseLabel = "";
+                    $mouseSynonyms = "";
+                    if ($species == "mouse") {
+                        $humanOnt = $mapping["mappedOnt"];
+                        $humanID = $mapping["mappedID"];
+                        $humanLabel = $mapping["mappedLabel"];
+                        $humanSynonyms = $mapping["mappedSynonyms"];
+                        $mouseID = $mapping["id"];
+                        $mouseLabel = $mapping["label"];
+                        $mouseSynonyms = $mapping["synonyms"];
+                    } else {
+                        $humanOnt = $mapping["ont"];
+                        $humanID = $mapping["id"];
+                        $humanLabel = $mapping["label"];
+                        $humanSynonyms = $mapping["synonyms"];
+                        $mouseID = $mapping["mappedID"];
+                        $mouseLabel = $mapping["mappedLabel"];
+                        $mouseSynonyms = $mapping["mappedSynonyms"];
+                    }
+                    $result = ["Human Ontology"=>$humanOnt, "ID"=>$humanID, "Human Phenotype"=>$humanLabel, "Human Synonyms"=>$humanSynonyms, 
+                    "MP ID"=>$mouseID, "MP Label"=>$mouseLabel, "Mouse Synonyms"=>$mouseSynonyms, 
+                    "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
                     array_push($results, $result);
                 }
 

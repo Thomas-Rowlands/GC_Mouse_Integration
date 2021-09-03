@@ -76,9 +76,10 @@ class GenomeBrowser extends React.Component {
                 assemblyNames: ['GRCh37'],
                 adapter: {
                     type: 'VcfTabixAdapter',
-                    VcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz',},
+                    vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz',},
                     index: {
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi',},
+                        indexType: "CSI",
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.csi',},
                     },
                 },
             },
@@ -113,6 +114,17 @@ class GenomeBrowser extends React.Component {
                                 height: 200,
                                 configuration:
                                     'gene_track-LinearBasicDisplay',
+                            }
+                        ]
+                    },
+                    {
+                        type: "VariantTrack",
+                        configuration: "variant_track",
+                        displays: [
+                            {
+                                type: "LinearVariantDisplay",
+                                height: 200,
+                                configuration: "variant_track-LinearVariantDisplay"
                             }
                         ]
                     }
