@@ -21,13 +21,18 @@ class Genome extends React.Component {
             termID: props.genotypeTermID ? props.genotypeTermID : qs.parse(this.props.location.search).termID,
             ontology: props.genotypeOntology ? props.genotypeOntology : qs.parse(this.props.location.search).ontology,
             markerData: null,
-            configData: api_server
+            configData: api_server,
+            annotationSelected: null,
         };
     }
 
     componentDidMount() {
         if (!this.state.markerData && this.state.termID && this.state.ontology)
             this.getKaryotypeData(this.state.termID, this.state.ontology);
+    }
+
+    onAnnotationClick = (annot) => {
+        this.setState({annotationSelected: annot, tabValue: 1});
     }
 
 
@@ -351,12 +356,16 @@ class Genome extends React.Component {
                     </AppBar>
                     <TabPanel value={tabValue} index={0} className="subTabMenu">
                         {
-                            markerData ? <AppIdeogram markerData={markerData} organism="human"/> :
+                            markerData ? <AppIdeogram markerData={markerData} onAnnotationClick={this.onAnnotationClick} organism="human"/> :
                                 <LoadingSpinner loading={loading}/>
                         }
                     </TabPanel>
                     <TabPanel value={tabValue} index={1} className="subTabMenu">
-                        <GenomeBrowser/>
+                        {
+                            this.state.annotationSelected ? <GenomeBrowser chrom={this.state.annotationSelected.chr}
+                                                                           start={this.state.annotationSelected.start}
+                                                                           stop={this.state.annotationSelected.stop}/> : <GenomeBrowser/>
+                        }
                     </TabPanel>
                 </div>
             ) : <GenomeBrowser/>;

@@ -166,6 +166,7 @@ class GenomeBrowser extends React.Component {
     };
 
 
+
     render() {
         const assembly = this.assembly();
         const tracks = this.tracks();
@@ -177,7 +178,7 @@ class GenomeBrowser extends React.Component {
                 assembly,
                 tracks,
                 defaultSession: defaultSession,
-                location: "1:100,987,269..100,987,368"
+                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:100,987,269..100,987,368"
             }
         );
         return (
