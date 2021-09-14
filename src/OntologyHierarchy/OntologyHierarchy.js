@@ -40,7 +40,6 @@ class OntologyHierarchy extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
             treeData: null,
             expandedMouseNodes: [''],
             expandedHumanNodes: [''],
@@ -278,7 +277,7 @@ class OntologyHierarchy extends React.Component {
             this.getRootTrees(this.state.humanOntology);
             return;
         }
-        this.setState({loading: true});
+        this.props.setLoading(true);
         let humanOnt = this.state.humanOntology;
         let mouseOnt = "MP";
         let searchOnt = ontology;
@@ -361,7 +360,6 @@ class OntologyHierarchy extends React.Component {
 
                         this.setState({
                             treeData: tree,
-                            loading: false,
                             isDataPresent: true,
                             isMappingPresent: true,
                             expandedMouseNodes: expandedMouseNodes,
@@ -376,7 +374,6 @@ class OntologyHierarchy extends React.Component {
                         }, () => this.scrollTrees());
                     } else {
                         this.setState({
-                            loading: false,
                             isDataPresent: false,
                             isMappingPresent: false,
                             humanSearchFailed: searchOnt !== "MP",
@@ -386,8 +383,9 @@ class OntologyHierarchy extends React.Component {
                 }
             })
             .catch((error) => {
-                this.setState({loading: false, searchOpen: true});
+                this.setState({searchOpen: true});
                 console.log("An error occurred searching for ontology mappings.");
+                this.props.setLoading(false);
             });
     }
 
@@ -399,7 +397,7 @@ class OntologyHierarchy extends React.Component {
     }
 
     getRootTrees = (ontology = null) => {
-        this.setState({loading: true});
+        this.props.setLoading(true);
         let ont = ontology ? ontology : "HPO";
         let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoots&ontology=" + ont;
         axios.get(url_string)
@@ -410,10 +408,10 @@ class OntologyHierarchy extends React.Component {
                         let expandedHumanNodes = ["humanTree-" + response.data.humanID];
                         this.setState({
                             treeData: response.data,
-                            loading: false,
                             expandedMouseNodes: expandedMouseNodes,
                             expandedHumanNodes: expandedHumanNodes,
                         });
+                        this.props.setLoading(false);
                     } else {
 
                     }
@@ -421,12 +419,13 @@ class OntologyHierarchy extends React.Component {
             })
             .catch((error) => {
                 console.log("An error occurred retrieving root tree data.");
-                this.setState({conErrorStatus: true, loading: false});
+                this.setState({conErrorStatus: true});
+                this.props.setLoading(false);
             });
     }
 
     getRootTree = (ontology, species) => {
-        this.setState({loading: true});
+        this.props.setLoading(true);
         let mappingOnt = ontology === "MP" ? this.state.humanOntology : "MP";
         let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoot&ontology=" + ontology + "&mappingOnt=" + mappingOnt;
         axios.get(url_string)
@@ -437,19 +436,22 @@ class OntologyHierarchy extends React.Component {
                             let expandedHumanNodes = ["humanTree-term-1"];
                             let tree = this.state.treeData;
                             tree["humanTree"] = response.data.tree;
-                            this.setState({treeData: tree, loading: false, expandedHumanNodes: expandedHumanNodes});
+                            this.setState({treeData: tree, expandedHumanNodes: expandedHumanNodes});
+                            this.props.setLoading(false);
                         } else {
                             let expandedMouseNodes = ["mouseTree-term-1"];
                             let tree = this.state.treeData;
                             tree["mouseTree"] = response.data.tree;
-                            this.setState({treeData: tree, loading: false, expandedMouseNodes: expandedMouseNodes});
+                            this.setState({treeData: tree, expandedMouseNodes: expandedMouseNodes});
+                            this.props.setLoading(false);
                         }
                     }
                 }
             })
             .catch((error) => {
                 console.log("An error occurred retrieving root tree data.");
-                this.setState({conErrorStatus: true, loading: false});
+                this.setState({conErrorStatus: true});
+                this.props.setLoading(false);
             });
     }
 
@@ -473,7 +475,7 @@ class OntologyHierarchy extends React.Component {
                 }
             })
             .catch((error) => {
-                this.setState({loading: false, searchOpen: true, tableData: null});
+                this.setState({searchOpen: true, tableData: null});
                 console.log("An error occurred searching for ontology mappings.");
             });
     }
@@ -581,6 +583,7 @@ class OntologyHierarchy extends React.Component {
         let treeData = this.state.treeData;
         treeData.humanID = e;
         treeData.mouseID = null;
+        this.props.setLoading(true);
         this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, breakdownType: 1});
     }
 
@@ -588,11 +591,12 @@ class OntologyHierarchy extends React.Component {
         let treeData = this.state.treeData;
         treeData.humanID = null;
         treeData.mouseID = e;
+        this.props.setLoading(true);
         this.setState({treeData: treeData, mouseID: null, isDataPresent: true, isMappingPresent: false, breakdownType: 2});
     }
 
     onBreakdownFinish = (e) => {
-        this.setState({loading: false});
+        this.props.setLoading(false);
     }
 
     changeHumanOntology = (e) => {
@@ -773,7 +777,6 @@ class OntologyHierarchy extends React.Component {
                                         {this.state.mouseSearchFailed ?
                                             <p style={{color: "red"}}>No match found.</p> : null}
                                     </div>
-                                    <LoadingSpinner loading={loading}/>
                                     {!mouseTree ? null :
                                         <OntologyTree treeID="mouseTree"
                                                       selectedPhenotypeLabel={mappedMousePhenotype}
@@ -787,8 +790,6 @@ class OntologyHierarchy extends React.Component {
                                 </Paper>
                             </Grid>
                         </Grid>
-
-
                     </ErrorBoundary>
                 </div>) : <div>
                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({

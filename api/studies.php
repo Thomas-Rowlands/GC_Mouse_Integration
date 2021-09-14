@@ -58,7 +58,7 @@
             $studies = [];
             if ($result)
                 foreach ($result as $row) {
-                    array_push($studies, ["id"=>$row->get("id"), "name"=>$row->get("name"), "-log P-value"=>$row->get("p_value")]);
+                    array_push($studies, ["id"=>$row->get("id"), "name"=>$row->get("name"), "-log P-value"=>round($row->get("p_value"), 2)]);
                 }
             return $studies;
         }

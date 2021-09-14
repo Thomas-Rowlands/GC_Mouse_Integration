@@ -1,49 +1,54 @@
-p, ul > * {
+.phenotype-breakdown-container p,.phenotype-breakdown-container ul > * {
     font-size: 0.8em;
 }
 
-p {
+.phenotype-breakdown-container p {
     margin-left: 1em;
 }
 
-li {
+.phenotype-breakdown-container li {
     list-style-type: disc;
 }
 
-.col {
+.phenotype-breakdown-container .col {
     margin-left: 0;
     padding: 0;
 }
 
-.highlight {
+.phenotype-breakdown-container .highlight {
     font-weight: bold;
     color: black;
     background-color: #C8D9EE;
-    margin: 0.1em;
+    /*margin: 0.1em;*/
     text-align: center;
 }
 
-.highlight > p {
+.phenotype-breakdown-container .highlight > p {
     margin-left: 1em;
 }
 
-.subTabMenu > .MuiBox-root {
+.phenotype-breakdown-container .subTabMenu > .MuiBox-root {
     padding-top: 0;
 }
 
-.subTabMenu .MuiAppBar-root {
-    max-width: 60%;
+.phenotype-breakdown-container .subTabMenu .MuiAppBar-root {
+    max-width: 80%;
     margin-left: auto;
     margin-right: auto;
 }
-
+.phenotype-breakdown-container .subTabMenu button{
+    font-size: 0.7em;
+}
+.phenotype-breakdown-container .subTabMenu .tab-button{
+    width: 18em;
+}
 @media (max-width: 1024px) {
     .subTabMenu .MuiAppBar-root {
         max-width: 90%;
     }
 }
 
-.legendIcon {
+.phenotype-breakdown-container .legendIcon {
     width: 10px;
     height: 10px;
 }

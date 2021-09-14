@@ -22,7 +22,7 @@
                 $termID = $row->get("id");
                 $termOnt = $row->get("ontology");
                 $label = $row->get("FSN");
-                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total")];
+                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
                 if (strtolower($label) == $search)
                     array_unshift($matches, $parsed);
                 else
@@ -42,7 +42,7 @@
                 $termID = $row->get("id");
                 $termOnt = $row->get("ontology");
                 $label = $row->get("FSN");
-                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total")];
+                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
                 if (strtolower($label) == $search)
                     array_unshift($matches, $parsed);
                 else
@@ -64,18 +64,19 @@
             if (!$matches)
                 return [];
             for ($i = 0; $i < sizeof($matches); $i++) {
-                $mapping = $this->get_human_mapping_by_id($matches[$i]["id"], $mappingOnt);
+                $mapping = null;
+                if ($matches[$i]["hasMESHMapping"] == true || $matches[$i]["hasHPOMapping"] == true)
+                    $mapping = $this->get_human_mapping_by_id($matches[$i]["id"], $mappingOnt);
                 $matches[$i]["mappedID"] = null;
                 $matches[$i]["mappedLabel"] = null;
                 $matches[$i]["mappedSynonyms"] = null;
                 $matches[$i]["mappedOnt"] = null;
                 if ($mapping) {
-                    $matches[$i]["mappedID"] = $mapping["mappedID"];
-                    $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
-                    $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
-                    $matches[$i]["mappedOnt"] = $mapping["mappedOnt"];
+                    $matches[$i]["mappedID"] = $mapping[0]["mappedID"];
+                    $matches[$i]["mappedLabel"] = $mapping[0]["mappedLabel"];
+                    $matches[$i]["mappedSynonyms"] = $mapping[0]["mappedSynonyms"];
+                    $matches[$i]["mappedOnt"] = $mapping[0]["mappedOnt"];
                 }
-                    
             }
             return $matches;
         }
@@ -92,16 +93,18 @@
                 return [];
 
             for ($i = 0; $i < sizeof($matches); $i++) {
-                $mapping = $this->get_mp_mapping_by_id($matches[$i]["id"]);
+                $mapping = null;
+                if ($matches[$i]["hasMPMapping"] == true)
+                    $mapping = $this->get_mp_mapping_by_id($matches[$i]["id"]);
                 $matches[$i]["mappedID"] = null;
                 $matches[$i]["mappedLabel"] = null;
                 $matches[$i]["mappedSynonyms"] = null;
                 $matches[$i]["mappedOnt"] = null;
                 if ($mapping) {
-                    $matches[$i]["mappedID"] = $mapping["mappedID"];
-                    $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
-                    $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
-                    $matches[$i]["mappedOnt"] = $mapping["mappedOnt"];
+                    $matches[$i]["mappedID"] = $mapping[0]["mappedID"];
+                    $matches[$i]["mappedLabel"] = $mapping[0]["mappedLabel"];
+                    $matches[$i]["mappedSynonyms"] = $mapping[0]["mappedSynonyms"];
+                    $matches[$i]["mappedOnt"] = $mapping[0]["mappedOnt"];
                 }
 
                     
@@ -135,7 +138,7 @@
             WITH n, COLLECT(syns) AS syns
             MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
             WHERE (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
-            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOntology", []);
+            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {

@@ -11,17 +11,25 @@ import {HashRouter, Route, Switch} from "react-router-dom";
 import PhenotypeSearch from "../PhenotypeSearch/PhenotypeSearch";
 import OntologyHierarchy from "../OntologyHierarchy/OntologyHierarchy";
 import Genome from "../Genome/Genome";
+import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            loading: false,
+        };
         this.routes = [{path: '/', name: 'Home', Component: Home},
             {path: '/PhenotypeSearch', name: 'Phenotype', Component: PhenotypeSearch},
             {path: '/OntologyHierarchy', name: 'Ontology', Component: OntologyHierarchy},
             {path: '/Genome', name: 'Genome', Component: Genome},
             {path: '/Genome/:termID', name: 'Genome', Component: Genome},
         ];
+    }
+
+    setLoading = (status) => {
+        this.setState({loading: status});
     }
 
     render() {
@@ -184,6 +192,7 @@ class App extends React.Component {
                     </div>
                 </header>
                 <div className="App">
+                    <LoadingSpinner loading={this.state.loading}/>
                     <HashRouter>
                             {this.routes.map(({path, Component}) => (
                                 <Route key={path} exact path={path}>
@@ -195,7 +204,7 @@ class App extends React.Component {
                                             unmountOnExit
                                         >
                                             <div className="page">
-                                                <Component/>
+                                                <Component setLoading={this.setLoading}/>
                                             </div>
                                         </CSSTransition>
                                     )}
