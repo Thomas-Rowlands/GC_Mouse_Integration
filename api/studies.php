@@ -26,17 +26,22 @@
             return $return_package;
         }
 
-        public function get_mouse_term_breakdown($mouseID) {
+        public function get_mouse_term_breakdown($mouseID, $targetOnt) {
+            $ont = new Ontology();
             $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get Mouse Knockouts
+            $return_package["Mappings"] = $ont->get_human_mapping_by_id($mouseID, $targetOnt);
             $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mouseID);
             return $return_package;
         }
 
-        public function get_human_term_breakdown($humanID, $ont) {
+        public function get_human_term_breakdown($humanID, $ontology) {
+            $ont = new Ontology();
             $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get GWAS Records
-            $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($ont, $humanID);
+            $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($ontology, $humanID);
+            $return_package["Mappings"] = $ont->get_mp_mapping_by_id($humanID);
+            $return_package["Gene Knockouts"] = $return_package["Mappings"] ? $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]) : [];
             return $return_package;
         }
 

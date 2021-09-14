@@ -29,7 +29,7 @@
                     else
                         echo "invalid ontology specified";
                 } else if ($_GET["mouseTerm"] != null) {
-                    $result = $study->get_mouse_term_breakdown($_GET["mouseTerm"]);
+                    $result = $study->get_mouse_term_breakdown($_GET["mouseTerm"], strtoupper($_GET["humanOntology"]));
                 } else {
                     if (validate_ontology($_GET["humanOntology"]))
                         $result = $study->get_human_term_breakdown($_GET["humanTerm"], strtoupper($_GET["humanOntology"]));

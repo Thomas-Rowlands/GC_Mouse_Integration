@@ -14,8 +14,8 @@
         public function term_search($search, $ont) {
             $result = $this->neo->execute("
             MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
-                WHERE ontTerm.ontology in [" . (strtolower($ont) == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND (toLOWER(syn.FSN) STARTS WITH {search} OR toLOWER(syn.FSN) CONTAINS {searchContains} OR toLOWER(ontTerm.FSN) STARTS WITH {search} OR toLOWER(ontTerm.FSN) CONTAINS {searchContains}) AND ontTerm.id IS NOT NULL
-            RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total LIMIT 10;
+                WHERE ontTerm.ontology in [" . (strtolower($ont) == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND (toLOWER(syn.FSN) STARTS WITH {search} OR toLOWER(syn.FSN) CONTAINS {searchContains} OR toLOWER(ontTerm.FSN) STARTS WITH {search} OR toLOWER(ontTerm.FSN) CONTAINS {searchContains}) AND ontTerm.id IS NOT NULL AND (ontTerm.gwas_total > 0 OR ontTerm.experiment_total > 0)
+            RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
             ", ["search"=>$search, "searchContains"=>" " . $search]);
             $matches = [];
             foreach ($result as $row) {
@@ -35,7 +35,7 @@
             $result = $this->neo->execute("
             MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
                 WHERE ontTerm.ontology = {ontology} AND (toLOWER(syn.FSN) STARTS WITH {search} OR toLOWER(syn.FSN) CONTAINS {searchContains} OR toLOWER(ontTerm.FSN) STARTS WITH {search} OR toLOWER(ontTerm.FSN) CONTAINS {searchContains}) AND ontTerm.id IS NOT NULL
-            RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total LIMIT 10;
+            RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total LIMIT 1;
             ", ["search"=>$search, "searchContains"=>" " . $search, "ontology"=>strtolower($ont)]);
             $matches = [];
             foreach ($result as $row) {
@@ -43,10 +43,24 @@
                 $termOnt = $row->get("ontology");
                 $label = $row->get("FSN");
                 $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
-                if (strtolower($label) == $search)
-                    array_unshift($matches, $parsed);
-                else
-                    array_push($matches, $parsed);
+                array_push($matches, $parsed);
+            }
+            return $matches;
+        }
+
+        public function exact_term_search($search, $ont) {
+            $result = $this->neo->execute("
+            MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
+    WHERE ontTerm.ontology = {ontology} AND toLOWER(syn.FSN) = {search} AND ontTerm.id IS NOT NULL
+RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total LIMIT 1;
+            ", ["search"=>$search, "searchContains"=>" " . $search, "ontology"=>strtolower($ont)]);
+            $matches = [];
+            foreach ($result as $row) {
+                $termID = $row->get("id");
+                $termOnt = $row->get("ontology");
+                $label = $row->get("FSN");
+                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
+                array_push($matches, $parsed);
             }
             return $matches;
         }
@@ -56,11 +70,11 @@
             $result = null;
             $ont = strtoupper($mappingOnt);
             $search = strtolower($search);
-            $matches = [];
+            $matches = $this->exact_term_search($search, "MP");
             if (!$isLimited)
-                $matches = $this->term_search($search, "MP");
+                $matches = array_merge($matches, $this->term_search($search, "MP"));
             else
-                $matches = $this->term_search_limited($search, "MP");
+                $matches = array_merge($matches, $this->term_search_limited($search, "MP"));
             if (!$matches)
                 return [];
             for ($i = 0; $i < sizeof($matches); $i++) {
@@ -84,11 +98,11 @@
         public function search_human_term($search, $ontology, $is_open_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
             $result = null;
             $search = strtolower($search);
-            $matches = [];
+            $matches = $this->exact_term_search($search, $ontology);
             if (!$isLimited)
-                $matches = $this->term_search($search, $ontology);
+                $matches = array_merge($matches, $this->term_search($search, $ontology));
             else
-                $matches = $this->term_search_limited($search, $ontology);
+                $matches = array_merge($matches, $this->term_search_limited($search, $ontology));
             if (!$matches)
                 return [];
 
@@ -106,21 +120,15 @@
                     $matches[$i]["mappedSynonyms"] = $mapping[0]["mappedSynonyms"];
                     $matches[$i]["mappedOnt"] = $mapping[0]["mappedOnt"];
                 }
-
-                    
             }
             return $matches;
         }
 
         public function get_mp_mapping_by_id($termID) {
             $result = $this->neo->execute("
-            MATCH (n {id: '".$termID."'})
-            WITH n
-            OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
-            WITH n, COLLECT(syns) AS syns
-            MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn:MP)<-[:HAS_SYNONYM*0..1]-(mappedTerm:MP)
-            WHERE (o in syns or o = n) AND mappedTerm:Term
-            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel", []);
+            MATCH (n {id: '" . $termID . "'})-[:LOOM_MAPPING|HAS_SYNONYM*0..2]-(mappedTerm:Term)
+WHERE mappedTerm:MP
+RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
