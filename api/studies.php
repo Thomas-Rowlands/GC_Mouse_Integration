@@ -57,7 +57,7 @@
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
-            $result = $this->neo->execute("MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n:" . $ontology . ")
+            $result = $this->neo->execute("MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n:MESH)
             WHERE n.id in [" . $term_string . "]
             RETURN DISTINCT s.id AS id, s.Name AS name, MAX(g.value) AS p_value", []);
             $studies = [];
@@ -165,11 +165,15 @@
                     $mouseID = "";
                     $mouseLabel = "";
                     $mouseSynonyms = "";
+                    $gwas = 0;
+                    $experiments = 0;
                     if ($species == "mouse") {
                         $humanOnt = $mapping["mappedOnt"];
                         $humanID = $mapping["mappedID"];
                         $humanLabel = $mapping["mappedLabel"];
                         $humanSynonyms = $mapping["mappedSynonyms"];
+                        $gwas = $mapping["gwas"];
+                        $experiments = $mapping["experiments"];
                         $mouseID = $mapping["id"];
                         $mouseLabel = $mapping["label"];
                         $mouseSynonyms = $mapping["synonyms"];
@@ -181,21 +185,17 @@
                         $mouseID = $mapping["mappedID"];
                         $mouseLabel = $mapping["mappedLabel"];
                         $mouseSynonyms = $mapping["mappedSynonyms"];
+                        $experiments = $mapping["experiments"];
+                        $gwas = $mapping["gwas"];
                     }
                     $result = ["Human Ontology"=>$humanOnt, "ID"=>$humanID, "Human Phenotype"=>$humanLabel, "Human Synonyms"=>$humanSynonyms, 
                     "MP ID"=>$mouseID, "MP Label"=>$mouseLabel, "Mouse Synonyms"=>$mouseSynonyms, 
-                    "GWAS Studies"=>$mapping["gwas"], "Mouse Knockouts"=>$mapping["experiments"]];
+                    "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$experiments];
                     array_push($results, $result);
                 }
 
             }
-            // $temp = [];
-            // foreach($mapped_mesh_terms as $mapping) {
-            //     if (!in_array($mapping, $temp)) {
-            //         $temp[] = $mapping;
-            //     }
-            // } 
-            // $mapped_mesh_terms = $temp;
+
 
             $total = count($results);
             if ($total > 0)

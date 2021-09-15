@@ -216,6 +216,10 @@ class PhenotypeSearch extends React.Component {
 
     }
 
+    genotypeHandler = () => {
+        this.setState({genotypeTermID: this.state.humanTerm, genotypeOntology: this.state.humanOntology});
+    }
+
     render() {
         const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
@@ -335,7 +339,9 @@ class PhenotypeSearch extends React.Component {
                                                 humanPhenotype={this.state.humanTerm}
                                                 humanOntology={this.state.humanOntology}
                                                 breakdownData={this.state.breakdownData}
-                                                onBreakdownFinish={this.onBreakdownFinish}/>
+                                                onBreakdownFinish={this.onBreakdownFinish}
+                                                setLoading={this.props.setLoading}
+                                                genotypeHandler={this.genotypeHandler}/>
                                         </div>
                                     </DialogContent>
                                     <DialogActions>
@@ -351,7 +357,8 @@ class PhenotypeSearch extends React.Component {
                                     genotypeOntology: null
                                 })}>Back</Button><br />
                                 <Genome genotypeTermID={this.state.genotypeTermID}
-                                        genotypeOntology={this.state.genotypeOntology}/>
+                                        genotypeOntology={this.state.genotypeOntology}
+                                        setLoading={this.props.setLoading}/>
                             </div>
                     }
 

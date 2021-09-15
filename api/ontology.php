@@ -90,6 +90,7 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
                     $matches[$i]["mappedLabel"] = $mapping[0]["mappedLabel"];
                     $matches[$i]["mappedSynonyms"] = $mapping[0]["mappedSynonyms"];
                     $matches[$i]["mappedOnt"] = $mapping[0]["mappedOnt"];
+                    $matches[$i]["gwas"] = $mapping[0]["gwas"];
                 }
             }
             return $matches;
@@ -119,6 +120,7 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
                     $matches[$i]["mappedLabel"] = $mapping[0]["mappedLabel"];
                     $matches[$i]["mappedSynonyms"] = $mapping[0]["mappedSynonyms"];
                     $matches[$i]["mappedOnt"] = $mapping[0]["mappedOnt"];
+                    $matches[$i]["experiments"] = $mapping[0]["experiments"];
                 }
             }
             return $matches;
@@ -128,11 +130,11 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
             $result = $this->neo->execute("
             MATCH (n {id: '" . $termID . "'})-[:LOOM_MAPPING|HAS_SYNONYM*0..2]-(mappedTerm:Term)
 WHERE mappedTerm:MP
-RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel", []);
+RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedOnt"=>"MP", "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms"=> $this->get_term_synonyms($row->get("mappedID"), "MP")];
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedOnt"=>"MP", "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms"=> $this->get_term_synonyms($row->get("mappedID"), "MP"), "experiments"=>$row->get("experiments")];
                     array_push($mappings, $record);
                 }
             return $mappings;
@@ -146,11 +148,11 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel", []);
             WITH n, COLLECT(syns) AS syns
             MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
             WHERE (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
-            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt", []);
+            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt, COALESCE(mappedTerm.gwas_total, mappedSyn.gwas_total) AS gwas", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedOnt"=>$row->get("mappedOnt"),"mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt)];
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedOnt"=>$row->get("mappedOnt"),"mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt), "gwas"=>$row->get("gwas")];
                     array_push($mappings, $record);
                 }
             return $mappings;

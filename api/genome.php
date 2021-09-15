@@ -139,7 +139,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 if (!$termID)
                     return [];
                 if (is_array($termID))
-                    $termID = $termID[0];
+                    $termID = $termID[0]["mappedID"];
             }
             $descendants = $this->ont->get_term_descendants($termID, "MP");
             array_push($descendants, $termID);
