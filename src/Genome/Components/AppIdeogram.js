@@ -92,21 +92,12 @@ class AppIdeogram extends Component {
     getHeatmapLegend = () => {
         return [
             {
-                name: 'Human Markers',
                 rows: [
-                    {color: '#88F', name: '< 10', shape: this.getShape()},
-                    {color: '#ff8200', name: 'Between 10 & 100', shape: this.getShape()},
-                    {color: '#F33', name: '> 100', shape: this.getShape()}
+                    {color: '#88F', name: 'Bottom 10%', shape: this.getShape()},
+                    {color: '#ff8200', name: 'Average', shape: this.getShape()},
+                    {color: '#F33', name: 'Top 10%', shape: this.getShape()}
                 ]
             },
-            {
-                name: "Mouse Knockouts",
-                rows: [
-                    {color: '#88F', name: '< 10', shape: this.getShape()},
-                    {color: '#ff8200', name: 'Between 10 & 100', shape: this.getShape()},
-                    {color: '#F33', name: '> 100', shape: this.getShape()}
-                ]
-            }
         ];
     }
 
@@ -120,12 +111,6 @@ class AppIdeogram extends Component {
                     ["high", '#F33']
                 ]
             },
-            {
-                key: 'count',
-                thresholds: [
-                    ["test", '#099100'],
-                ]
-            }
         ];
     }
 

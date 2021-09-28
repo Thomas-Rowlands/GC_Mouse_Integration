@@ -63,12 +63,15 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
             }
             $descendants = $this->ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
-            $result = [];
+            $result = ["highest"=>0, "average"=>0, "bins"=>[]];
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
             $term_string = rtrim($term_string, ",");
+
+            $total = 0;
+
             foreach (Genome::$chromosomes as $chromosome) {
                 $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
                 FROM human_markers_chr".$chromosome." AS hm
@@ -77,17 +80,21 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
                     foreach ($markers as $marker) {
-                        array_push($result, $marker);
+                        array_push($result["bins"], $marker);
                     }
+                    $total += $marker["value"];
+                    if ($marker["value"] > $result["highest"])
+                        $result["highest"] = $marker["value"];
                 }
             }
 
+            if ($result["bins"])
+                if (count($result["bins"]) > 0)
+                    $result["average"] = $total / count($result["bins"]);
+
 
             
-            if ($result)
-                return $result;
-            else
-                return [];
+            return $result;
 
         }
 
@@ -142,13 +149,15 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     $termID = $termID[0]["mappedID"];
             }
             $descendants = $this->ont->get_term_descendants($termID, "MP");
-            array_push($descendants, $termID);
-            $result = [];
+            $result = ["highest"=>0, "average"=>0, "bins"=>[]];
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
             }
+            $term_string .= "'" . str_replace(" ", "", $termID) . "',";
             $term_string = rtrim($term_string, ",");
+
+            $total = 0;
             foreach (Genome::$chromosomes as $chromosome) {
                 $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
                 FROM mouse_knockouts_chr".$chromosome." AS mk
@@ -159,15 +168,17 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     foreach ($markers as $marker) {
                         array_push($result, $marker);
                     }
+                    $total += $marker["value"];
+                    if ($marker["value"] > $result["highest"])
+                        $result["highest"] = $marker["value"];
                 }
             }
-
+            if ($result["bins"])
+                if (count($result["bins"]) > 0)
+                    $result["average"] = $total / count($result["bins"]);
 
             
-            if ($result)
-                return $result;
-            else
-                return [];
+            return $result;
         }
 
     }

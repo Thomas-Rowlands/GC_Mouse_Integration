@@ -221,7 +221,7 @@ class Genome extends React.Component {
                                 ]
                             }
                         ;
-                        response.data.markers.forEach(marker =>
+                        response.data.markers.bins.forEach(marker =>
                             result.annots.forEach(
                                 subset => {
                                     if (subset.chr === marker.chr) {
@@ -273,7 +273,7 @@ class Genome extends React.Component {
                                 }
                             )
                         );
-                        response.data.knockouts.forEach(knockout =>
+                        response.data.knockouts.bins.forEach(knockout =>
                             result.annots.forEach(
                                 subset => {
                                     if (subset.chr === knockout.chr) {
