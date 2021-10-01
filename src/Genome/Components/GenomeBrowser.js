@@ -69,6 +69,22 @@ class GenomeBrowser extends React.Component {
                 },
             },
             {
+                type: 'FeatureTrack',
+                trackId: 'impc_gene_track',
+                name: 'IMPC Genes',
+                category: ['Annotation'],
+                assemblyNames: ['GRCh37'],
+                adapter: {
+                    type: 'Gff3TabixAdapter',
+                    gffGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/IMPC_Genes.gff3.gz',},
+                    index: {
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/IMPC_Genes.gff3.gz.tbi',},
+                        indexType: 'TBI',
+                    },
+                    renderer: {type: 'SvgFeatureRenderer',},
+                },
+            },
+            {
                 type: 'VariantTrack',
                 trackId: 'variant_track',
                 name: 'Variants',
@@ -83,7 +99,21 @@ class GenomeBrowser extends React.Component {
                     },
                 },
             },
-
+                        {
+                type: 'VariantTrack',
+                trackId: 'gc_variant_track',
+                name: 'GWAS Central Variants',
+                category: ['Annotation'],
+                assemblyNames: ['GRCh37'],
+                adapter: {
+                    type: 'VcfTabixAdapter',
+                    vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/GC_only_variants.vcf.gz',},
+                    index: {
+                        indexType: "TBI",
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/GC_only_variants.vcf.gz.tbi',},
+                    },
+                },
+            },
         ];
     }
 
@@ -107,7 +137,7 @@ class GenomeBrowser extends React.Component {
                     },
                     {
                         type: 'FeatureTrack',
-                        configuration: 'gene_track',
+                        configuration: 'impc_gene_track',
                         displays: [
                             {
                                 type: 'LinearBasicDisplay',
@@ -119,7 +149,7 @@ class GenomeBrowser extends React.Component {
                     },
                     {
                         type: "VariantTrack",
-                        configuration: "variant_track",
+                        configuration: "gc_variant_track",
                         displays: [
                             {
                                 type: "LinearVariantDisplay",
@@ -178,7 +208,7 @@ class GenomeBrowser extends React.Component {
                 assembly,
                 tracks,
                 defaultSession: defaultSession,
-                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:100,987,269..100,987,368"
+                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:1..3,000,000"
             }
         );
         return (
