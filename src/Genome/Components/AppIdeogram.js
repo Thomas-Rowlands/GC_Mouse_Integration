@@ -69,7 +69,6 @@ class AppIdeogram extends Component {
                 ],
                 annotationHeight: 7.5,
                 legend: this.getHeatmapLegend(),
-                // heatmaps: this.getHeatmaps(),
             });
         }
         return this.ideogram;
@@ -77,9 +76,7 @@ class AppIdeogram extends Component {
 
 
     expandIdeogram = (self) => {
-        self.clearBrushMarkers();
         self.setState({openChromosome: null});
-        $("#brush-menu-container").hide();
     }
 
     getAnnotationTracks = () => {
@@ -92,10 +89,11 @@ class AppIdeogram extends Component {
     getHeatmapLegend = () => {
         return [
             {
+                name: "Marker Significance",
                 rows: [
-                    {color: '#88F', name: 'Bottom 10%', shape: this.getShape()},
-                    {color: '#ff8200', name: 'Average', shape: this.getShape()},
-                    {color: '#F33', name: 'Top 10%', shape: this.getShape()}
+                    {color: '#88F', name: "Below " + (this.props.marker_avg + 1).toString()},
+                    {color: '#ff8200', name: "Between " + (this.props.marker_avg - 1).toString() + " & " + (this.props.marker_avg + 1).toString()},
+                    {color: '#F33', name: "Above " + (this.props.marker_avg + 1).toString()}
                 ]
             },
         ];
@@ -104,11 +102,11 @@ class AppIdeogram extends Component {
     getHeatmaps = () => {
         return [
             {
-                key: 'count',
+                key: 'Marker Significance',
                 thresholds: [
-                    ["low", '#88F'],
-                    ["mid", '##ff8200'],
-                    ["high", '#F33']
+                    ["Below " + (this.props.marker_avg + 1).toString(), '#88F'],
+                    ["Between " + (this.props.marker_avg - 1).toString() + " " + (this.props.marker_avg + 1).toString(), '#ff8200'],
+                    ["Above " + (this.props.marker_avg + 1).toString(), '#F33']
                 ]
             },
         ];

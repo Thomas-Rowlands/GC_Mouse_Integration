@@ -81,10 +81,11 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
                     foreach ($markers as $marker) {
                         array_push($result["bins"], $marker);
+                        $total += $marker["value"];
+                        if ($marker["value"] > $result["highest"])
+                            $result["highest"] = $marker["value"];
                     }
-                    $total += $marker["value"];
-                    if ($marker["value"] > $result["highest"])
-                        $result["highest"] = $marker["value"];
+
                 }
             }
 
@@ -166,11 +167,12 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
                     foreach ($markers as $marker) {
-                        array_push($result, $marker);
+                        array_push($result["bins"], $marker);
+                        $total += $marker["value"];
+                        if ($marker["value"] > $result["highest"])
+                            $result["highest"] = $marker["value"];
                     }
-                    $total += $marker["value"];
-                    if ($marker["value"] > $result["highest"])
-                        $result["highest"] = $marker["value"];
+
                 }
             }
             if ($result["bins"])

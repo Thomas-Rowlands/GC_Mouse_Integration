@@ -55,7 +55,7 @@ class GenomeBrowser extends React.Component {
             {
                 type: 'FeatureTrack',
                 trackId: 'gene_track',
-                name: 'Features',
+                name: 'Ensembl Features',
                 category: ['Annotation'],
                 assemblyNames: ['GRCh37'],
                 adapter: {
@@ -87,15 +87,15 @@ class GenomeBrowser extends React.Component {
             {
                 type: 'VariantTrack',
                 trackId: 'variant_track',
-                name: 'Variants',
+                name: 'Ensembl Variants',
                 category: ['Annotation'],
                 assemblyNames: ['GRCh37'],
                 adapter: {
                     type: 'VcfTabixAdapter',
                     vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz',},
                     index: {
-                        indexType: "CSI",
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.csi',},
+                        indexType: "TBI",
+                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi',},
                     },
                 },
             },
