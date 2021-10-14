@@ -7,6 +7,20 @@ import {
 } from '@jbrowse/react-linear-genome-view';
 import {api_server} from "../../UtilityComponents/ConfigData";
 
+function forceLoadTracks() {
+
+    let btns = document.querySelectorAll("[data-testid=\"reload_button\"]");
+    if (btns.length > 0) {
+        btns.forEach((btn) => {
+            btn.click();
+        });
+    } else {
+        window.setTimeout(() => {
+            forceLoadTracks();
+        }, 500);
+    }
+}
+
 class GenomeBrowser extends React.Component {
 
     constructor(props) {
@@ -14,7 +28,15 @@ class GenomeBrowser extends React.Component {
         this.state = {
             configData: api_server
         }
-
+        this.viewState = createViewState(
+        {
+                configuration: this.configuration(),
+                assembly: this.assembly(),
+                tracks: this.tracks(),
+                defaultSession: this.defaultSession(),
+                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:1..3,000,000"
+            }
+        );
     }
 
     assembly = () => {
@@ -106,7 +128,6 @@ class GenomeBrowser extends React.Component {
                 name: 'GWAS Central Variants',
                 category: ['Annotation'],
                 assemblyNames: ['GRCh37'],
-                maxDisplayedBpPerPx: 3000,
                 adapter: {
                     type: 'VcfTabixAdapter',
                     vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/GC_only_variants.vcf.gz',},
@@ -165,19 +186,16 @@ class GenomeBrowser extends React.Component {
                                 type: "LinearVariantDisplay",
                                 height: 200,
                                 configuration: "variant_track-LinearVariantDisplay",
-                                maxDisplayedBpPerPx: 3000
+                                maxDisplayedBpPerPx: 300000
                             }
                         ],
-                        maxDisplayedBpPerPx: 3000
                     }
                 ],
                 hideHeader: false,
                 hideCloseButton: true,
                 hideControls: false,
                 trackSelectorType: "hierarchical",
-                maxDisplayedBpPerPx: 3000,
             },
-            maxDisplayedBpPerPx: 3000
         };
     }
 
@@ -209,22 +227,18 @@ class GenomeBrowser extends React.Component {
         };
     };
 
-    render() {
-        const assembly = this.assembly();
-        const tracks = this.tracks();
-        let defaultSession = this.defaultSession();
-        const configuration = this.configuration();
-        const state = createViewState(
-            {
-                configuration: configuration,
-                assembly,
-                tracks,
-                defaultSession: defaultSession,
-                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:1..3,000,000"
-            }
-        );
 
-        return < JBrowseLinearGenomeView viewState={state}/>;
+    componentDidMount() {
+        forceLoadTracks();
+    }
+
+    navTo = (loc) => {
+        this.viewState.session.view.zoomTo(loc);
+
+    }
+
+    render() {
+        return < JBrowseLinearGenomeView viewState={this.viewState}/>;
     }
 }
 
