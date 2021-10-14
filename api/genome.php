@@ -59,7 +59,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 $study = new StudySearch();
                 $termID = $study->get_mesh_id_from_db($termID);
                 if (!$termID)
-                    return [];
+                    return ["highest"=>null, "average"=>null, "bins"=>[]];
             }
             $descendants = $this->ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
@@ -145,7 +145,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
             if (strtoupper($searchOnt) != "MP") {
                 $termID = $this->ont->get_mp_mapping_by_id($termID);
                 if (!$termID)
-                    return [];
+                    return ["highest"=>null, "average"=>null, "bins"=>[]];
                 if (is_array($termID))
                     $termID = $termID[0]["mappedID"];
             }
@@ -159,6 +159,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
             $term_string = rtrim($term_string, ",");
 
             $total = 0;
+            $used_bin_count = 0;
             foreach (Genome::$chromosomes as $chromosome) {
                 $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
                 FROM mouse_knockouts_chr".$chromosome." AS mk
@@ -169,6 +170,8 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     foreach ($markers as $marker) {
                         array_push($result["bins"], $marker);
                         $total += $marker["value"];
+                        if ($marker["value"] > 0)
+                            $used_bin_count += 1;
                         if ($marker["value"] > $result["highest"])
                             $result["highest"] = $marker["value"];
                     }
@@ -176,8 +179,8 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 }
             }
             if ($result["bins"])
-                if (count($result["bins"]) > 0)
-                    $result["average"] = $total / count($result["bins"]);
+                if ($used_bin_count)
+                    $result["average"] = $total / $used_bin_count;
 
             
             return $result;

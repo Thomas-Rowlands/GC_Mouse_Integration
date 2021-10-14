@@ -10,7 +10,7 @@
                 WITH mouseTerm, mouseSyns, humanTerm, COLLECT(humanSyn) AS humanSyns
             MATCH (N)-[M:LOOM_MAPPING]-(H)
                 WHERE (N in mouseSyns or N = mouseTerm) AND (H in humanSyns or H = humanTerm)
-            RETURN DISTINCT ID(mouseTerm) AS mouseTermNodeId, mouseTerm.id as mouseID, mouseTerm.FSN AS mouseTermLabel, mouseTerm.experiment_total AS Experiments, ID(N) as mouseNodeId, N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, ID(humanTerm) AS humanTermNodeId, humanTerm.FSN AS humanTermLabel, humanTerm.id as humanID, H.FSN as humanLabel, H.gwas_total AS GWAS, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
+            RETURN DISTINCT ID(mouseTerm) AS mouseTermNodeId, mouseTerm.id as mouseID, mouseTerm.FSN AS mouseTermLabel, mouseTerm.experiment_total AS Experiments, ID(N) as mouseNodeId, N.originalType as mouseType, N.FSN as mouseLabel, N.ontology as mouseOnt, M.is_exact_match as isExactMatch, ID(humanTerm) AS humanTermNodeId, humanTerm.FSN AS humanTermLabel, humanTerm.id as humanID, H.FSN as humanLabel, humanTerm.gwas_total AS GWAS, H.ontology as humanOnt, ID(H) as humanNodeId, H.originalType as humanType",
         ["mouseID"=>$mouseID, "humanID"=>$humanID]);
             $mappings = [];
             $term_mapping_retrieved = false;

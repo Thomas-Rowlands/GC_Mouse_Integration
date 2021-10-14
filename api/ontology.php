@@ -169,6 +169,17 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
             return $synonyms;
         }
 
+        public function get_phenotype_name($termID, $ontology) {
+            if (!$ontology)
+                return null;
+            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ") WHERE N.id = {termID} RETURN N.FSN AS phenotype", ["termID"=>$termID]);
+            $phenotype = null;
+            foreach ($result as $row) {
+                $phenotype = $row->get("phenotype");
+            }
+            return $phenotype;
+        }
+
         public function get_root_ontology_tree($ontology, $mappingOnt) {
             $ontLabel = "";
             if ($ontology == "MP")

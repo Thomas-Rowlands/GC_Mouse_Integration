@@ -5,23 +5,6 @@
     margin-top: 1%;
     height:95%;
 }
-
-#brush-marker-container {
-    width:95%;
-}
-
-.brush-marker {
-    padding: 0.3em;
-    background-color: blue;
-    color: white;
-    border-radius: 5px;
-    border: 1px solid black;
-    margin-right: 0.5em;
-    margin-top: 0.5em;
-    cursor: pointer;
-    display: inline-grid;
-}
-
 #_ideogramInnerWrap{
     position: relative !important;
     margin-left: auto;
@@ -32,8 +15,8 @@
     margin-top: 5em;
 }
 #_ideogramMiddleWrap{
-    width:100%;
-    height:100%;
+    width:100% !important;
+    height:100% !important;
 }
 
 li {
@@ -41,4 +24,22 @@ li {
 }
 ul > *{
     font-size:unset;
+}
+
+.legend{
+    display: flex;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.legend > :nth-child(1){
+    margin-left:auto;
+    margin-right:0;
+}
+.legend > :nth-child(2){
+    margin-left:0;
+    margin-right:auto;
+}
+.legend > div > h3{
+    text-align:Center;
 }

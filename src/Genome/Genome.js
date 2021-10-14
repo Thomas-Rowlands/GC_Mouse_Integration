@@ -35,7 +35,6 @@ class Genome extends React.Component {
         this.setState({annotationSelected: annot, tabValue: 1});
     }
 
-
     getKaryotypeData = (termID, ontology) => {
         let url_string = this.state.configData.api_server + "controller.php?type=genome&phenotype=" + termID + "&ontology=" + ontology;
         axios.get(url_string)
@@ -48,7 +47,9 @@ class Genome extends React.Component {
                                     "start",
                                     "length",
                                     "trackIndex",
-                                    "color"
+                                    "color",
+                                    "markerSignificance",
+                                    "knockoutSignificance"
                                 ],
                                 "annots": [
                                     {
@@ -221,8 +222,8 @@ class Genome extends React.Component {
                                 ]
                             }
                         ;
-                        let marker_avg_boundary = [Math.floor(response.data.markers.average) - 1, Math.ceil(response.data.markers.average) + 1];
-                        let knockout_avg_boundary = [Math.floor(response.data.knockouts.average) - 1, Math.ceil(response.data.knockouts.average) + 1];
+                        let marker_avg = Math.floor(response.data.markers.average);
+                        let knockout_avg = Math.floor(response.data.knockouts.average);
                         response.data.markers.bins.forEach(marker =>
                             result.annots.forEach(
                                 subset => {
@@ -254,22 +255,25 @@ class Genome extends React.Component {
                                             "Y": 59373566
                                         };
                                         let val = parseInt(marker.highest_significance);
+                                        val = val > 10 ? 10 : val;
                                         let count = parseInt(marker.value);
                                         let start = ((parseInt(marker.bin) * 3000000) - 3000000) + 1;
                                         let length = (start + 3000000) - 1 > chrom_ranges[marker.chr] ? chrom_ranges[marker.chr] - start : 3000000;
-                                        let cat = "";
-                                        if (val <= marker_avg_boundary[0])
-                                            cat = '#88F';
-                                        else if (val > marker_avg_boundary[0] && val <= marker_avg_boundary[1])
-                                            cat = '#ff8200';
-                                        else if (val > marker_avg_boundary[1])
-                                            cat = '#F33';
+                                        let colour = "";
+                                        if (count < marker_avg)
+                                            colour = '#0000b8';
+                                        else if (count === marker_avg)
+                                            colour = '#31bb22';
+                                        else if (count > marker_avg)
+                                            colour = '#F33';
                                         subset.annots.push([
                                             count.toString() + (count > 1 ? " markers" : " marker"),
                                             start,
                                             length,
                                             0,
-                                            cat,
+                                            colour,
+                                            val,
+                                            10
                                         ]);
                                     }
                                 }
@@ -306,28 +310,37 @@ class Genome extends React.Component {
                                             "Y": 59373566
                                         };
                                         let val = parseInt(knockout.highest_significance);
+                                        val = val > 10 ? 10 : val;
                                         let count = parseInt(knockout.value);
                                         let start = ((parseInt(knockout.bin) * 3000000) - 3000000) + 1;
                                         let length = (start + 3000000) - 1 > chrom_ranges[knockout.chr] ? chrom_ranges[knockout.chr] - start : 3000000;
-                                        let cat = "";
-                                        if (val <= knockout_avg_boundary[0])
-                                            cat = '#88F';
-                                        else if (val > knockout_avg_boundary[0] && val <= knockout_avg_boundary[1])
-                                            cat = '#ff8200';
-                                        else if (val > knockout_avg_boundary[1])
-                                            cat = '#F33';
+                                        let colour = "";
+                                        if (count < knockout_avg)
+                                            colour = '#0000b8';
+                                        else if (count === knockout_avg)
+                                            colour = '#31bb22';
+                                        else if (count > knockout_avg)
+                                            colour = '#F33';
                                         subset.annots.push([
                                             count.toString() + (count > 1 ? " knockouts" : " knockout"),
                                             start,
                                             length,
                                             1,
-                                            cat,
+                                            colour,
+                                            10,
+                                            val
                                         ]);
                                     }
                                 }
                             )
                         );
-                        this.setState({markerData: result, marker_avg: marker_avg_boundary[0] + 1, knockout_avg: knockout_avg_boundary[0] + 1, loading: false});
+                        this.setState({
+                            markerData: result,
+                            phenotype: response.data.phenotype,
+                            marker_avg: marker_avg,
+                            knockout_avg: knockout_avg,
+                            loading: false
+                        });
                     }
                 }
             }).catch((error) => {
@@ -336,11 +349,11 @@ class Genome extends React.Component {
     }
 
     render() {
-        let {loading, tabValue, termID, ontology, markerData, marker_avg, knockout_avg} = this.state;
+        let {loading, tabValue, termID, ontology, markerData, marker_avg, knockout_avg, phenotype} = this.state;
         return termID && ontology ?
             (
                 <div><br/>
-                    <Typography className="center">{ontology}: {termID}</Typography>
+                    <Typography className="center">{phenotype}</Typography>
                     <br/>
                     <AppBar position="static" color="default">
                         <Tabs
@@ -358,7 +371,9 @@ class Genome extends React.Component {
                     </AppBar>
                     <TabPanel value={tabValue} index={0} className="subTabMenu">
                         {
-                            markerData ? <AppIdeogram markerData={markerData} marker_avg={marker_avg} knockout_avg={knockout_avg} onAnnotationClick={this.onAnnotationClick} organism="human"/> :
+                            markerData ?
+                                <AppIdeogram markerData={markerData} marker_avg={marker_avg} knockout_avg={knockout_avg}
+                                             onAnnotationClick={this.onAnnotationClick} organism="human"/> :
                                 <LoadingSpinner loading={loading}/>
                         }
                     </TabPanel>
@@ -366,7 +381,8 @@ class Genome extends React.Component {
                         {
                             this.state.annotationSelected ? <GenomeBrowser chrom={this.state.annotationSelected.chr}
                                                                            start={this.state.annotationSelected.start}
-                                                                           stop={this.state.annotationSelected.stop}/> : <GenomeBrowser/>
+                                                                           stop={this.state.annotationSelected.stop}/> :
+                                <GenomeBrowser/>
                         }
                     </TabPanel>
                 </div>

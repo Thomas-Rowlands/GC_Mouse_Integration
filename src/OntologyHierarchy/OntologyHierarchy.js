@@ -577,6 +577,7 @@ class OntologyHierarchy extends React.Component {
             }, 500);
 
         }
+        this.props.setLoading(false);
     }
 
     getHumanPhenotypeBreakdown = (e) => {
