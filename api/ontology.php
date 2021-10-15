@@ -96,14 +96,19 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
             return $matches;
         }
 
-        public function search_human_term($search, $ontology, $is_open_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
-            $result = null;
+        public function search_human_term($search, $ontology, $is_exact_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
             $search = strtolower($search);
-            $matches = $this->exact_term_search($search, $ontology);
-            if (!$isLimited)
-                $matches = array_merge($matches, $this->term_search($search, $ontology));
-            else
-                $matches = array_merge($matches, $this->term_search_limited($search, $ontology));
+            $matches = [];
+            if ($is_exact_search)
+                $matches = $this->exact_term_search($search, $ontology);
+
+            if (!$is_exact_search) {
+                if (!$isLimited)
+                    $matches = array_merge($matches, $this->term_search($search, $ontology));
+                else
+                    $matches = array_merge($matches, $this->term_search_limited($search, $ontology));
+            }
+
             if (!$matches)
                 return [];
 
@@ -161,7 +166,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
         public function get_term_synonyms($termID, $ontology) {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} RETURN ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
+            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
             $synonyms = [];
             foreach ($result as $row) {
                 array_push($synonyms, $row->get("Synonym"));

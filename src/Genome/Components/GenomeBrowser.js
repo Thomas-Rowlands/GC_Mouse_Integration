@@ -28,8 +28,9 @@ class GenomeBrowser extends React.Component {
         this.state = {
             configData: api_server
         }
+        this.trackNum = 3;
         this.viewState = createViewState(
-        {
+            {
                 configuration: this.configuration(),
                 assembly: this.assembly(),
                 tracks: this.tracks(),
@@ -142,7 +143,25 @@ class GenomeBrowser extends React.Component {
                         displayId: "gc_variant_track-LinearVariantDisplay",
                         maxDisplayedBpPerPx: 3000
                     }
-                ]
+                ],
+                      "textSearching": {
+        "textSearchAdapter": {
+          "type": "TrixTextSearchAdapter",
+          "textSearchAdapterId": "gc_variant_track-index",
+          "ixFilePath": {
+            "uri": "trix/gc_variant_track.ix"
+          },
+          "ixxFilePath": {
+            "uri": "trix/gc_variant_track.ixx"
+          },
+          "metaFilePath": {
+            "uri": "trix/gc_variant_track_meta.json"
+          },
+          "assemblyNames": [
+            "GRCh37"
+          ]
+        }
+      }
             },
         ];
     }
@@ -223,7 +242,8 @@ class GenomeBrowser extends React.Component {
                     },
                 },
             },
-            disableAnalytics: true
+            disableAnalytics: true,
+
         };
     };
 

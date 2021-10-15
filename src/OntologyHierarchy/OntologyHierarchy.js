@@ -2,7 +2,6 @@ import React from 'react';
 import $ from 'jquery';
 import axios from "axios";
 import {Button, Grid, InputLabel, MenuItem, Paper, Select, TextField, withStyles} from '@material-ui/core';
-import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import './OntologyHierarchy.css';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
