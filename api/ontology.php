@@ -23,7 +23,7 @@
                 $termOnt = $row->get("ontology");
                 $label = $row->get("FSN");
                 $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
-                if (strtolower($label) == $search)
+                if (strtolower($label) == strtolower($search))
                     array_unshift($matches, $parsed);
                 else
                     array_push($matches, $parsed);
@@ -65,16 +65,46 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
             return $matches;
         }
 
+        public function exact_term_id_search($search) {
+            $result = $this->neo->execute("
+            MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
+    WHERE ontTerm.id = {search}
+RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasMPMapping AS hasMPMapping, ontTerm.hasMESHMapping AS hasMESHMapping, ontTerm.hasHPOMapping AS hasHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
+            ", ["search"=>$search]);
+            $matches = [];
+            foreach ($result as $row) {
+                $termID = $row->get("id");
+                $termOnt = $row->get("ontology");
+                $label = $row->get("FSN");
+                $parsed = ["id"=> $termID, "synonyms"=>$this->get_term_synonyms($termID, $termOnt), "label"=> $label, "experiments"=>$row->get("experiment_total"), "ont"=> $termOnt, "gwas"=>$row->get("gwas_total"), "hasMESHMapping"=>$row->get("hasMESHMapping"), "hasHPOMapping"=>$row->get("hasHPOMapping"), "hasMPMapping"=>$row->get("hasMPMapping")];
+                array_push($matches, $parsed);
+            }
+            return $matches;
+        }
 
-        public function search_mouse_term($search, $mappingOnt, $is_open_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
+
+        public function search_mouse_term($search, $mappingOnt, $is_exact_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
             $result = null;
+            $matches = [];
             $ont = strtoupper($mappingOnt);
-            $search = strtolower($search);
-            $matches = $this->exact_term_search($search, "MP");
-            if (!$isLimited)
-                $matches = array_merge($matches, $this->term_search($search, "MP"));
-            else
-                $matches = array_merge($matches, $this->term_search_limited($search, "MP"));
+            if ($is_exact_search) {
+                $terms = [];
+                if (str_contains($search, ","))
+                    $terms = explode(",", $search);
+                else
+                    $terms = [$search];
+                foreach($terms as $term) {
+                    $matches = array_merge($matches, $this->exact_term_id_search($term));
+                }
+            } else {
+                $search = strtolower($search);
+                if (!$isLimited)
+                    $matches = array_merge($matches, $this->term_search($search, "MP"));
+                else
+                    $matches = array_merge($matches, $this->term_search_limited($search, "MP"));
+            }
+            
+
             if (!$matches)
                 return [];
             for ($i = 0; $i < sizeof($matches); $i++) {
@@ -97,18 +127,24 @@ RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTe
         }
 
         public function search_human_term($search, $ontology, $is_exact_search=false, $human_pval=0, $mouse_pval=0, $isLimited=false) {
-            $search = strtolower($search);
+            
             $matches = [];
-            if ($is_exact_search)
-                $matches = $this->exact_term_search($search, $ontology);
-
-            if (!$is_exact_search) {
+            if ($is_exact_search) {
+                $terms = [];
+                if (str_contains($search, ","))
+                    $terms = explode(",", $search);
+                else
+                    $terms = [$search];
+                foreach($terms as $term) {
+                    $matches = array_merge($matches, $this->exact_term_id_search($term));
+                }
+            } else {
+                $search = strtolower($search);
                 if (!$isLimited)
                     $matches = array_merge($matches, $this->term_search($search, $ontology));
                 else
                     $matches = array_merge($matches, $this->term_search_limited($search, $ontology));
             }
-
             if (!$matches)
                 return [];
 

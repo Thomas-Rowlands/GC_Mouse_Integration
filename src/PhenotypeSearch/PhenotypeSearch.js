@@ -2,7 +2,7 @@ import React from 'react';
 import './PhenotypeSearch.css';
 import $ from 'jquery';
 import {
-    Button,
+    Button, Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -70,7 +70,9 @@ class PhenotypeSearch extends React.Component {
             displayError: false,
             tableOrder: "",
             genotypeTermID: "",
-            genotypeOntology: ""
+            genotypeOntology: "",
+            termLimitReached: false,
+            exactTermList: []
         };
         this.page_num = 1;
         this.liveCancelToken = null;
@@ -116,7 +118,7 @@ class PhenotypeSearch extends React.Component {
         let input = x;
         if (this.liveCancelToken)
             this.liveCancelToken.cancel();
-        this.setState({searchInput: input});
+        this.setState({searchInput: input, exactTerm: null});
         if (input.length < 1) {
             $("#live-search").hide();
             this.setState({liveLoading: false, liveSearchResults: [], inputErrorText: "Input cannot be empty."});
@@ -146,7 +148,13 @@ class PhenotypeSearch extends React.Component {
     }
 
     search = () => {
-        let search_input = this.state.searchInput;
+        let search_input = null;
+        if (this.state.isSearchExact) {
+            search_input = this.state.exactTermList.join();
+        } else {
+            search_input = this.state.searchInput;
+        }
+
         if (search_input.length < 3) {
             this.setState({displayError: true});
             return;
@@ -155,7 +163,9 @@ class PhenotypeSearch extends React.Component {
         this.setState({loading: true, displayError: false, tableData: null, tableOrder: ordering});
         let human_pval = this.state.humanPval;
         let mouse_pval = this.state.mousePval;
-        let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" + encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval=" + mouse_pval + "&species=" + this.state.selectedSpecies;
+        let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" +
+            encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval="
+            + mouse_pval + "&species=" + this.state.selectedSpecies + (this.state.isSearchExact ? "&exact" : "");
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -221,7 +231,7 @@ class PhenotypeSearch extends React.Component {
     }
 
     render() {
-        const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
+        const {tableData, liveLoading, loading, searchOpen, liveSearchResults, exactTerm} = this.state;
         const {classes} = this.props;
         return (
             <SwitchTransition>
@@ -241,14 +251,20 @@ class PhenotypeSearch extends React.Component {
                                         <Autocomplete
                                             freeSolo
                                             className={classes.autoComplete}
+                                            multiple
+                                            disabled={this.state.termLimitReached}
                                             onInputChange={this.retrieveLiveSearch}
                                             id="phenotypeSearchInput"
+                                            renderTags={(value, getTagProps) => value.map((option, index) => (
+                                               <Chip color="primary" label={option.FSN} size="small" {...getTagProps({index})}/>
+                                            ))}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
                                                     label="Phenotype search"
                                                     variant="outlined"
                                                     required
+                                                    disabled={this.state.termLimitReached}
                                                     helperText={this.state.inputErrorText}
                                                     InputProps={{
                                                         ...params.InputProps,
@@ -268,6 +284,14 @@ class PhenotypeSearch extends React.Component {
                                                 />
                                             )}
                                             options={liveSearchResults}
+                                            onChange={(e, newVal) => {
+                                                let termList = [];
+                                                newVal.forEach(val => {
+                                                    termList.push(val.id);
+                                                });
+                                                this.setState({"termLimitReached": newVal.length > 3, "exactTermList": termList, "isSearchExact": termList.length > 0});
+                                            }
+                                            }
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                                             selectOnFocus={false}
                                             renderOption={(option) => option.FSN + " (" + option.type + ")"}/>

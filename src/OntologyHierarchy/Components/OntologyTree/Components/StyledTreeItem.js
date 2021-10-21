@@ -7,6 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 const useTreeItemStyles = theme => ({
   root: {
     color: theme.palette.text.secondary,
+      fontFamily: "Roboto, Trebuchet MS, serif",
     '&:hover > $content': {
       // backgroundColor: theme.palette.action.hover,
     },
@@ -23,7 +24,7 @@ const useTreeItemStyles = theme => ({
     borderTopRightRadius: theme.spacing(2),
     borderBottomRightRadius: theme.spacing(2),
     paddingRight: theme.spacing(1),
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: theme.typography.fontWeightRegular,
     '$expanded > &': {
       fontWeight: theme.typography.fontWeightRegular,
     },

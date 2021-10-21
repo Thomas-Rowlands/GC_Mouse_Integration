@@ -12,6 +12,8 @@ import PhenotypeSearch from "../PhenotypeSearch/PhenotypeSearch";
 import OntologyHierarchy from "../OntologyHierarchy/OntologyHierarchy";
 import Genome from "../Genome/Genome";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
+import { ThemeProvider } from "@material-ui/styles";
+import GCTheme from "./theme";
 
 class App extends React.Component {
 
@@ -204,7 +206,9 @@ class App extends React.Component {
                                             unmountOnExit
                                         >
                                             <div className="page">
-                                                <Component setLoading={this.setLoading}/>
+                                                <ThemeProvider theme={GCTheme}>
+                                                    <Component setLoading={this.setLoading}/>
+                                                </ThemeProvider>
                                             </div>
                                         </CSSTransition>
                                     )}

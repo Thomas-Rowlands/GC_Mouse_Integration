@@ -299,6 +299,7 @@ class OntologyHierarchy extends React.Component {
 
                         // populate human tree if result returned.
                         if (response.data.humanID) {
+                            expandedHumanNodes = [];
                             breakdownType = 1;
                             tree["humanID"] = response.data.humanID;
                             tree["humanTree"] = response.data.humanTree;
@@ -329,6 +330,7 @@ class OntologyHierarchy extends React.Component {
                         }
                         // populate mouse tree if result returned.
                         if (response.data.mouseID) {
+                            expandedMouseNodes = [];
                             breakdownType = 2;
                             tree["mouseID"] = response.data.mouseID;
                             tree["mouseTree"] = response.data.mouseTree;

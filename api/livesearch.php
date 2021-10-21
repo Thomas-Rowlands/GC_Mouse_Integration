@@ -1,6 +1,7 @@
 
 <?php
-ini_set('display_errors', '0');
+header('Content-Type: application/json');
+// ini_set('display_errors', '0');
 include 'database.php';
 
 if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
@@ -9,7 +10,10 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $entry = strtolower($_GET["entry"]);
     $cmd = "MATCH (n)
     WHERE n.ontology in [" . ($ont == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\" 
-    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology
+    WITH n
+    OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
+    WITH n, m
+    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology, COALESCE(n.id, m.id) AS id
     ORDER BY FSN
     ;";
     $neo = new Neo_Connection();
@@ -21,7 +25,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
             $type = "Term";
         else
             $type = "Synonym";
-        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology")];
+        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology"), "id"=> $row->get("id")];
         if (strtolower($row->get("FSN")) == $entry)
             array_unshift($matches, $parsed);
         else

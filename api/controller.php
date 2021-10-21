@@ -8,7 +8,10 @@
         if ($_GET['type'] == "study") {
             if (parameters_present(array("search", "page", "human_pval", "mouse_pval", "species"))) {
                 $study = new StudySearch();
-                $result = $study->search_by_term($_GET["search"], $_GET["page"], 20, $_GET["human_pval"], $_GET["mouse_pval"], $_GET["species"]);
+                if (isset($_GET["exact"]))
+                    $result = $study->search_by_term($_GET["search"], $_GET["page"], 20, $_GET["human_pval"], $_GET["mouse_pval"], $_GET["species"], true);
+                else
+                    $result = $study->search_by_term($_GET["search"], $_GET["page"], 20, $_GET["human_pval"], $_GET["mouse_pval"], $_GET["species"]);
                 if ($result)
                     echo json_encode($result);
                 else
