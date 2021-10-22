@@ -33,9 +33,10 @@ class GenomeBrowser extends React.Component {
             {
                 configuration: this.configuration(),
                 assembly: this.assembly(),
+                aggregateTextSearchAdapters: this.textSearchConfig(),
                 tracks: this.tracks(),
                 defaultSession: this.defaultSession(),
-                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:1..3,000,000"
+                location: this.props.chrom ? this.props.chrom + ":" + this.props.start + "-" + this.props.stop : "1:1..3,000,000",
             }
         );
     }
@@ -143,27 +144,31 @@ class GenomeBrowser extends React.Component {
                         displayId: "gc_variant_track-LinearVariantDisplay",
                         maxDisplayedBpPerPx: 3000
                     }
-                ],
-                      "textSearching": {
-        "textSearchAdapter": {
-          "type": "TrixTextSearchAdapter",
-          "textSearchAdapterId": "gc_variant_track-index",
-          "ixFilePath": {
-            "uri": "trix/gc_variant_track.ix"
-          },
-          "ixxFilePath": {
-            "uri": "trix/gc_variant_track.ixx"
-          },
-          "metaFilePath": {
-            "uri": "trix/gc_variant_track_meta.json"
-          },
-          "assemblyNames": [
-            "GRCh37"
-          ]
-        }
-      }
+                ]
             },
         ];
+    }
+
+    textSearchConfig = () => {
+        return [
+      {
+        type: 'TrixTextSearchAdapter',
+        textSearchAdapterId: 'gc-index',
+        ixFilePath: {
+          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ix',
+          locationType: 'UriLocation',
+        },
+        ixxFilePath: {
+          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ixx',
+          locationType: 'UriLocation',
+        },
+        metaFilePath: {
+          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate_meta.json',
+          locationType: 'UriLocation',
+        },
+        assemblyNames: ['hg19'],
+      },
+    ];
     }
 
     defaultSession = () => {

@@ -150,7 +150,7 @@ class PhenotypeSearch extends React.Component {
     search = () => {
         let search_input = null;
         if (this.state.isSearchExact) {
-            search_input = this.state.exactTermList.join();
+            search_input = this.state.exactTermList.map((term) => term.id).join();
         } else {
             search_input = this.state.searchInput;
         }
@@ -197,7 +197,17 @@ class PhenotypeSearch extends React.Component {
     }
 
     speciesRadioChanged = (e) => {
-        this.setState({selectedSpecies: e.target.value});
+        if (this.state.isSearchExact) {
+            this.setState({
+                selectedSpecies: e.target.value,
+                termLimitReached: false,
+                exactTermList: [],
+                isSearchExact: false
+            });
+        } else {
+            this.setState({selectedSpecies: e.target.value});
+        }
+
     }
 
     openOntologyTerm = (e) => {
@@ -231,7 +241,7 @@ class PhenotypeSearch extends React.Component {
     }
 
     render() {
-        const {tableData, liveLoading, loading, searchOpen, liveSearchResults, exactTerm} = this.state;
+        const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
         return (
             <SwitchTransition>
@@ -255,8 +265,27 @@ class PhenotypeSearch extends React.Component {
                                             disabled={this.state.termLimitReached}
                                             onInputChange={this.retrieveLiveSearch}
                                             id="phenotypeSearchInput"
+                                            filterOptions={(options, state) => {
+                                                console.log(options.map((elem) => elem.id));
+                                                if (options) {
+                                                    for (let l = options.length - 1; l >= 0; l--) {
+                                                        for (let i = 0; i < this.state.exactTermList.length; i++) {
+                                                            if (options[l].id === this.state.exactTermList[i].id) {
+                                                                options.splice(l, 1);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                console.log(options.map((elem) => elem.id));
+                                                console.log(state);
+                                                return options;
+                                            }}
+                                            value={this.state.exactTermList ? this.state.exactTermList : []}
                                             renderTags={(value, getTagProps) => value.map((option, index) => (
-                                               <Chip color="primary" label={option.FSN} size="small" {...getTagProps({index})}/>
+                                                <Chip color="primary" label={option.FSN}
+                                                      size="small" {...getTagProps({index})}/>
                                             ))}
                                             renderInput={(params) => (
                                                 <TextField
@@ -276,25 +305,24 @@ class PhenotypeSearch extends React.Component {
                                                             </React.Fragment>
                                                         ),
                                                     }}
-                                                    // onKeyDown={e => {
-                                                    //     if (e.keyCode === 13) {
-                                                    //         this.searchClick();
-                                                    //     }
-                                                    // }}
                                                 />
                                             )}
                                             options={liveSearchResults}
                                             onChange={(e, newVal) => {
                                                 let termList = [];
                                                 newVal.forEach(val => {
-                                                    termList.push(val.id);
+                                                    termList.push({"FSN": val.FSN, "id": val.id});
                                                 });
-                                                this.setState({"termLimitReached": newVal.length > 3, "exactTermList": termList, "isSearchExact": termList.length > 0});
+                                                this.setState({
+                                                    "termLimitReached": newVal.length > 3,
+                                                    "exactTermList": termList,
+                                                    "isSearchExact": termList.length > 0
+                                                });
                                             }
                                             }
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                                             selectOnFocus={false}
-                                            renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
+                                            renderOption={(option) => option.FSN + " (" + option.type + ") " + option.ontology}/>
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                                         <RadioGroup row className={classes.radio} name="speciesRadio"
                                                     value={this.state.selectedSpecies}
@@ -379,7 +407,7 @@ class PhenotypeSearch extends React.Component {
                                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
                                     genotypeTermID: null,
                                     genotypeOntology: null
-                                })}>Back</Button><br />
+                                })}>Back</Button><br/>
                                 <Genome genotypeTermID={this.state.genotypeTermID}
                                         genotypeOntology={this.state.genotypeOntology}
                                         setLoading={this.props.setLoading}/>
