@@ -13,7 +13,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     WITH n
     OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
     WITH n, m
-    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology, COALESCE(n.id, m.id) AS id
+    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology, COALESCE(n.id, m.id) AS id, COALESCE(m.FSN, n.FSN) AS Term, COALESCE(m.id, n.id) AS TermID
     ORDER BY FSN
     ;";
     $neo = new Neo_Connection();
@@ -25,7 +25,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
             $type = "Term";
         else
             $type = "Synonym";
-        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology"), "id"=> $row->get("id")];
+        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology"), "id"=> $row->get("id"), "term"=> $row->get("Term"), "termID"=> $row->get("TermID")];
         if (strtolower($row->get("FSN")) == $entry)
             array_unshift($matches, $parsed);
         else

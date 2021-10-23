@@ -266,7 +266,6 @@ class PhenotypeSearch extends React.Component {
                                             onInputChange={this.retrieveLiveSearch}
                                             id="phenotypeSearchInput"
                                             filterOptions={(options, state) => {
-                                                console.log(options.map((elem) => elem.id));
                                                 if (options) {
                                                     for (let l = options.length - 1; l >= 0; l--) {
                                                         for (let i = 0; i < this.state.exactTermList.length; i++) {
@@ -277,9 +276,6 @@ class PhenotypeSearch extends React.Component {
                                                         }
                                                     }
                                                 }
-
-                                                console.log(options.map((elem) => elem.id));
-                                                console.log(state);
                                                 return options;
                                             }}
                                             value={this.state.exactTermList ? this.state.exactTermList : []}
@@ -311,7 +307,7 @@ class PhenotypeSearch extends React.Component {
                                             onChange={(e, newVal) => {
                                                 let termList = [];
                                                 newVal.forEach(val => {
-                                                    termList.push({"FSN": val.FSN, "id": val.id});
+                                                    termList.push({"FSN": val.term, "id": val.termID});
                                                 });
                                                 this.setState({
                                                     "termLimitReached": newVal.length > 3,
@@ -322,7 +318,7 @@ class PhenotypeSearch extends React.Component {
                                             }
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                                             selectOnFocus={false}
-                                            renderOption={(option) => option.FSN + " (" + option.type + ") " + option.ontology}/>
+                                            renderOption={(option) => <div style={{width:"100%"}}><div style={{display:"inline-block", maxWidth: "30ch", overflow: "hidden"}}>{option.FSN + " (" + option.type + ") "}</div><div style={{display:"inline-block", float:"right", fontWeight:"bold"}}>{option.ontology.toUpperCase()}</div></div>}/>
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                                         <RadioGroup row className={classes.radio} name="speciesRadio"
                                                     value={this.state.selectedSpecies}
