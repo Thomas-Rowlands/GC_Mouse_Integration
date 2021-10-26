@@ -66,109 +66,219 @@ class GenomeBrowser extends React.Component {
     }
 
     tracks = () => {
-        return [{
-            type: "ReferenceSequenceTrack",
-            trackId: "refseq_track",
-            adapter: {
-                type: "BgzipFastaAdapter",
-                fastaLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz"},
-                faiLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.fai"},
-                gziLocation: {"uri": this.state.configData.api_server + "JBrowseData/hg19.fa.gz.gzi"}
-            },
-            rendering: {type: "DivSequenceRenderer"}
-        },
+        return [
             {
-                type: 'FeatureTrack',
-                trackId: 'gene_track',
-                name: 'Ensembl Features',
-                category: ['Annotation'],
-                assemblyNames: ['GRCh37'],
-                adapter: {
-                    type: 'Gff3TabixAdapter',
-                    gffGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz',},
-                    index: {
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz.tbi',},
-                        indexType: 'TBI',
+                "type": "FeatureTrack",
+                "trackId": "gene_track",
+                "name": "Ensembl Features",
+                "category": [
+                    "Annotation"
+                ],
+                "assemblyNames": [
+                    "GRCh37"
+                ],
+                "adapter": {
+                    "type": "Gff3TabixAdapter",
+                    "gffGzLocation": {
+                        "uri": this.state.configData.api_server + "JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz"
                     },
-                    renderer: {type: 'SvgFeatureRenderer',},
-                },
-            },
-            {
-                type: 'FeatureTrack',
-                trackId: 'impc_gene_track',
-                name: 'IMPC Genes',
-                category: ['Annotation'],
-                assemblyNames: ['GRCh37'],
-                adapter: {
-                    type: 'Gff3TabixAdapter',
-                    gffGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/IMPC_Genes.gff3.gz',},
-                    index: {
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/IMPC_Genes.gff3.gz.tbi',},
-                        indexType: 'TBI',
+                    "index": {
+                        "location": {
+                            "uri": this.state.configData.api_server + "JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz.tbi"
+                        },
+                        "indexType": "TBI"
                     },
-                    renderer: {type: 'SvgFeatureRenderer',},
-                },
-            },
-            {
-                type: 'VariantTrack',
-                trackId: 'variant_track',
-                name: 'Ensembl Variants',
-                category: ['Annotation'],
-                assemblyNames: ['GRCh37'],
-                adapter: {
-                    type: 'VcfTabixAdapter',
-                    vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz',},
-                    index: {
-                        indexType: "TBI",
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi',},
-                    },
-                },
-            },
-            {
-                type: 'VariantTrack',
-                trackId: 'gc_variant_track',
-                name: 'GWAS Central Variants',
-                category: ['Annotation'],
-                assemblyNames: ['GRCh37'],
-                adapter: {
-                    type: 'VcfTabixAdapter',
-                    vcfGzLocation: {uri: this.state.configData.api_server + 'JBrowseData/GC_only_variants.vcf.gz',},
-                    index: {
-                        indexType: "TBI",
-                        location: {uri: this.state.configData.api_server + 'JBrowseData/GC_only_variants.vcf.gz.tbi',},
-                    },
-                },
-                displays: [
-                    {
-                        type: "LinearVariantDisplay",
-                        displayId: "gc_variant_track-LinearVariantDisplay",
-                        maxDisplayedBpPerPx: 3000
+                    "renderer": {
+                        "type": "SvgFeatureRenderer"
                     }
-                ]
+                },
+                // "textSearching": {
+                //     "textSearchAdapter": {
+                //         "type": "TrixTextSearchAdapter",
+                //         "textSearchAdapterId": "gene_track-index",
+                //         "ixFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gene_track.ix",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "ixxFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gene_track.ixx",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "metaFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gene_track_meta.json",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "assemblyNames": [
+                //             "GRCh37"
+                //         ]
+                //     }
+                // }
             },
+            {
+                "type": "FeatureTrack",
+                "trackId": "impc_gene_track",
+                "name": "IMPC Genes",
+                "category": [
+                    "Annotation"
+                ],
+                "assemblyNames": [
+                    "GRCh37"
+                ],
+                "adapter": {
+                    "type": "Gff3TabixAdapter",
+                    "gffGzLocation": {
+                        "uri": this.state.configData.api_server + "JBrowseData/IMPC_Genes.gff3.gz"
+                    },
+                    "index": {
+                        "location": {
+                            "uri": this.state.configData.api_server + "JBrowseData/IMPC_Genes.gff3.gz.tbi"
+                        },
+                        "indexType": "TBI"
+                    },
+                    "renderer": {
+                        "type": "SvgFeatureRenderer"
+                    }
+                },
+                // "textSearching": {
+                //     "textSearchAdapter": {
+                //         "type": "TrixTextSearchAdapter",
+                //         "textSearchAdapterId": "impc_gene_track-index",
+                //         "ixFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/impc_gene_track.ix",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "ixxFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/impc_gene_track.ixx",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "metaFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/impc_gene_track_meta.json",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "assemblyNames": [
+                //             "GRCh37"
+                //         ]
+                //     }
+                // }
+            },
+            {
+                "type": "VariantTrack",
+                "trackId": "variant_track",
+                "name": "Ensembl Variants",
+                "category": [
+                    "Annotation"
+                ],
+                "assemblyNames": [
+                    "GRCh37"
+                ],
+                "adapter": {
+                    "type": "VcfTabixAdapter",
+                    "vcfGzLocation": {
+                        "uri": this.state.configData.api_server + "JBrowseData/homo_sapiens_phenotype_associated.vcf.gz"
+                    },
+                    "index": {
+                        "indexType": "TBI",
+                        "location": {
+                            "uri": this.state.configData.api_server + "JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi"
+                        }
+                    }
+                },
+                // "textSearching": {
+                //     "textSearchAdapter": {
+                //         "type": "TrixTextSearchAdapter",
+                //         "textSearchAdapterId": "variant_track-index",
+                //         "ixFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/variant_track.ix",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "ixxFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/variant_track.ixx",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "metaFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/variant_track_meta.json",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "assemblyNames": [
+                //             "GRCh37"
+                //         ]
+                //     }
+                // }
+            },
+            {
+                "type": "VariantTrack",
+                "trackId": "gc_variant_track",
+                "name": "GWAS Central Variants",
+                "category": [
+                    "Annotation"
+                ],
+                "assemblyNames": [
+                    "GRCh37"
+                ],
+                "adapter": {
+                    "type": "VcfTabixAdapter",
+                    "vcfGzLocation": {
+                        "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants.vcf.gz"
+                    },
+                    "index": {
+                        "indexType": "TBI",
+                        "location": {
+                            "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants.vcf.gz.tbi"
+                        }
+                    }
+                },
+                "displays": [
+                    {
+                        "type": "LinearVariantDisplay",
+                        "displayId": "gc_variant_track-LinearVariantDisplay",
+                        "maxDisplayedBpPerPx": 3000
+                    }
+                ],
+                // "textSearching": {
+                //     "textSearchAdapter": {
+                //         "type": "TrixTextSearchAdapter",
+                //         "textSearchAdapterId": "gc_variant_track-index",
+                //         "ixFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gc_variant_track.ix",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "ixxFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gc_variant_track.ixx",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "metaFilePath": {
+                //             "uri": this.state.configData.api_server + "JBrowseData/trix/gc_variant_track_meta.json",
+                //             "locationType": "UriLocation"
+                //         },
+                //         "assemblyNames": [
+                //             "GRCh37"
+                //         ]
+                //     }
+                // }
+            }
         ];
     }
 
     textSearchConfig = () => {
         return [
-      {
-        type: 'TrixTextSearchAdapter',
-        textSearchAdapterId: 'gc-index',
-        ixFilePath: {
-          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ix',
-          locationType: 'UriLocation',
-        },
-        ixxFilePath: {
-          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ixx',
-          locationType: 'UriLocation',
-        },
-        metaFilePath: {
-          uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate_meta.json',
-          locationType: 'UriLocation',
-        },
-        assemblyNames: ['hg19'],
-      },
-    ];
+            {
+                type: 'TrixTextSearchAdapter',
+                textSearchAdapterId: 'hg19-index',
+                ixFilePath: {
+                    uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ix',
+                    locationType: 'UriLocation',
+                },
+                ixxFilePath: {
+                    uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate.ixx',
+                    locationType: 'UriLocation',
+                },
+                metaFilePath: {
+                    uri: this.state.configData.api_server + 'JBrowseData/trix/aggregate_meta.json',
+                    locationType: 'UriLocation',
+                },
+                assemblyNames: ['hg19'],
+            },
+        ];
     }
 
     defaultSession = () => {
@@ -185,7 +295,7 @@ class GenomeBrowser extends React.Component {
                             {
                                 type: 'LinearReferenceSequenceDisplay',
                                 configuration:
-                                    'refseq_track-LinearReferenceSequenceDisplay',
+                                    'assembly_track-LinearReferenceSequenceDisplay',
                             },
                         ],
                     },

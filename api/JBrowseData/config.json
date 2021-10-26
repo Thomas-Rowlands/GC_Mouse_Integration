@@ -1,0 +1,272 @@
+{
+  "assemblies": [
+    {
+      "name": "hg19",
+      "sequence": {
+        "type": "ReferenceSequenceTrack",
+        "trackId": "hg19-ReferenceSequenceTrack",
+        "adapter": {
+          "type": "BgzipFastaAdapter",
+          "fastaLocation": {
+            "uri": "hg19.fa.gz",
+            "locationType": "UriLocation"
+          },
+          "faiLocation": {
+            "uri": "hg19.fa.gz.fai",
+            "locationType": "UriLocation"
+          },
+          "gziLocation": {
+            "uri": "hg19.fa.gz.gzi",
+            "locationType": "UriLocation"
+          }
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "theme": {
+      "palette": {
+        "primary": {
+          "main": "#311b92"
+        },
+        "secondary": {
+          "main": "#004ba7"
+        },
+        "tertiary": {
+          "main": "#f57c00"
+        },
+        "quaternary": {
+          "main": "#d50000"
+        },
+        "bases": {
+          "A": {
+            "main": "#98FB98"
+          },
+          "C": {
+            "main": "#87CEEB"
+          },
+          "G": {
+            "main": "#DAA520"
+          },
+          "T": {
+            "main": "#DC143C"
+          }
+        }
+      }
+    },
+    "disableAnalytics": true
+  },
+  "connections": [],
+  "defaultSession": {},
+  "tracks": [
+    {
+      "type": "ReferenceSequenceTrack",
+      "trackId": "refseq_track",
+      "adapter": {
+        "type": "BgzipFastaAdapter",
+        "fastaLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/hg19.fa.gz"
+        },
+        "faiLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/hg19.fa.gz.fai"
+        },
+        "gziLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/hg19.fa.gz.gzi"
+        }
+      },
+      "rendering": {
+        "type": "DivSequenceRenderer"
+      }
+    },
+    {
+      "type": "FeatureTrack",
+      "trackId": "gene_track",
+      "name": "Ensembl Features",
+      "category": [
+        "Annotation"
+      ],
+      "assemblyNames": [
+        "GRCh37"
+      ],
+      "adapter": {
+        "type": "Gff3TabixAdapter",
+        "gffGzLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz"
+        },
+        "index": {
+          "location": {
+            "uri": "http://gcmouseapi/JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz.tbi"
+          },
+          "indexType": "TBI"
+        },
+        "renderer": {
+          "type": "SvgFeatureRenderer"
+        }
+      },
+      "textSearching": {
+        "textSearchAdapter": {
+          "type": "TrixTextSearchAdapter",
+          "textSearchAdapterId": "gene_track-index",
+          "ixFilePath": {
+            "uri": "trix/gene_track.ix",
+            "locationType": "UriLocation"
+          },
+          "ixxFilePath": {
+            "uri": "trix/gene_track.ixx",
+            "locationType": "UriLocation"
+          },
+          "metaFilePath": {
+            "uri": "trix/gene_track_meta.json",
+            "locationType": "UriLocation"
+          },
+          "assemblyNames": [
+            "GRCh37"
+          ]
+        }
+      }
+    },
+    {
+      "type": "FeatureTrack",
+      "trackId": "impc_gene_track",
+      "name": "IMPC Genes",
+      "category": [
+        "Annotation"
+      ],
+      "assemblyNames": [
+        "GRCh37"
+      ],
+      "adapter": {
+        "type": "Gff3TabixAdapter",
+        "gffGzLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/IMPC_Genes.gff3.gz"
+        },
+        "index": {
+          "location": {
+            "uri": "http://gcmouseapi/JBrowseData/IMPC_Genes.gff3.gz.tbi"
+          },
+          "indexType": "TBI"
+        },
+        "renderer": {
+          "type": "SvgFeatureRenderer"
+        }
+      },
+      "textSearching": {
+        "textSearchAdapter": {
+          "type": "TrixTextSearchAdapter",
+          "textSearchAdapterId": "impc_gene_track-index",
+          "ixFilePath": {
+            "uri": "trix/impc_gene_track.ix",
+            "locationType": "UriLocation"
+          },
+          "ixxFilePath": {
+            "uri": "trix/impc_gene_track.ixx",
+            "locationType": "UriLocation"
+          },
+          "metaFilePath": {
+            "uri": "trix/impc_gene_track_meta.json",
+            "locationType": "UriLocation"
+          },
+          "assemblyNames": [
+            "GRCh37"
+          ]
+        }
+      }
+    },
+    {
+      "type": "VariantTrack",
+      "trackId": "variant_track",
+      "name": "Ensembl Variants",
+      "category": [
+        "Annotation"
+      ],
+      "assemblyNames": [
+        "GRCh37"
+      ],
+      "adapter": {
+        "type": "VcfTabixAdapter",
+        "vcfGzLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/homo_sapiens_phenotype_associated.vcf.gz"
+        },
+        "index": {
+          "indexType": "TBI",
+          "location": {
+            "uri": "http://gcmouseapi/JBrowseData/homo_sapiens_phenotype_associated.vcf.gz.tbi"
+          }
+        }
+      },
+      "textSearching": {
+        "textSearchAdapter": {
+          "type": "TrixTextSearchAdapter",
+          "textSearchAdapterId": "variant_track-index",
+          "ixFilePath": {
+            "uri": "trix/variant_track.ix",
+            "locationType": "UriLocation"
+          },
+          "ixxFilePath": {
+            "uri": "trix/variant_track.ixx",
+            "locationType": "UriLocation"
+          },
+          "metaFilePath": {
+            "uri": "trix/variant_track_meta.json",
+            "locationType": "UriLocation"
+          },
+          "assemblyNames": [
+            "GRCh37"
+          ]
+        }
+      }
+    },
+    {
+      "type": "VariantTrack",
+      "trackId": "gc_variant_track",
+      "name": "GWAS Central Variants",
+      "category": [
+        "Annotation"
+      ],
+      "assemblyNames": [
+        "GRCh37"
+      ],
+      "adapter": {
+        "type": "VcfTabixAdapter",
+        "vcfGzLocation": {
+          "uri": "http://gcmouseapi/JBrowseData/GC_only_variants.vcf.gz"
+        },
+        "index": {
+          "indexType": "TBI",
+          "location": {
+            "uri": "http://gcmouseapi/JBrowseData/GC_only_variants.vcf.gz.tbi"
+          }
+        }
+      },
+      "displays": [
+        {
+          "type": "LinearVariantDisplay",
+          "displayId": "gc_variant_track-LinearVariantDisplay",
+          "maxDisplayedBpPerPx": 3000
+        }
+      ],
+      "textSearching": {
+        "textSearchAdapter": {
+          "type": "TrixTextSearchAdapter",
+          "textSearchAdapterId": "gc_variant_track-index",
+          "ixFilePath": {
+            "uri": "trix/gc_variant_track.ix",
+            "locationType": "UriLocation"
+          },
+          "ixxFilePath": {
+            "uri": "trix/gc_variant_track.ixx",
+            "locationType": "UriLocation"
+          },
+          "metaFilePath": {
+            "uri": "trix/gc_variant_track_meta.json",
+            "locationType": "UriLocation"
+          },
+          "assemblyNames": [
+            "GRCh37"
+          ]
+        }
+      }
+    }
+  ],
+  "aggregateTextSearchAdapters": []
+}
