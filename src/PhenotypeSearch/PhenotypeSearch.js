@@ -307,7 +307,7 @@ class PhenotypeSearch extends React.Component {
                                             onChange={(e, newVal) => {
                                                 let termList = [];
                                                 newVal.forEach(val => {
-                                                    termList.push({"FSN": val.term, "id": val.termID});
+                                                    termList.push({"FSN": (val.term ? val.term : val.FSN), "id": (val.termID ? val.termID : val.id)});
                                                 });
                                                 this.setState({
                                                     "termLimitReached": newVal.length > 3,
