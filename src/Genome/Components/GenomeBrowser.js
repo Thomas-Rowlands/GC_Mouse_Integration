@@ -69,7 +69,7 @@ class GenomeBrowser extends React.Component {
         return [
             {
                 "type": "FeatureTrack",
-                "trackId": "gene_track",
+                "trackId": "Homo_sapiens.GRCh37.87.chr_sorted.gff3.gz",
                 "name": "Ensembl Features",
                 "category": [
                     "Annotation"
@@ -116,7 +116,7 @@ class GenomeBrowser extends React.Component {
             },
             {
                 "type": "FeatureTrack",
-                "trackId": "impc_gene_track",
+                "trackId": "IMPC_Genes.gff3.gz",
                 "name": "IMPC Genes",
                 "category": [
                     "Annotation"
@@ -163,7 +163,7 @@ class GenomeBrowser extends React.Component {
             },
             {
                 "type": "VariantTrack",
-                "trackId": "variant_track",
+                "trackId": "homo_sapiens_phenotype_associated.vcf.gz",
                 "name": "Ensembl Variants",
                 "category": [
                     "Annotation"
@@ -207,7 +207,7 @@ class GenomeBrowser extends React.Component {
             },
             {
                 "type": "VariantTrack",
-                "trackId": "gc_variant_track",
+                "trackId": "GC_only_variants.vcf.gz",
                 "name": "GWAS Central Variants",
                 "category": [
                     "Annotation"
@@ -230,7 +230,7 @@ class GenomeBrowser extends React.Component {
                 "displays": [
                     {
                         "type": "LinearVariantDisplay",
-                        "displayId": "gc_variant_track-LinearVariantDisplay",
+                        "displayId": "GC_only_variants.vcf.gz-LinearVariantDisplay",
                         "maxDisplayedBpPerPx": 3000
                     }
                 ],
@@ -301,25 +301,25 @@ class GenomeBrowser extends React.Component {
                     },
                     {
                         type: 'FeatureTrack',
-                        configuration: 'impc_gene_track',
+                        configuration: 'IMPC_Genes.gff3.gz',
                         displays: [
                             {
                                 type: 'LinearBasicDisplay',
                                 height: 200,
                                 configuration:
-                                    'gene_track-LinearBasicDisplay',
+                                    'IMPC_Genes.gff3.gz-LinearBasicDisplay',
                                 maxDisplayedBpPerPx: 3000
                             }
                         ]
                     },
                     {
                         type: "VariantTrack",
-                        configuration: "gc_variant_track",
+                        configuration: "GC_only_variants.vcf.gz",
                         displays: [
                             {
                                 type: "LinearVariantDisplay",
                                 height: 200,
-                                configuration: "variant_track-LinearVariantDisplay",
+                                configuration: "GC_only_variants.vcf.gz-LinearVariantDisplay",
                                 maxDisplayedBpPerPx: 300000
                             }
                         ],

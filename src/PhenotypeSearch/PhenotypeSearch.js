@@ -27,6 +27,8 @@ import Grow from '@material-ui/core/Grow';
 import Typography from "@material-ui/core/Typography";
 import Genome from "../Genome/Genome";
 import {CSSTransition, SwitchTransition} from "react-transition-group";
+import InfoIcon from '@material-ui/icons/Info';
+import InfoDialog from "../UtilityComponents/InfoDialog";
 
 const useStyles = theme => ({
     formControl: {
@@ -72,7 +74,8 @@ class PhenotypeSearch extends React.Component {
             genotypeTermID: "",
             genotypeOntology: "",
             termLimitReached: false,
-            exactTermList: []
+            exactTermList: [],
+            infoOpen: false
         };
         this.page_num = 1;
         this.liveCancelToken = null;
@@ -240,6 +243,10 @@ class PhenotypeSearch extends React.Component {
         this.setState({genotypeTermID: this.state.humanTerm, genotypeOntology: this.state.humanOntology});
     }
 
+    getSearchInfoContent = () => {
+        return "";
+    }
+
     render() {
         const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
@@ -252,6 +259,7 @@ class PhenotypeSearch extends React.Component {
                 >
                     {
                         !this.state.genotypeTermID ? <div className="PhenotypeSearch">
+                                <InfoDialog onClose={() => this.setState({infoOpen: false})} title={this.state.infoTitle} open={this.state.infoOpen} contentText={this.state.infoText}/>
                                 <LoadingSpinner loading={loading}/>
                                 <div className="searchResultsContainer">
                                     {/* Orthology Selection */}
@@ -319,6 +327,7 @@ class PhenotypeSearch extends React.Component {
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                                             selectOnFocus={false}
                                             renderOption={(option) => <div style={{width:"100%"}}><div style={{display:"inline-block", maxWidth: "30ch", overflow: "hidden"}}>{option.FSN + " (" + option.type + ") "}</div><div style={{display:"inline-block", float:"right", fontWeight:"bold"}}>{option.ontology.toUpperCase()}</div></div>}/>
+                                        <InfoIcon color="primary" onClick={() => this.setState({infoText: "test text", infoTitle: "test title", infoOpen: true})}/>
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                                         <RadioGroup row className={classes.radio} name="speciesRadio"
                                                     value={this.state.selectedSpecies}
