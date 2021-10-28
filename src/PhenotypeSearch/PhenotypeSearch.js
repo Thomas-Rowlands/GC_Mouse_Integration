@@ -275,7 +275,7 @@ class PhenotypeSearch extends React.Component {
                                             freeSolo
                                             className={classes.autoComplete}
                                             multiple
-                                            disabled={this.state.termLimitReached}
+                                            getOptionDisabled={(options) => this.state.termLimitReached}
                                             onInputChange={this.retrieveLiveSearch}
                                             id="phenotypeSearchInput"
                                             filterOptions={(options, state) => {
@@ -302,7 +302,7 @@ class PhenotypeSearch extends React.Component {
                                                     label="Phenotype search"
                                                     variant="outlined"
                                                     required
-                                                    disabled={this.state.termLimitReached}
+                                                    // disabled={this.state.termLimitReached}
                                                     helperText={this.state.inputErrorText}
                                                     InputProps={{
                                                         ...params.InputProps,
@@ -318,6 +318,11 @@ class PhenotypeSearch extends React.Component {
                                             )}
                                             options={liveSearchResults}
                                             onChange={(e, newVal) => {
+                                                if (e.code === "Enter") {
+                                                    this.search();
+                                                    return;
+                                                }
+
                                                 let termList = [];
                                                 newVal.forEach(val => {
                                                     termList.push({

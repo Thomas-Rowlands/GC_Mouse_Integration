@@ -12,6 +12,7 @@ import PhenotypeResultBreakdown from "../PhenotypeSearch/Components/PhenotypeRes
 import api_server from "../UtilityComponents/ConfigData";
 import Genome from "../Genome/Genome";
 import {CSSTransition, SwitchTransition} from "react-transition-group";
+import InfoDialog from "../UtilityComponents/InfoDialog";
 
 const useStyles = theme => ({
     formControl: {
@@ -634,6 +635,12 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
+    getInfoText = () => {
+        return `
+        
+        `;
+    }
+
     render() {
         const {classes} = this.props;
         const {
@@ -710,7 +717,7 @@ class OntologyHierarchy extends React.Component {
                                         options={this.state.humanLiveSearchResults}
                                         getOptionLabel={(option) => option.FSN ? option.FSN : this.state.humanSearchInput}
                                         renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
-                                    <p>Search for terms with mappings to the MP ontology</p>
+                                    <p className={"center"}>Search for terms with mappings to the MP ontology<InfoDialog title={"Ontology Hierarchy"} contentText={""}/></p>
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
                                     {this.state.humanSearchFailed ?
