@@ -4,6 +4,7 @@ import './AppIdeogram.css'
 import {Button, FormControl, InputLabel, MenuItem, Select, Typography, withStyles} from "@material-ui/core";
 import $ from "jquery";
 import {api_server} from "../../UtilityComponents/ConfigData";
+import {d3} from "ideogram/src/js/lib";
 
 const useStyles = theme => ({
     formControl: {
@@ -37,7 +38,6 @@ class AppIdeogram extends Component {
             configData: api_server,
         }
         this.ideogram = null;
-        this.annots = this.props.markerData;
     }
 
     componentDidMount() {
@@ -53,7 +53,7 @@ class AppIdeogram extends Component {
 
     getIdeogram = () => {
         this.ideogram = null;
-        if (this.annots) {
+        if (this.props.markerData) {
             this.ideogram = new Ideogram({
                 organism: 'human',
                 assembly: "GRCh37",
@@ -63,8 +63,9 @@ class AppIdeogram extends Component {
                 rotatable: false,
                 chrWidth: 15,
                 chrHeight: 600,
-                annotations: this.annots,
+                annotations: this.props.markerData,
                 onClickAnnot: this.props.onAnnotationClick,
+                onLoad: () => this.filterAnnots(0, 0),
                 annotationTracks: [
                     {id: 'markerTrack', displayName: 'Markers', shape: this.getShape()},
                     {id: 'knockoutTrack', displayName: 'Knockouts', shape: this.getShape()}
@@ -117,30 +118,47 @@ class AppIdeogram extends Component {
         ];
     }
 
-    getFilterSelection = (isMarkerPval, newVal) => {
-        let filter = {"markerSignificance": {}, "knockoutSignificance": {}};
-        let marker = isMarkerPval ? newVal : this.state.markerPval;
-        let knockout = isMarkerPval ? this.state.knockoutPval : newVal;
-        for (let i = 0; i < 11; i++) {
-            if (i >= marker)
-                filter["markerSignificance"][i] = 1;
-            if (i >= knockout)
-                filter["knockoutSignificance"][i] = 1;
-        }
-        return filter;
-    }
 
     onKnockoutPvalChange = (newVal) => {
         this.setState({knockoutPval: newVal});
-        let selection = this.getFilterSelection(false, newVal);
-        this.ideogram.filterAnnots(selection);
+        this.filterAnnots(this.state.markerPval, newVal);
     }
 
     onMarkerPvalChange = (newVal) => {
         this.setState({markerPval: newVal});
-        let selection = this.getFilterSelection(true, newVal);
-        this.ideogram.filterAnnots(selection);
+        this.filterAnnots(newVal, this.state.knockoutPval);
     }
+
+    getFilteredAnnots = (markerPval, knockoutPval) => {
+
+        this.ideogram.annotsByFacet["markerSignificance"].filter((val) => {
+           return val >= markerPval;
+        });
+
+        this.ideogram.annotsByFacet["knockoutSignificance"].filter((val) => {
+           return val >= knockoutPval;
+        });
+
+        let results = this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 1]].top(Infinity);
+        return results;
+    }
+
+    filterAnnots = (markerPval, knockoutPval) => {
+        let results;
+
+        results = this.getFilteredAnnots(markerPval, knockoutPval);
+
+        results = this.ideogram.packAnnots(results);
+
+        delete this.ideogram.maxAnnotsPerBar;
+        delete this.ideogram.maxAnnotsPerBarAllChrs;
+
+        this.ideogram.filteredAnnots = results;
+
+        d3.selectAll(this.ideogram.selector + ' polygon.annot').remove();
+        this.ideogram.drawAnnots(results);
+    }
+
 
     render() {
         const {classes} = this.props;

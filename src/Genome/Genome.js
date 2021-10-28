@@ -224,6 +224,7 @@ class Genome extends React.Component {
                         ;
                         let marker_avg = Math.floor(response.data.markers.average);
                         let knockout_avg = Math.floor(response.data.knockouts.average);
+
                         response.data.markers.bins.forEach(marker =>
                             result.annots.forEach(
                                 subset => {
