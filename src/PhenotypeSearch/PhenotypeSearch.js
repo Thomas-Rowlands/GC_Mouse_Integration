@@ -244,7 +244,13 @@ class PhenotypeSearch extends React.Component {
     }
 
     getSearchInfoContent = () => {
-        return "";
+        return `
+        By inputting partial or exact ontology terms/synonyms, this search will return matching records along with their 
+        associated GWAS studies and IMPC gene knockout experiments. 
+        
+        Each returned record can be further expanded for further
+        information using the icon buttons on the right-hand side for a breakdown and karyotype/genotype view respectively.
+        `;
     }
 
     render() {
@@ -259,12 +265,11 @@ class PhenotypeSearch extends React.Component {
                 >
                     {
                         !this.state.genotypeTermID ? <div className="PhenotypeSearch">
-                                <InfoDialog onClose={() => this.setState({infoOpen: false})} title={this.state.infoTitle} open={this.state.infoOpen} contentText={this.state.infoText}/>
                                 <LoadingSpinner loading={loading}/>
                                 <div className="searchResultsContainer">
                                     {/* Orthology Selection */}
                                     <div className="orthology-menu">
-                                        <Typography variant="h6">Comparative data on human-mouse orthologues.</Typography>
+                                        <Typography variant="h6">Comparative data on human-mouse orthologues. <InfoDialog title={"Phenotype Search"} contentText={this.getSearchInfoContent()}/></Typography>
                                         <br/>
                                         <Autocomplete
                                             freeSolo
@@ -315,7 +320,10 @@ class PhenotypeSearch extends React.Component {
                                             onChange={(e, newVal) => {
                                                 let termList = [];
                                                 newVal.forEach(val => {
-                                                    termList.push({"FSN": (val.term ? val.term : val.FSN), "id": (val.termID ? val.termID : val.id)});
+                                                    termList.push({
+                                                        "FSN": (val.term ? val.term : val.FSN),
+                                                        "id": (val.termID ? val.termID : val.id)
+                                                    });
                                                 });
                                                 this.setState({
                                                     "termLimitReached": newVal.length > 3,
@@ -326,8 +334,23 @@ class PhenotypeSearch extends React.Component {
                                             }
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
                                             selectOnFocus={false}
-                                            renderOption={(option) => <div style={{width:"100%"}}><div style={{display:"inline-block", maxWidth: "30ch", overflow: "hidden"}}>{option.FSN + " (" + option.type + ") "}</div><div style={{display:"inline-block", float:"right", fontWeight:"bold"}}>{option.ontology.toUpperCase()}</div></div>}/>
-                                        <InfoIcon color="primary" onClick={() => this.setState({infoText: "test text", infoTitle: "test title", infoOpen: true})}/>
+                                            renderOption={(option) =>
+                                                <div style={{width: "100%"}}>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        maxWidth: "30ch",
+                                                        overflow: "hidden"
+                                                    }}>
+                                                        {option.FSN + " (" + option.type + ") "}
+                                                    </div>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        float: "right",
+                                                        fontWeight: "bold"
+                                                    }}>
+                                                        {option.ontology.toUpperCase()}
+                                                    </div>
+                                                </div>}/>
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
                                         <RadioGroup row className={classes.radio} name="speciesRadio"
                                                     value={this.state.selectedSpecies}
