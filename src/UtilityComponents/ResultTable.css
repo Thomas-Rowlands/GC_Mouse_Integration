@@ -1,5 +1,9 @@
 th{
-    background-color: #C8D9EE;
+    background-color: #0090de;
+    color: white !important;
+}
+th:hover{
+    background-color: #257cee;
 }
 tr:hover{
     background-color: #f4f9ff;

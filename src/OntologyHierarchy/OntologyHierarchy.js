@@ -640,6 +640,11 @@ class OntologyHierarchy extends React.Component {
 
     getInfoText = () => {
         return `
+        Search for terms including your text input or via the navigable trees.
+        
+        Terms with associated GWAS records are marked by a purple button, IMPC gene knockout experiments by a green button and included ontology mappings with a red/blue button, which can be used to retrieve said data. 
+        
+        Use the drop down selection labelled "Human Ontology" to switch between MeSH and HPO ontologies for the left-side ontology tree. 
         
         `;
     }
@@ -720,7 +725,7 @@ class OntologyHierarchy extends React.Component {
                                         options={this.state.humanLiveSearchResults}
                                         getOptionLabel={(option) => option.FSN ? option.FSN : this.state.humanSearchInput}
                                         renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
-                                    <p className={"center"}>Search for terms with mappings to the MP ontology<InfoDialog title={"Ontology Hierarchy"} contentText={""}/></p>
+                                    <p className={"center"}>Search for terms with mappings to the MP ontology<InfoDialog title={"Ontology Hierarchy"} contentText={this.getInfoText()}/></p>
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
                                     {this.state.humanSearchFailed ?

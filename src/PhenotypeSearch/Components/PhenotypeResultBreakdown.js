@@ -20,6 +20,8 @@ import TabPanel from "../../UtilityComponents/TabPanel";
 import api_server from "../../UtilityComponents/ConfigData";
 import {Graph} from "react-d3-graph";
 import _ from "lodash";
+import InfoDialog from "../../UtilityComponents/InfoDialog";
+import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
 
 const useStyles = theme => ({
     formControl: {
@@ -376,11 +378,32 @@ class PhenotypeResultBreakdown extends React.Component {
         this.props.genotypeHandler();
     }
 
+    getGWASInfoText = () => {
+        return `
+        Human GWAS study records containing marker associations with the selected phenotype (and descendant ontology terms) are displayed below.
+        
+        Use the dropdown menu to filter results by -log p-value. 
+        `;
+    }
+
+    getKnockoutInfoText = () => {
+        return `
+        IMPC mouse gene knockout experiments containing associations with the selected phenotype (and descendant ontology terms) are displayed below.
+        
+        Use the dropdown menu to filter results by -log p-value. 
+        `;
+    }
+
     render() {
         const {breakdownData,loading, tabValue, dataTabValue, mappingGraphData, hasData} = this.state;
         const {classes} = this.props;
         if (loading)
-            return null;
+            return (
+                <div className="breakdown-loading-container">
+                    <LoadingSpinner loading={loading}/>
+                </div>
+
+            );
         if (hasData)
             return (
                 <div>
@@ -389,6 +412,7 @@ class PhenotypeResultBreakdown extends React.Component {
                             <Button variant="contained" color="primary"
                                     onClick={this.props.backBtnClick}>Back</Button> : null}
                         <div className="phenotype-breakdown-container">
+
                             <AppBar position="static" color="default">
                                 <Tabs
                                     value={tabValue}
@@ -424,7 +448,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 </AppBar>
                                 <TabPanel value={dataTabValue} index={0}>
                                     <div style={{width: "100%"}}>
-                                        <FormControl style={{marginLeft: "44%"}} className={classes.formControl}
+                                        <FormControl style={{marginLeft: "36%"}} className={classes.formControl}
                                                      onChange={this.humanPValChanged}>
                                             <InputLabel shrink>Human P-value</InputLabel>
                                             <Select value={this.state.humanPval} className={classes.selectEmpty}
@@ -442,7 +466,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                                 <MenuItem value={9}>9</MenuItem>
                                                 <MenuItem value={10}>10</MenuItem>
                                             </Select>
-                                        </FormControl>
+                                        </FormControl><InfoDialog title={"GWAS Records"} contentText={this.getGWASInfoText()}/>
                                     </div>
 
                                     {breakdownData ?
@@ -452,7 +476,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={dataTabValue} index={1}>
                                     <div style={{width: "100%"}}>
-                                        <FormControl style={{marginLeft: "44%"}} className={classes.formControl}>
+                                        <FormControl style={{marginLeft: "36%"}} className={classes.formControl}>
                                             <InputLabel shrink>Mouse P-value</InputLabel>
                                             <Select value={this.state.mousePval} className={classes.selectEmpty} id="select"
                                                     onChange={this.mousePValChanged}>
@@ -468,7 +492,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                                 <MenuItem value={9}>9</MenuItem>
                                                 <MenuItem value={10}>10</MenuItem>
                                             </Select>
-                                        </FormControl>
+                                        </FormControl><InfoDialog title={"IMPC Gene Knockout Experiments"} contentText={this.getKnockoutInfoText()}/>
                                     </div>
 
                                     {breakdownData ? <ResultTable isSearchResult={false}  orderBy={"Gene"} cellClickHandlers={{
