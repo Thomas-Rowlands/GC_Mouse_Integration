@@ -272,7 +272,7 @@ class OntologyHierarchy extends React.Component {
         return tempFilteredNodes;
     }
 
-    search = (searchInput, ontology) => {
+    search = (searchInput, ontology, isExact=false) => {
         if (searchInput === undefined || searchInput === "") {
             this.getRootTrees(this.state.humanOntology);
             return;
@@ -281,7 +281,10 @@ class OntologyHierarchy extends React.Component {
         let humanOnt = this.state.humanOntology;
         let mouseOnt = "MP";
         let searchOnt = ontology;
-        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" + searchInput + "&humanOntology=" + humanOnt + "&mouseOntology=" + mouseOnt + "&searchOntology=" + searchOnt;
+        let exactArg = isExact ? "&exact" : "";
+        let url_string = this.state.configData.api_server + "controller.php?type=ontology&search&term=" +
+            searchInput + "&humanOntology=" + humanOnt +
+            "&mouseOntology=" + mouseOnt + "&searchOntology=" + searchOnt + exactArg;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
@@ -494,13 +497,13 @@ class OntologyHierarchy extends React.Component {
     mouseSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("mouseSearchInput").value;
         this.setState({mouseSearchInput: input});
-        this.search(input, "MP");
+        this.search(input, "MP", true);
     }
 
     humanSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("humanSearchInput").value;
         this.setState({humanSearchInput: input});
-        this.search(input, this.state.humanOntology);
+        this.search(input, this.state.humanOntology, true);
     }
 
     setexpandedMouseNodes = (nodes, ids) => {

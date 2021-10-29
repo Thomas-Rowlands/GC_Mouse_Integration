@@ -77,7 +77,7 @@
                 if (validate_ontology($_GET["humanOntology"]) && validate_ontology($_GET["mouseOntology"]) && validate_ontology($_GET["searchOntology"])) {
                     $ont = new Ontology();
                     $result = null;
-                    $result = $ont->get_ontology_trees($_GET["term"], strtoupper($_GET["humanOntology"]), strtoupper($_GET["mouseOntology"]), strtoupper($_GET["searchOntology"]));
+                    $result = $ont->get_ontology_trees($_GET["term"], strtoupper($_GET["humanOntology"]), strtoupper($_GET["mouseOntology"]), strtoupper($_GET["searchOntology"]), isset($_GET["exact"]));
                     if ($result)
                         echo json_encode($result);
                     else

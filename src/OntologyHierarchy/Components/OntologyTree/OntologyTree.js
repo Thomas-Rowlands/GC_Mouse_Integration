@@ -70,7 +70,7 @@ class OntologyTree extends React.Component {
     getTreeNodes = (nodes, parentPath) => {
         const {classes} = this.props;
         const btn = nodes.hasMapping ?
-            <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.label)}
+            <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
                     color="primary" variant="outlined" id={nodes.id}
             ><img width="50px" src={"/images/MappingIcon.svg"}/></Button>
             : nodes.hasData ? <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}

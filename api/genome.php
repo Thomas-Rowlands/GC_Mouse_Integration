@@ -73,9 +73,11 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
             $total = 0;
 
             foreach (Genome::$chromosomes as $chromosome) {
-                $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, SUM(value) AS value, highest_significance
                 FROM human_markers_chr".$chromosome." AS hm
-                WHERE hm.mesh_id in (" . $term_string . ")";
+                WHERE hm.mesh_id in (" . $term_string . ")
+                GROUP BY hm.bin, hm.highest_significance
+                ";
                 $markers_result = $this->con->execute($cmd, "gc_bin");
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
@@ -161,9 +163,11 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
             $total = 0;
             $used_bin_count = 0;
             foreach (Genome::$chromosomes as $chromosome) {
-                $cmd = "SELECT '".$chromosome."' AS chr, bin, value, highest_significance
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, SUM(value) AS value, highest_significance
                 FROM mouse_knockouts_chr".$chromosome." AS mk
-                WHERE mk.mp_id in (" . $term_string . ")";
+                WHERE mk.mp_id in (" . $term_string . ")
+                GROUP BY mk.bin, mk.highest_significance
+                ";
                 $markers_result = $this->con->execute($cmd, "gc_bin");
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);

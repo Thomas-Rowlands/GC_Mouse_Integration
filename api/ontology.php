@@ -268,7 +268,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
                 return null;
         }
 
-        public function get_ontology_trees($term, $humanOntology, $mouseOntology, $searchOntology) {
+        public function get_ontology_trees($term, $humanOntology, $mouseOntology, $searchOntology, $isExactTerm=false) {
             $humanOntology = $humanOntology;
             $mouseOntology = $mouseOntology;
             $searchOntology = $searchOntology;
@@ -279,9 +279,9 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
             $humanLabel = "";
             $match = null;
             if ($searchOntology == "MP") {
-                $match = $this->search_mouse_term($term, $humanOntology, false, 0, 0, true);
+                $match = $this->search_mouse_term($term, $humanOntology, $isExactTerm, 0, 0, true);
             } else {
-                $match = $this->search_human_term($term, $searchOntology, false, 0, 0, true);
+                $match = $this->search_human_term($term, $searchOntology, $isExactTerm, 0, 0, true);
             }
             if ($match) {
                 $isExactMatch = null;

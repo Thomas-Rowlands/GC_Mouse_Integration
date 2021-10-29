@@ -1,5 +1,4 @@
 import React from "react";
-import * as qs from "query-string";
 import 'fontsource-roboto';
 import {
     createViewState,
