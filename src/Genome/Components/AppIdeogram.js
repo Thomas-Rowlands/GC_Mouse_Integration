@@ -139,7 +139,7 @@ class AppIdeogram extends Component {
            return val >= knockoutPval;
         });
 
-        let results = this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 1]].top(Infinity);
+        let results = this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 2]].top(Infinity);
         return results;
     }
 

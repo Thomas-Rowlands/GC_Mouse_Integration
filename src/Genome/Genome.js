@@ -49,7 +49,8 @@ class Genome extends React.Component {
                                     "trackIndex",
                                     "color",
                                     "markerSignificance",
-                                    "knockoutSignificance"
+                                    "knockoutSignificance",
+                                    "quantity",
                                 ],
                                 "annots": [
                                     {
@@ -267,6 +268,18 @@ class Genome extends React.Component {
                                             colour = '#31bb22';
                                         else if (count > marker_avg)
                                             colour = '#F33';
+
+                                        // Ensure markers with higher significance values are counted.
+                                        subset.annots.forEach((elem) => {
+                                            if (elem[1] === start) {
+                                                if (elem[5] >= val) {
+                                                    count += elem[7];
+                                                } else if (elem[5] < val) {
+                                                    elem[7] += count;
+                                                    elem[0] = elem[7].toString() + " markers";
+                                                }
+                                            }
+                                        });
                                         subset.annots.push([
                                             count.toString() + (count > 1 ? " markers" : " marker"),
                                             start,
@@ -274,7 +287,8 @@ class Genome extends React.Component {
                                             0,
                                             colour,
                                             val,
-                                            10
+                                            10,
+                                            count
                                         ]);
                                     }
                                 }
@@ -329,7 +343,8 @@ class Genome extends React.Component {
                                             1,
                                             colour,
                                             10,
-                                            val
+                                            val,
+                                            count
                                         ]);
                                     }
                                 }

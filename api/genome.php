@@ -77,6 +77,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 FROM human_markers_chr".$chromosome." AS hm
                 WHERE hm.mesh_id in (" . $term_string . ")
                 GROUP BY hm.bin, hm.highest_significance
+                ORDER BY hm.bin, hm.highest_significance ASC
                 ";
                 $markers_result = $this->con->execute($cmd, "gc_bin");
                 if ($markers_result) {
