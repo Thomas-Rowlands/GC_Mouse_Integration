@@ -362,7 +362,6 @@ class OntologyHierarchy extends React.Component {
                             tree["isExactMatch"] = response.data.isExactMatch;
                         }
 
-
                         this.setState({
                             treeData: tree,
                             isDataPresent: true,
@@ -383,7 +382,7 @@ class OntologyHierarchy extends React.Component {
                             isMappingPresent: false,
                             humanSearchFailed: searchOnt !== "MP",
                             mouseSearchFailed: searchOnt === "MP"
-                        });
+                        }, () => this.props.setLoading(false));
                     }
                 }
             })
@@ -506,19 +505,19 @@ class OntologyHierarchy extends React.Component {
         this.search(input, this.state.humanOntology, true);
     }
 
-    setexpandedMouseNodes = (nodes, ids) => {
+    setExpandedMouseNodes = (nodes, ids) => {
         if (Array.isArray(ids[0]))
             ids = ids[0];
         ids.push(nodes.id);
         this.tempExpandedmouseIds = ids;
-        return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setexpandedMouseNodes(node, ids)) : ids;
+        return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setExpandedMouseNodes(node, ids)) : ids;
     }
-    setexpandedHumanNodes = (nodes, ids) => {
+    setExpandedHumanNodes = (nodes, ids) => {
         if (Array.isArray(ids[0]))
             ids = ids[0];
         ids.push(nodes.id);
         this.tempExpandedhumanIds = ids;
-        return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setexpandedHumanNodes(node, ids)) : ids;
+        return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setExpandedHumanNodes(node, ids)) : ids;
     }
 
     isLoadingRequired = (id, obj) => {
