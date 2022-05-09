@@ -49,8 +49,8 @@
 }
 
 .phenotype-breakdown-container .legendIcon {
-    width: 10px;
-    height: 10px;
+    width: 1.5em;
+    height: 1.5em;
 }
 
 .MuiTabs-centered {
@@ -59,4 +59,15 @@
 
 .breakdown-loading-container {
     min-height: 50vh;
+}
+
+svg {
+    vertical-align: middle;
+}
+
+#graph-id-graph-wrapper{
+    border-right: solid 3px lightgray;
+    border-bottom: solid 3px lightgray;
+    border-top: solid 1px lightgray;
+    border-left: solid 1px lightgray;
 }

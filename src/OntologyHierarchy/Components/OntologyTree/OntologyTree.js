@@ -1,4 +1,4 @@
-import {Button, Icon, Paper, SvgIcon, withStyles} from "@material-ui/core";
+import {Button, withStyles} from "@material-ui/core";
 import {animated, useSpring} from "react-spring/web.cjs";
 import Collapse from "@material-ui/core/Collapse";
 import PropTypes from "prop-types";
@@ -72,10 +72,12 @@ class OntologyTree extends React.Component {
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
                     color="primary" variant="outlined" id={nodes.id}
-            ><img width="50px" src={"/images/MappingIcon.svg"}/></Button>
-            : nodes.hasData ? <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
-                    color="primary" variant="outlined" id={nodes.id}
-            ><img width="50px" src={this.props.treeID === "humanTree" ? "/images/GWASDataIcon.svg" : "/images/KnockoutDataIcon.svg"}/></Button> : null;
+            ><img width="20px" src={"/images/man.png"}/><img width="20px" src={"/images/mouse.png"} /></Button>
+            : nodes.hasData ?
+                <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
+                        color="primary" variant="outlined" id={nodes.id}
+                ><img width="20px"
+                      src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {
@@ -98,7 +100,7 @@ class OntologyTree extends React.Component {
     getExpandedNodeIDs = () => {
         let terms = this.props.expanded;
         let result = [];
-        terms.forEach(term => function() {
+        terms.forEach(term => function () {
             // result.push($())
         });
         return result;

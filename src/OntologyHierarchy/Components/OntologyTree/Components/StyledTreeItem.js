@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import {withStyles} from '@material-ui/core';
 import TreeItem from '@material-ui/lab/TreeItem';
-import SearchIcon from '@material-ui/icons/Search';
 
 const useTreeItemStyles = theme => ({
   root: {

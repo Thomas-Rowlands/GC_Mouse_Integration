@@ -1,15 +1,15 @@
 import React, {Component} from "react";
 import Ideogram from "ideogram";
 import './AppIdeogram.css'
-import {Button, FormControl, InputLabel, MenuItem, Select, Typography, withStyles} from "@material-ui/core";
-import $ from "jquery";
+import {Button, FormControl, InputLabel, MenuItem, Select, withStyles} from "@material-ui/core";
 import {api_server} from "../../UtilityComponents/ConfigData";
 import {d3} from "ideogram/src/js/lib";
 
 const useStyles = theme => ({
     formControl: {
         margin: theme.spacing(1),
-        minWidth: 120,
+        minWidth: "6em",
+        textAlign: "center"
     },
     selectEmpty: {
         marginTop: theme.spacing(2),
@@ -132,11 +132,11 @@ class AppIdeogram extends Component {
     getFilteredAnnots = (markerPval, knockoutPval) => {
 
         this.ideogram.annotsByFacet["markerSignificance"].filter((val) => {
-           return val >= markerPval;
+            return val >= markerPval;
         });
 
         this.ideogram.annotsByFacet["knockoutSignificance"].filter((val) => {
-           return val >= knockoutPval;
+            return val >= knockoutPval;
         });
 
         let results = this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 2]].top(Infinity);
@@ -163,101 +163,103 @@ class AppIdeogram extends Component {
     render() {
         const {classes} = this.props;
         return (
-            <div>
+            <div className="karyotype-control-container">
                 {
-
                     this.state.openChromosome ? <br/> : null
                 }
                 {
                     this.state.openChromosome ? <Button size="small" color="primary" variant="contained"
                                                         onClick={() => this.expandIdeogram(this)}>Back</Button> : null
                 }
-                <div className="center">
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink>Marker P-value</InputLabel>
-                        <Select value={this.state.markerPval} className={classes.selectEmpty} id="select"
-                                onChange={(e) => this.onMarkerPvalChange(e.target.value)}>
-                            <MenuItem value={0}>0</MenuItem>
-                            <MenuItem value={1}>1</MenuItem>
-                            <MenuItem value={2}>2</MenuItem>
-                            <MenuItem value={3}>3</MenuItem>
-                            <MenuItem value={4}>4</MenuItem>
-                            <MenuItem value={5}>5</MenuItem>
-                            <MenuItem value={6}>6</MenuItem>
-                            <MenuItem value={7}>7</MenuItem>
-                            <MenuItem value={8}>8</MenuItem>
-                            <MenuItem value={9}>9</MenuItem>
-                            <MenuItem value={10}>10</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink>Knockout P-value</InputLabel>
-                        <Select value={this.state.knockoutPval} className={classes.selectEmpty} id="select"
-                                onChange={(e) => this.onKnockoutPvalChange(e.target.value)}>
-                            <MenuItem value={0}>0</MenuItem>
-                            <MenuItem value={1}>1</MenuItem>
-                            <MenuItem value={2}>2</MenuItem>
-                            <MenuItem value={3}>3</MenuItem>
-                            <MenuItem value={4}>4</MenuItem>
-                            <MenuItem value={5}>5</MenuItem>
-                            <MenuItem value={6}>6</MenuItem>
-                            <MenuItem value={7}>7</MenuItem>
-                            <MenuItem value={8}>8</MenuItem>
-                            <MenuItem value={9}>9</MenuItem>
-                            <MenuItem value={10}>10</MenuItem>
-                        </Select>
-                    </FormControl>
+                <div className="control-container">
+                    <div className="species-controls">
+                        <h3>Human Genetic Variants</h3>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel shrink>-log P-value</InputLabel>
+                            <Select value={this.state.markerPval} className={classes.selectEmpty} id="select"
+                                    onChange={(e) => this.onMarkerPvalChange(e.target.value)}>
+                                <MenuItem value={0}>0</MenuItem>
+                                <MenuItem value={1}>1</MenuItem>
+                                <MenuItem value={2}>2</MenuItem>
+                                <MenuItem value={3}>3</MenuItem>
+                                <MenuItem value={4}>4</MenuItem>
+                                <MenuItem value={5}>5</MenuItem>
+                                <MenuItem value={6}>6</MenuItem>
+                                <MenuItem value={7}>7</MenuItem>
+                                <MenuItem value={8}>8</MenuItem>
+                                <MenuItem value={9}>9</MenuItem>
+                                <MenuItem value={10}>10</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <div className="legend">
+                            <ul>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#0000b8"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Below Average
+                                </li>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#31bb22"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Average ({this.props.marker_avg} markers)
+                                </li>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#F33"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Above Average
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="species-controls">
+                        <h3>Mouse Gene Knockouts</h3>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel shrink>-log P-value</InputLabel>
+                            <Select value={this.state.knockoutPval} className={classes.selectEmpty} id="select"
+                                    onChange={(e) => this.onKnockoutPvalChange(e.target.value)}>
+                                <MenuItem value={0}>0</MenuItem>
+                                <MenuItem value={1}>1</MenuItem>
+                                <MenuItem value={2}>2</MenuItem>
+                                <MenuItem value={3}>3</MenuItem>
+                                <MenuItem value={4}>4</MenuItem>
+                                <MenuItem value={5}>5</MenuItem>
+                                <MenuItem value={6}>6</MenuItem>
+                                <MenuItem value={7}>7</MenuItem>
+                                <MenuItem value={8}>8</MenuItem>
+                                <MenuItem value={9}>9</MenuItem>
+                                <MenuItem value={10}>10</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <div className="legend">
+                            <ul>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#0000b8"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Below Average
+                                </li>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#31bb22"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Average ({this.props.knockout_avg} knockouts)
+                                </li>
+                                <li>
+                                    <svg width="10" height="10">
+                                        <rect width="10" height="10" fill="#F33"/>
+                                    </svg>
+                                    &nbsp;&nbsp;Above Average
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
+
                 <div className="ideo-container"/>
-                <div className="legend">
-                    <div>
-                        <h3>Markers</h3>
-                        <ul>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#0000b8"/>
-                                </svg>
-                                &nbsp;&nbsp;Below Average
-                            </li>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#31bb22"/>
-                                </svg>
-                                &nbsp;&nbsp;Average ({this.props.marker_avg} markers)
-                            </li>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#F33"/>
-                                </svg>
-                                &nbsp;&nbsp;Above Average
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3>Knockouts</h3>
-                        <ul>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#0000b8"/>
-                                </svg>
-                                &nbsp;&nbsp;Below Average
-                            </li>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#31bb22"/>
-                                </svg>
-                                &nbsp;&nbsp;Average ({this.props.knockout_avg} knockouts)
-                            </li>
-                            <li>
-                                <svg width="10" height="10">
-                                    <rect width="10" height="10" fill="#F33"/>
-                                </svg>
-                                &nbsp;&nbsp;Above Average
-                            </li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         );
     }

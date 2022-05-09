@@ -402,7 +402,6 @@ class PhenotypeResultBreakdown extends React.Component {
                 <div className="breakdown-loading-container">
                     <LoadingSpinner loading={loading}/>
                 </div>
-
             );
         if (hasData)
             return (
@@ -566,13 +565,13 @@ class PhenotypeResultBreakdown extends React.Component {
                                             <Grid container>
                                                 <Grid item xs={3} className="col">
                                                     <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                                        <circle cx="5" cy="5" r="10px" fill="red"/>
+                                                        <rect x="15%" y="15%" width="1em" height="1em" fill="red"/>
                                                     </svg>
                                                     {this.props.humanOntology === "MESH" ? " MeSH Term" : " HPO Term"}
                                                 </Grid>
                                                 <Grid item xs={3} className="col">
                                                     <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                                        <circle cx="5" cy="5" r="10px" fill="blue"/>
+                                                        <rect x="15%" y="15%" width="1em" height="1em" fill="blue"/>
                                                     </svg>
                                                     {" MP Term"}
                                                 </Grid>
@@ -580,13 +579,13 @@ class PhenotypeResultBreakdown extends React.Component {
                                             <Grid container>
                                                 <Grid item xs={3} className="col">
                                                     <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                                        <circle cx="5" cy="5" r="10px" fill="orange"/>
+                                                        <circle cx="9" cy="9" r="0.5em" fill="orange"/>
                                                     </svg>
                                                     {this.props.humanOntology === "MESH" ? " MeSH Synonym" : " HPO Synonym"}
                                                 </Grid>
                                                 <Grid item xs={3} className="col">
                                                     <svg className="legendIcon" xmlns="http://www.w3.org/2000/svg">
-                                                        <circle cx="5" cy="5" r="10px" fill="lightblue"/>
+                                                        <circle cx="9" cy="9" r="0.5em" fill="lightblue"/>
                                                     </svg>
                                                     {" MP Synonym"}
                                                 </Grid>

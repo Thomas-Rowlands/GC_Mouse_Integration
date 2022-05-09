@@ -6,7 +6,6 @@ import {Link} from 'react-router-dom';
 import $ from 'jquery';
 import 'jqueryui';
 import {Grid, withStyles} from "@material-ui/core";
-import {Button, InputLabel, MenuItem, Paper, Select, TextField } from '@material-ui/core';
 
 
 const useStyles = theme => ({
@@ -24,7 +23,7 @@ class Home extends React.Component {
     render() {
         const {classes} = this.props;
         const spacing = 3;
-        return (<Grid className={classes.root} container direction="row" justify="center" alignItems="center" spacing={10}>
+        return (<Grid className={classes.root} container direction="row" justifyContent="center" alignItems="center" spacing={10}>
             <Grid item xs={spacing}>
                 <Link to="/PhenotypeSearch">
                     <MainMenuItem url="/PhenotypeSearch" image="images/bootstrap-icons-1.3.0/search.svg"

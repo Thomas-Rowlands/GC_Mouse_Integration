@@ -3,7 +3,7 @@ import { createTheme } from "@material-ui/core/styles";
 const GCTheme = createTheme({
     palette: {
         primary: {
-            main: "#0090de",
+            main: "#037dbf",
             contrastText: "#ffffff"
         },
         secondary: {

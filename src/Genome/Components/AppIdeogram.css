@@ -3,43 +3,64 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 1%;
-    height:95%;
+    height: 95%;
 }
-#_ideogramInnerWrap{
+
+#_ideogramInnerWrap {
     position: relative !important;
     margin-left: auto;
     margin-right: auto;
+    overflow-x: auto !important;
 }
 
-#_ideogramOuterWrap{
-    margin-top: 5em;
-}
-#_ideogramMiddleWrap{
-    width:100% !important;
-    height:100% !important;
+#_ideogramMiddleWrap {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto;
 }
 
 li {
     list-style-type: none;
 }
-ul > *{
-    font-size:unset;
+
+ul > * {
+    font-size: unset;
 }
 
-.legend{
-    display: flex;
-    width: 50%;
+.legend {
+    display: inline;
+    text-align: unset;
+}
+
+.species-controls > h3 {
+    text-align: Center;
+}
+
+.control-container {
+    display: block ruby;
     margin-left: auto;
     margin-right: auto;
+    position: absolute;
+    left: 63vw;
+    top: 60vh;
+    z-index: 999;
 }
-.legend > :nth-child(1){
-    margin-left:auto;
-    margin-right:0;
+
+.species-controls {
+    margin-right: 1em;
+    border: solid thin #0090de;
+    border-radius: 0.5em;
+    background-color: #f3f3ff;
+    padding: 1em;
+    width: 12vw;
+    min-width: fit-content;
 }
-.legend > :nth-child(2){
-    margin-left:0;
-    margin-right:auto;
+
+.species-controls > .MuiFormControl-root {
+    width: 100%;
+    padding-bottom: 1em;
 }
-.legend > div > h3{
-    text-align:Center;
+
+.karyotype-control-container {
+    display: grid;
 }

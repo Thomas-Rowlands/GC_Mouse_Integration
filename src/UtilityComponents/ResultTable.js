@@ -7,7 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Button, IconButton, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
+import {IconButton, TablePagination, TableSortLabel, Tooltip} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import {Equalizer} from "@material-ui/icons";
@@ -83,7 +83,7 @@ class ResultTable extends React.Component {
     viewButtonHeader = () => {
         if (this.props.isSearchResult) {
             return (
-                <TableCell align="center" padding="default"/>
+                <TableCell align="center" padding="normal"/>
             );
         } else
             return null;
@@ -163,7 +163,7 @@ class ResultTable extends React.Component {
                                         {Object.keys(this.props.tableData[0]).map((header, index) => {
                                             if (!hiddenHeaders.includes(header))
                                                 return (<TableCell align="center"
-                                                                   padding={paddingHeaders.includes(header) ? "none" : "default"}
+                                                                   padding={paddingHeaders.includes(header) ? "none" : "normal"}
                                                                    sortDirection={this.state.orderBy === header ? this.state.order : false}
                                                                    key={index}
                                                                    onClick={() => this.handleRequestSort(header)}>{header}
@@ -173,8 +173,8 @@ class ResultTable extends React.Component {
                                                     </TableSortLabel>
                                                 </TableCell>)
                                         })}
-                                        {this.props.isSearchResult ? <TableCell align="center" padding="default">Results</TableCell> : null }
-                                        {this.props.isSearchResult ? <TableCell align="center" padding="default">Genome View</TableCell> : null }
+                                        {this.props.isSearchResult ? <TableCell align="center" padding="normal">Results</TableCell> : null }
+                                        {this.props.isSearchResult ? <TableCell align="center" padding="normal">Genome View</TableCell> : null }
 
                                     </TableRow>
                                 </TableHead>
@@ -223,8 +223,8 @@ class ResultTable extends React.Component {
                             count={this.props.tableData.length}
                             rowsPerPage={this.state.rowsPerPage}
                             page={this.state.page}
-                            onChangePage={this.handleChangePage}
-                            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                            onPageChange={this.handleChangePage}
+                            onRowsPerPageChange={this.handleChangeRowsPerPage}
                         />
                     </div>
                 );

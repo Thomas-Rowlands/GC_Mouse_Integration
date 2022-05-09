@@ -368,7 +368,7 @@ class Genome extends React.Component {
         let {loading, tabValue, termID, ontology, markerData, marker_avg, knockout_avg, phenotype} = this.state;
         return termID && ontology ?
             (
-                <div><br/>
+                <div>
                     <Typography className="center">{phenotype}</Typography>
                     <br/>
                     <AppBar position="static" color="default">
