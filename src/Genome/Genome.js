@@ -42,6 +42,13 @@ class Genome extends React.Component {
                 if (response.status === 200) {
                     if (response.data) {
                         let result = {
+                                "metadata": {
+                                  "numTracks": 2,
+                                  "trackLabels": [
+                                      "Mouse",
+                                      "Human"
+                                  ]
+                                },
                                 "keys": [
                                     "name",
                                     "start",
