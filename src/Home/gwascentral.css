@@ -1,0 +1,1350 @@
+/*
+  $Id: gwascentral.css 1860 2012-03-20 11:51:22Z rcf8 $
+ CSS styles for the GWAS Central website
+ */
+
+/* site wide styles */
+html {
+  font-size:100%;
+}
+table#menu {
+	font-size: 0.9em;
+}
+div.section_heading span {
+	 vertical-align:50%;
+	 font-size:1.2em;
+	 color:#0066dd;
+	 font-weight:bold;
+}
+
+div.page_title {
+	font-size:1.1em;
+	padding-bottom:0.5em;
+	font-weight:bold;
+}
+	
+fieldset {
+	border:none;
+	margin:0;
+	padding:0;
+}
+
+.filter {
+	float:left;
+	padding-right:1em;
+}
+
+.first_filter label, .filter label {
+	font-weight:bold;
+	color:#777777;
+	display:block;
+	font-size:0.9em;
+}
+
+
+h4 {
+	padding-left:1em;
+	font-style:italic;
+}
+#header {
+  display: block;
+  min-height: 1%;
+  min-width: 900px;
+  margin: 0px 0px 0em 0em;
+  overflow: visible;
+  background-color:#F4F9FF;
+  width:100%;
+}
+ul {
+	margin:0;
+	list-style:square;
+}
+
+ul.options {
+	list-style:none;
+	padding-left:0;
+}
+ul.options li {
+	padding-bottom:0.5em;
+}
+ul.options img {
+	vertical-align:text-bottom;
+}
+ul.inline {
+	display:inline;
+}
+
+ul.inline li {
+	display:inline;
+	padding-right:1em;
+}
+
+/*
+ul.details_item li:before {
+	content: "- ";
+}
+*/
+ul.details_item {
+	padding-left:1.5em;
+	color:#0066dd;
+}
+ul.details_item li {
+	padding-bottom:0.3em;
+}
+ul.details_item li span {
+	color:black;
+}
+
+img {
+	border:none;
+}
+#footer {
+  display: block;
+  clear: both;
+  margin-left: 0px;
+  margin-right: 0px;
+  min-width: inherit;
+	padding-bottom:1em;
+	padding-top:1em;
+
+}
+#content {
+  height: 100%;
+  min-width: inherit;
+  min-height: 450px;
+  padding-top: 1em;
+	background-color:white;
+	padding-left:0.5em;
+	padding-right:0.5em;
+}
+
+div.block {
+	padding:0.3em 0 0.3em 0;
+}
+
+div.option_detail {
+	font-size:0.8em;
+	color:#444444;
+}
+select,input {
+  background-color: #eeeeee;
+  border:solid 1px #999999;
+}
+
+input.button, input.search_button {
+	border:outset 2px #eeeeee;
+	background-color:#cccccc;
+	color:black;
+	font-weight:bold;
+	font-size:0.9em;
+	padding-top:0.2em;
+	padding-bottom:0.2em
+}
+
+input.search_button {
+	font-size:1.2em;
+	
+}
+
+input:active {
+  background-color: #aaaaaa;
+}
+
+.resultsummary {
+	font-size:0.9em;
+	padding:1em 1em 1.5em 1em;
+}
+
+span.resultheading {
+	font-size:1em;
+	font-weight:bold;
+	padding-left:0.5em;
+	color:#555555;
+	text-decoration:underline;
+}
+
+div.superduper_search {
+	text-align:center;
+	width: 100%;
+}
+input.superduper_search {
+	font-size: 1.4em
+}
+
+span.superduper_search {
+	font-size:0.8em
+}
+div.explore_panel table {
+	border-collapse:collapse;
+}
+
+div.main-tab-base-row, div.main-tab-base {
+	background-color:#cdcdcd;
+	height:4px;
+	margin:0px;
+	padding:0px;
+}
+	
+div.main-tab-container {
+	float:right;
+	display:inline;
+	width:108px;
+	text-align:center;
+	height:71px;
+}
+
+div.main-tab {
+	background: transparent no-repeat;
+	width:108px;
+	padding-top:0.8em;
+	padding-left:0;
+	padding-right:0;
+	padding-bottom:0;
+	float:right;
+}
+
+div.main-tab-selected {
+	width:108px;
+	padding-top:0.8em;
+	padding-left:0;
+	padding-right:0;
+	padding-bottom:0;
+}
+
+div.main-tab-selected a {
+	color:black;
+	font-weight:bolder;
+}
+
+div.main-tab-base {
+	width:108px;
+	height:4px;
+}
+
+div.main-tab-base-selected {
+	height:4px;
+	padding:0px;
+	width:108px;
+	background-color:white;
+	
+}
+
+div.summary {
+	font-size:0.8em;
+}
+
+b.identifier {
+	color:#0066dd;
+}
+
+div.title {
+	padding-bottom:0.3em;
+	padding-left:0.5em;
+	padding-top:0.5em;
+}
+
+
+div.details {
+	padding-top:0em;
+	font-size:0.9em;
+}
+
+div.details_item {
+	padding-bottom:0.3em;
+}
+
+div.details_item b {
+	color:#999999;
+	font-weight:bold;	
+}
+
+
+b.item_new {
+	color:#dd0000;
+}
+
+b.item_updated {
+	color:#00aa00;
+}
+
+div.infonews_panels table td {
+	width:50%;
+	padding:1.5em;
+}
+div.infonews_panels {
+	padding-top:1em;
+}
+
+
+div.panel_heading {
+	vertical-align:50%;
+	font-size:1.5em;
+	font-weight:bold;
+	position:relative;
+}
+
+div.panel_heading img {
+	width:40px;
+	height:40px;
+}
+
+span.panel_heading_text {
+	vertical-align: top;
+	position:absolute;
+	top:0.5em;
+	left:54px;
+	font-size:0.9em;
+	font-weight:bold;
+	color:#0066dd;
+	font-family:"trebuchet MS",Arial,Helvetica,sans-serif;
+}
+
+span.panel_heading_links {
+	position:absolute;
+	right:0;
+	padding-right:0.5em;
+	font-size:0.6em;
+	font-weight:normal;
+}
+
+div.greypanel, div.bluepanel {
+	border:solid 1px lightgrey;
+	padding:0.5em;
+	font-size:0.9em;
+	height:12.5em;
+	margin-top:0em;
+}
+
+div.greypanel {
+	background-color:#f6f6f6;
+}
+div.bluepanel {
+	background-color:#D9EAFF;
+	border:1px solid #aaaaff;
+}
+
+div.bluepanel_pheno_t {
+	padding:0.5em;
+	font-size:0.9em;
+	background-color:#FAFAFA;
+	border-top:1px solid lightgray;
+	border-left:1px solid lightgray;
+	border-right:1px solid lightgray;
+}
+
+div.bluepanel_pheno_b {
+	background-color:#FAFAFA;
+	border-top:1px dotted lightgray;
+	border-left:1px solid lightgray;
+	border-right:1px solid lightgray;
+	border-bottom:1px solid lightgray;
+	margin-left:1em;
+	margin-right:1em;
+}
+
+div.bluepanel_pheno_b table{
+	background-color:#FAFAFA;
+	border: none;
+}
+
+div.bluepanel_pheno_b table tr, div.bluepanel_pheno_b table td, div.bluepanel_pheno_b table th {
+	border: none;
+}
+div.explore_panel {
+	 font-size:1em;
+	 padding-top:5em;
+}
+
+div.explore_panel table {
+	border-spacing:0px;
+}
+
+div.explore_panel table td {
+	text-align:center;
+}
+
+div.explore_panel table td img {
+	padding-bottom:0.3em;
+}
+input.checkbox {
+  background-color: transparent;
+  border:none;
+}
+/* Standard layout for regular text paragraphs across site */
+p {
+  text-align: left;
+  clear: both;
+  margin-left: 1em;
+  margin-bottom: 0.6em;
+  /* line-height:1.3em; */
+}
+
+
+/* header and footer elements */
+div#header_banner {
+	margin-left:0px;
+	width:100%;
+}
+div#logobox {
+	position:absolute;
+	width:180px;
+	height:100px;
+	cursor:pointer;
+}
+
+div#dialog {
+	display: none; overflow: auto; font-size: 0.9em; width: 550px;height:270px
+}
+div#dataset_dialog {
+	display: none; overflow: auto; font-size: 0.9em; width: 650px;height:200px
+}
+form#searchform {
+	display:inline;
+}
+
+form {
+	margin-bottom:0;
+	margin-top:0;
+}
+a.small_text {
+	font-size:0.8em;
+}
+div#menubar {
+	width:800px;
+}
+
+div#header_banner {
+  height: 80px;
+  background-color: white;
+	padding-bottom:0px;
+	padding-right:0px;
+	margin-right:0px;
+	position:relative;
+}
+
+div#header_menulinks, div#footer_menulinks {
+  background-color: transparent;
+  text-align: right;
+  padding-right: 0em;
+  font-size: 0.9em;
+}
+
+div#header_menulinks {
+  padding-top: 5px;
+  float:right;
+  width:100%;
+}
+div#footer_menulinks {
+  padding-top:12px;
+  border-bottom: 0.5em;
+
+}
+div#menulinks a {
+  color: #0066dd;
+  font-size:0.9em;
+}
+
+div#footer_w3c {
+  float: left;
+  padding: 0px;
+}
+
+#menutabs{
+background: transparent;
+voice-family: "\"}\"";
+padding-left: 5px;
+margin-top:1px;
+margin-bottom:0px;
+float:left;
+min-width:800px;
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+
+}
+
+#menutabs ul{
+font: 1.2em Arial, Verdana, sans-serif;
+margin:0;
+padding:0;
+list-style:none;
+float:right;
+margin-right:0.5em;
+}
+
+#menutabs li{
+display:inline;
+margin:0 0px 0 0;
+padding:0;
+/* text-transform:uppercase; */
+font-weight:bold;
+}
+
+#menutabs a{
+float:left;
+color: white;
+margin:0 2px 0 0;
+padding:0 0 1px 3px;
+text-decoration:none;
+letter-spacing: 1px;
+}
+
+#menutabs a span{
+float:left;
+display:block;
+padding:4px 9px 2px 6px;
+}
+
+#menutabs a span{
+float:none;
+}
+
+
+#menutabs a:hover{
+background-color:#d3d3d3;
+color:#0C1D2E;
+}
+
+#menutabs a:hover span{
+background-color:#d3d3d3;
+color:#0C1D2E;
+}
+
+#menutabs #current a, #menutabs #current span { /*currently selected tab*/
+background-color:#d3d3d3;
+color:#0C1D2E
+
+}
+
+#menutabsline{
+clear: both;
+padding: 0;
+width: 100%;
+height: 2px;
+line-height: 1px;
+background: #d3d3d3;
+}
+
+/* index page elements */
+div#news_panel {
+	border:none;
+	width:100%;
+	margin-top:0.3em;
+	scrollbar-3dlight-color:#009900; 
+scrollbar-arrow-color:orange; 
+scrollbar-base-color:#00CC00; 
+scrollbar-darkshadow-color:#009900; 
+scrollbar-face-color:teal; 
+scrollbar-highlight-color:palegreen; 
+scrollbar-shadow-color:#000000;
+}
+
+div#news_table {
+  border: none;
+  background:transparent;
+  font-weight:normal;
+  color: black;
+  padding:0.5em;
+  overflow-y:visible;
+  height:8em;
+  margin-right:0.5em;
+}
+
+div#news_table table {
+	border-collapse:collapse;
+}
+div#news_table table th {
+	border-right:1px solid black;
+	font-size: 0.9em;
+	font-weight:bold;
+	padding:0.5em;
+	vertical-align:top;
+	width:1%
+}
+
+div#news_table table td {
+	font-size: 0.9em;
+	padding:0.5em;
+}
+
+td.hidden {
+	display:none;
+}
+
+td.round_blue, td.round_grey {
+	padding:0;margin:0;border-left:0.5em solid white; border-right:0.5em solid white;height:6px;
+}
+
+td.round_blue {
+	background-color:#d9eaff;
+}
+td.round_grey {
+	background-color:#eeeeee;
+}
+
+DIV.box {
+	padding:0.5em;
+	border:solid 1px #d3d3d3;
+	margin-top:1em;
+}
+
+div.linksbar {
+	padding:0.5em;
+}
+
+div#about_panel li {
+	margin-left:1.3em;
+}
+div#about_panel p {
+	line-height:1.4em;	
+}
+
+div.heading {
+	border: none;
+  background-color:transparent;
+  font-weight:bold;
+  text-decoration:underline;
+  color: #555555;
+	padding-left:0.5em;
+	padding-top:1em;
+	margin:0;
+	font-size:1em;
+}
+
+div#about_panel h1 p {
+	border: none;
+  background-color:#ffffff;
+  font-weight:bold;
+  text-decoration:underline;
+  color: #555555;
+	padding-left:0.5em;
+	margin:0;
+	font-size:0.8em;
+}
+
+div#about_panel h2 p {
+	margin:0;
+  clear: both;
+  font-size:1.2em;
+	padding-left:0.8em;
+	font-size:0.7em;
+}
+
+div.text {
+  border: none;
+  background-color:transparent;
+  font-weight:normal;
+  color: black;
+  padding:0.5em;
+}
+
+
+div.form {
+	padding:0 0 0 0;
+	font-size:0.9em;
+}
+
+div.form label {
+	font-weight:bold;
+}
+/*
+div.form input.text, input.checkbox {
+	display:inline;
+}
+div.form select {
+	display:inline;
+}
+div.form p {
+	margin:0 0 0.5em 0;
+	padding:0 0 0 0;
+	display:block;
+}
+*/
+div.sub_text {
+	font-size:0.8em;
+	text-align:left;
+	color:#999999;
+}
+
+div.table {
+  width:100%;
+  border:none;
+  background-color:transparent;
+  padding:0.5em;
+}
+
+table.layout {
+	border:none;
+}
+
+table.layout td {
+	border:none;	
+}
+
+table.toggle {
+  background-color:#ffffff;
+  font-weight:normal;
+  color: black;
+  padding:0px;
+  width:100%;
+  border-collapse:collapse;
+}
+
+table.toggle_panel {
+  background-color:#ffffff;
+  font-weight:normal;
+  color: black;
+  padding:0px;
+  width:100%;
+  border-collapse:collapse;
+  border:none;
+}
+
+a.toggle_title {
+	color: black;
+	font-weight:bold;
+}
+
+th.toggle_table {
+	width: 12px;
+	padding-top: 6px;
+	padding-left: 5px;
+	padding-right:5px;
+	vertical-align:top;
+	border:none;
+}
+
+tr.toggle_row {
+	border:solid 1px lightgray;
+}
+
+td.toggle_table {
+	border-left:none;
+}
+
+div.toggle {
+	border: none;
+  background-color:#ffffff;
+  font-weight:normal;
+  color: black;
+  margin-right: 0em;
+  margin-bottom: 0.5em;
+  padding-top:1em;
+  padding-bottom:1em;
+}
+
+th.toggle_panel {
+	background-color: transparent;
+	width: 12px;
+	padding-top: 6px;
+	padding-left: 5px;
+	padding-right:5px;
+	vertical-align:top;
+}
+
+td.toggle_panel {
+	padding:0px;
+	padding-top:0em;
+	padding-bottom:0em;
+	border:none;
+}
+
+div.toggle_title {
+	font-weight:bold;
+	color:black;
+	font-size:0.9em;	
+}
+div.toggle_title > table {
+	border: none;
+	width: 100%;
+	border-collapse:collapse;
+	padding-top:0em;
+	padding-bottom:0em;
+	color:black;
+
+}
+
+div.toggle_title > table > tbody > tr > td {
+	padding-top:0.3em;
+	padding-bottom:0.3em;
+	vertical-align:middle;
+}
+
+div.toggle_title > table > tbody > tr > td > a {
+	color:black;
+}
+
+span.alleles_text {
+	font-size:1.2em;
+	font-family:Courier New;
+	color:black;
+	padding-top:0.2em;
+
+}
+span.alleles_text > span {
+	font-family:Arial;
+}
+
+span.studies_text {
+	font-weight:bold;
+
+}
+span.studies_text > span {
+	font-weight:normal;
+}
+
+div#added_panel {
+	display: block;
+	float: right;
+	text-align: right;
+}
+div.tab_panel {
+	padding:1em;
+	padding-top:0.5em;
+	clear: both;
+}
+
+table.summary {
+  border:none;
+  border-collapse:separate;
+}
+
+table.summary th {
+	background-color:#C8D9EE;
+	border:none;
+	padding:0.7em;
+	font-size:0.9em;
+	vertical-align:top;
+	white-space: nowrap;
+}
+
+table.summary td {
+	font-size: 0.9em;
+	border:none;
+	padding:0.7em;
+}
+
+table.summary td li {
+margin-left:0.5em;
+}
+
+table.info {
+  border:1px solid #d3d3d3;
+  border-collapse:collapse;
+}
+
+table.info th {
+	background-color:#d9eaff;
+	border:1px solid #d3d3d3;
+	padding:0.3em;
+	font-size:0.9em;
+	color:white;
+}
+
+table.info td {
+	font-size: 0.9em;
+	border-left:1px solid #d3d3d3;
+	border-right:1px solid #d3d3d3;
+	padding:0.3em;
+	padding-left:0.5em;
+	padding-right:0.5em;
+}
+
+div#navigation_breadcrumb {
+  clear: both;
+  background-color: white;
+  display: block;
+  margin-bottom: 0;
+  /*border-top: solid 2px lightgray; */
+  color: #777777;
+}
+
+span.sectionname {
+  padding-left: 5px;
+  font-weight:bold;
+}
+div.section, div.searchresults_section {
+  padding: 3px;
+  margin: 5px;
+  float: left;
+  border: thin solid #B0C4DE;
+  min-width: 46em;
+  vertical-align: top;
+  clear: both;
+}
+
+table.searchresults {
+	width:100%;
+	border-collapse:collapse;
+}
+table.searchresults td {
+	border:solid 1px #d3d3d3;
+	margin:0;
+	padding:0.5em;
+}
+div.collapsible_section_header {
+  clear: both;
+}
+.searchresults_header {
+  padding: 5px;
+}
+.searchresults_summary {
+  padding:0.5em;
+  margin:0;
+  font-size: 80%;
+}
+.searchform {
+  padding: 5px;
+  margin: 5px;
+}
+.reportpage, .searchresults_panel {
+  padding-left: 1em;
+  padding-right:1em;
+  width: 98%;
+  min-width: 900px;
+  clear: both;
+}
+.searchresults_item {
+  width:100%;
+}
+
+/* gets rid of the border spacing between cells and no border for cells in a table unless required */
+table {
+	border:none;
+	border-collapse:separate;
+  table-layout: auto;
+}
+
+/* border and bgd colour around no table elements */
+th {
+  text-align: left;
+  padding-left: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-spacing:0;
+  border:none;
+}
+tr.hover td {
+  background:#C8DCFA none repeat scroll 0%;
+}
+
+td {
+  border: none;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  vertical-align: top;
+}
+
+
+/* Override certain Exhibit styles and/or define new ones relating to Exhibit */
+.optionfilter_panel {
+	width: 28%;
+  font-size: 0.85em;
+  float: left;
+	padding: 1em 16px 0.5em 0;
+}
+
+a {
+  text-decoration:none;
+}
+a:hover {
+  text-decoration:underline;
+}
+img:hover {
+	text-decoration:none;
+}
+
+div#home_subtoolbar a {
+  /* border-top: solid #d3d3d3; */
+  color: #888888;
+  /*color: #000000; */
+}
+
+
+.ac_results {
+	padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;
+}
+
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ac_results li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	
+	
+	/* 
+	if width will be 100% horizontal scrollbar will apear 
+	when scroll mode will be used
+	*/
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	/* 
+	it is very important, if line-height not setted or setted 
+	in relative units scroll will be broken in firefox
+	*/
+	line-height: 16px;
+	overflow: hidden;
+	position: relative;
+	
+}
+
+.ac_odd {
+	background-color: #eee;
+}
+
+.ac_over {
+	/*background-color: #0A246A;*/
+	background-color: #0066dd;
+	color: white;
+}
+
+span.origin {
+	position: absolute;
+  top: 0;
+  right: 5px;;
+	font-style:italic;
+	font-weight:bold;
+}
+
+
+/* From Catalyst */
+.message {
+background-color:#d9ffea;
+  border:solid 1px #00ff00;
+      padding:0.5em;
+	        margin-right:0.5em;
+			        display:block;
+					}
+
+.error {
+  background-color:#ffeeee;
+  border:solid 2px #F33;
+  padding:0.5em;
+  margin-right:0.5em;
+  display:block;
+}
+
+.issue {
+  background-color:#ffaa77;
+  border:solid 1px #ffff00;
+  padding:0.5em;
+  margin-right:0.5em;
+  display:block;
+}
+
+/* fixes to IE CSS-bugs and other cross-browser issues */
+/* The so-called Holly Hack to prevent content from 'falling out' of container-divs. */
+/* Hides from IE-mac \ */
+* html .floatholder {
+  min-height: 1%;
+  padding-left:0.5em;
+}
+/* End hide from IE-mac */
+
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+
+#list {
+text-align:left;
+}
+.checklist {
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+margin-left:15px;
+padding-left:0;
+}
+#autoSuggestionsList li {
+	list-style-type:none;
+}
+
+ul.panel_links {
+	padding-left:0;
+	display:inline;
+	list-style: none none;
+	margin:0;
+}
+
+ul.panel_links li {
+	 display:inline;
+}
+
+div.treetext {
+  border: none;
+  background-color:transparent;
+  font-weight:normal;
+  color: black;
+  padding:1.0em;
+}
+
+/* ideas */
+
+h1, h2, h3, h4 {
+	font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;
+	}
+	.panel_heading_text {
+	font-family:Trebuchet MS;
+	}
+	a {
+		font-weight:normal;
+	}
+	
+	
+	.submit {
+		float:left;
+		clear:left;
+	}
+	
+	.browser_panel {
+		float:left;
+		display:block;
+		width:100%;
+		padding-bottom:0.5em;
+	}
+	
+	#filter_SearchSubmit {
+		padding-top:0.5em;
+	}
+	table.info th {
+		background-color:#2664C7;
+		text-decoration: none;
+	}
+	.alternate {
+		background-color:#F4F9FF;
+	}
+	.non-alternate {
+		background-color:#ffffff;
+	}
+	div#menutabs ul li a {
+		background:white;
+		font-family: Trebuchet MS;
+		color: #aaaaaa;
+	}
+	#current a span {
+		color:black;
+		font-weight:bolder;
+		background:white;
+		background-color:white;
+	}
+	#menutabs a span {
+		background:white;
+	}
+	div#content {
+	/* 	border-top:2px solid lightgrey; */
+	}
+	div#menutabs {
+		/* border-top:2px solid lightgrey; */
+	}
+	#section_heading {
+		font-size:0.9em;
+	}
+	.section_heading span {
+	font-family:Trebuchet MS;
+	}
+	input {
+		border:1px solid lightgrey;
+	}
+	a,
+a:visited,
+a:active {
+	color: #2664C7;
+	font-weight: normal;
+}
+.radio {
+	margin-right:1em;
+}
+fieldset.qfilter label {
+	padding-bottom:0.5em;
+}
+fieldset.qfilter {
+	padding-bottom:1em;
+}
+
+#page_info {
+	border-bottom:solid 1px lightgray;
+	padding-bottom:0.5em;
+	margin-bottom:0.5em;
+	font-size:1.1em;
+}
+
+fieldset.options {
+	height: 7.5em;
+	font-size:0.9em;
+	border:solid 2px lightgrey;
+	padding:1.5em 1em 0.5em 1em;
+}
+
+fieldset.options-browser_genome,fieldset.options-browser_region {
+	height: 3em;
+	width:100%;
+}
+fieldset.buttons {
+	height: 4em;
+	float:left;
+	width:100%;
+}
+fieldset.browserpanel {
+	height: 2em;
+}
+fieldset.result_opts {
+	height: 8em;
+	font-size:0.9em;
+	border:solid 2px lightgrey;
+	background:#fefefe;
+	padding:0.5em 1em 0.5em 1em;
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+}
+fieldset.browser_opts {
+	font-size:0.8em;
+	border:none;
+	border-top:none;
+	background:none;
+	padding:0.5em 0em 0.5em 0em;
+	margin-top:0;
+	width:26em;
+	position:absolute;
+	right:60px;
+	top:154px;
+	text-align:right;
+	background-color:#2664C7;
+	opacity:1;
+	color:white;
+}
+
+fieldset.result_opts-marker {
+	height:3.5em;
+}
+
+
+fieldset.result_opts-studies, result_opts-genes_studies, result_opts-genes_phenotypes, fieldset.result_opts-phenotypes, fieldset.result_opts-marker_results {
+	height:7em;
+
+}
+
+fieldset.browser_opts, fieldset.options-browser_region {
+	float:left;
+	clear:left;
+}
+
+fieldset.options-generegion {
+	height:8em;
+}
+fieldset.options-phenotypes_term {
+	height:7em;
+}
+fieldset.result_opts-study, fieldset.result_opts-phenotype, fieldset.options-browser_regionmarkers, fieldset.result_opts-genes, fieldset.result_opts-study_markers,fieldset.result_opts-browser_genome,fieldset.result_opts-browser_topmarkers, fieldset.result_opts-browser_region 
+{
+	height:3em;
+}
+fieldset.result_opts-study_results {
+	border:none;
+	height:3em;
+}
+fieldset.submit {
+	padding-bottom:1.5em;
+	padding-left:1em;
+}
+	
+#filter_AddedResultsets {
+	float:left;
+	clear:left;
+}
+#filter_DatasetPanel {
+	float:left;
+	clear:left;
+	width:100%;
+	display:block;
+}
+#filter_Page {
+	width:100%;
+	float:left;
+	clear:left;
+}
+span#filter_ChrSize {
+	display:block;
+	padding-bottom:1em;
+}
+
+#filter_RegionTracks {
+	width:100%;
+}
+#filter_HapmapPopulations, #filter_HapmapTracks {
+	width:100%;
+}
+.browser_sel {
+	 width:100%;
+	border:none;
+}
+
+.browser_sel_toggle {
+	padding-bottom:0.2em;
+	background:#efefef;
+	opacity:1;
+	filter:alpha(opacity=90);
+}
+#browser_sel_row {
+	background:#efefef;
+
+
+}
+button {
+	border-style:outset;
+}
+button.img_button {
+	text-align:left;
+	height:2.4em;
+	width:8em;
+	font-size:90%;
+	border-style:outset;
+}
+button.img_button:hover {
+	background-color:#dddddd;
+}
+button.img_button:active {
+	border-style:inset;
+}
+button.img_button img {
+	vertical-align:bottom;
+	padding-left:0.2em;
+}
+#filter_ExportFormat {
+	height:3em;
+}
+.toggle_in_options {
+	padding-left:1em;
+	float:left;
+	width:100%;
+}
+table.dialog {
+border-spacing:0;
+}
+table.dialog td {
+	padding:0.2em;
+	border-bottom:1px solid lightgray;
+}
+div.color_box {
+	width:16px;
+	height:16px;
+	border:solid 1px black;
+}
+table.dialog td.last_row {
+	border-bottom:white;
+}
+	
