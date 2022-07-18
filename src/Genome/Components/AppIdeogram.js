@@ -26,7 +26,7 @@ const useStyles = theme => ({
     },
 });
 
-const mouse_track_icon = "<g transform='translate(0, 13) scale(0.003, 0.003) rotate(90)'\n" +
+const mouse_track_icon = "<g transform='translate(0, 28) scale(0.003, 0.003) rotate(90)'\n" +
     "fill='#000000' stroke='none'>\n" +
     "<path d='M1442 4316 c-66 -71 -67 -77 -22 -121 l39 -38 29 24 c16 13 43 32 60\n" +
     "41 l31 17 -15 37 c-24 57 -45 84 -64 84 -10 0 -36 -20 -58 -44z'/>\n" +
@@ -59,7 +59,7 @@ const mouse_track_icon = "<g transform='translate(0, 13) scale(0.003, 0.003) rot
     "l-60 46 -80 -160z'/>\n" +
     "</g>";
 
-const human_track_icon = "<g transform='translate(0, 28) scale(0.003, 0.003) rotate(90)'\n" +
+const human_track_icon = "<g transform='translate(0, 13) scale(0.003, 0.003) rotate(90)'\n" +
     "fill='#000000' stroke='none'>\n" +
     "<path d='M2460 5109 c-158 -31 -293 -169 -327 -335 -63 -310 220 -579 527\n" +
     "-499 326 85 430 493 183 726 -102 97 -241 136 -383 108z'/>\n" +

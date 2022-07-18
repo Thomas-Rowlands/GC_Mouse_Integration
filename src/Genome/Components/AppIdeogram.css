@@ -41,8 +41,8 @@ ul > * {
     margin-left: auto;
     margin-right: auto;
     position: absolute;
-    left: 63vw;
-    top: 60vh;
+    left: 54%;
+    top: 65%;
     z-index: 999;
 }
 
