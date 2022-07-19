@@ -4,7 +4,9 @@ Model organism data integration with IMPC mouse gene knockouts.
 
 ## Requirements
 
-This web application utilises React, so having node package manager installed on the server will ensure project dependencies can be installed successfully. For a full list of dependencies, please view the package.json  file.
+This web application utilises React, so having node package manager installed on the server will ensure project dependencies can be installed successfully. For a full list of dependencies, please view the package.json file.
+
+Due to the various peer dependencies specifying versions, you will likely get an error when simply using "npm install", so please use "npm install --legacy-peer-deps" to successfully install all dependencies (they do work together!).
 
 ## Setup
 ### GC_Mouse Database
