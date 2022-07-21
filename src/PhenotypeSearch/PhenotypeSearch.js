@@ -27,7 +27,6 @@ import Grow from '@material-ui/core/Grow';
 import Typography from "@material-ui/core/Typography";
 import Genome from "../Genome/Genome";
 import {CSSTransition, SwitchTransition} from "react-transition-group";
-import InfoIcon from '@material-ui/icons/Info';
 import InfoDialog from "../UtilityComponents/InfoDialog";
 
 const useStyles = theme => ({

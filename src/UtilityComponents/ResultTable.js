@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import './ResultTable.css';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -172,6 +172,8 @@ class ResultTable extends React.Component {
                                                                     onClick={() => this.handleRequestSort(header)}>
                                                     </TableSortLabel>
                                                 </TableCell>)
+                                            else
+                                                return null;
                                         })}
                                         {this.props.isSearchResult ? <TableCell align="center" padding="normal">Results</TableCell> : null }
                                         {this.props.isSearchResult ? <TableCell align="center" padding="normal">Genome View</TableCell> : null }
@@ -189,6 +191,8 @@ class ResultTable extends React.Component {
                                                     {Object.keys(row).map((key) => {
                                                         if (!hiddenHeaders.includes(key))
                                                             return this.getSearchTableCell(row, key);
+                                                        else
+                                                            return null;
                                                     })}<TableCell align="center"><IconButton size="medium" color="primary"
                                                                                          variant="contained"
                                                                                          data-human-ont={row["Human Ontology"]}
@@ -210,6 +214,8 @@ class ResultTable extends React.Component {
                                                     {Object.keys(row).map((key) => {
                                                         if (!hiddenHeaders.includes(key))
                                                             return this.getTableCell(row, key);
+                                                        else
+                                                            return null;
                                                     })}
                                                 </TableRow>
                                             )

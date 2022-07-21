@@ -73,7 +73,6 @@ class PhenotypeResultBreakdown extends React.Component {
     constructor(props) {
         super(props);
         this.gwasStudyClicked = this.gwasStudyClicked.bind(this);
-        this.experimentClicked = this.experimentClicked.bind(this);
         this.triggerGenotypeEvent = this.triggerGenotypeEvent.bind(this);
         this.state = {
             mousePhenotype: "",
@@ -114,9 +113,6 @@ class PhenotypeResultBreakdown extends React.Component {
             win.focus();
     }
 
-    experimentClicked(row) {
-        let selection = $(row.target).attr("data-study");
-    }
 
     getBreakdownData() {
         this.setState({loading: true});
@@ -131,6 +127,7 @@ class PhenotypeResultBreakdown extends React.Component {
                         let dataTabValue = response.data["GWAS Studies"].length > 0 ? 0 : 1;
                         // graph payload (with minimalist structure)
                         if (!Array.isArray(response.data["Mappings"])) {
+                            let i;
                             let humanTermCoords = [50, 214];
                             let mouseTermCoords = [750, 214];
                             let data = {
@@ -155,7 +152,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 links: []
                             };
 
-                            for (var i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
+                            for (i = 0; i < response.data["Mappings"]["mouseSynonyms"].length; i++) {
                                 let mapping = response.data["Mappings"]["mouseSynonyms"][i];
                                 let mouseNode = {
                                     id: mapping["synonymId"],
@@ -176,7 +173,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                     data.links.push(link);
                                 }
                             }
-                            for (var i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
+                            for (i = 0; i < response.data["Mappings"]["humanSynonyms"].length; i++) {
                                 let mapping = response.data["Mappings"]["humanSynonyms"][i];
                                 let humanNode = {
                                     id: mapping["synonymId"],
@@ -197,7 +194,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                     data.links.push(link);
                                 }
                             }
-                            for (var i = 0; i < response.data["Mappings"]["matches"].length; i++) {
+                            for (i = 0; i < response.data["Mappings"]["matches"].length; i++) {
                                 let match = response.data["Mappings"]["matches"][i];
                                 let source = _.find(data.nodes, function (node) {
                                     if (node.id === match["humanNodeId"])

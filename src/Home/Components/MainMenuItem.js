@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {Paper, withStyles} from "@material-ui/core";
 import './MainMenuItem.css';
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +11,6 @@ const useStyles = theme => ({
         height: 500,
         zIndex: 1,
         position: 'relative',
-        border: "solid 1px black",
         width: "100%",
     },
     img: {
@@ -44,10 +43,9 @@ class MainMenuItem extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {isZoomed} = this.state;
 
         return (
-            <Paper style={{transform: this.state.isZoomed ? 'scale(1.1)' : 'scale(1)',
+            <Paper elevation={12} style={{transform: this.state.isZoomed ? 'scale(1.1)' : 'scale(1)',
                 transition: this.state.isZoomed ? '0.3s' :  '0.3s', zIndex: this.state.isZoomed ? 99 :  1}}
                    onMouseEnter={() => this.toggle()}
                    onMouseLeave={() => this.toggle()} className={classes.paper}>

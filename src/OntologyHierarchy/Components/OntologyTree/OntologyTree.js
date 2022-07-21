@@ -72,11 +72,11 @@ class OntologyTree extends React.Component {
         const btn = nodes.hasMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
                     color="primary" variant="outlined" id={nodes.id}
-            ><img width="20px" src={"/images/man.png"}/><img width="20px" src={"/images/mouse.png"} /></Button>
+            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse" width="20px" src={"/images/mouse.png"} /></Button>
             : nodes.hasData ?
                 <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
                         color="primary" variant="outlined" id={nodes.id}
-                ><img width="20px"
+                ><img width="20px" alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
                       src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
@@ -109,9 +109,6 @@ class OntologyTree extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {
-            loading,
-        } = this.state;
         if (this.props.treeData === null || this.props.treeData === undefined) {
             throw new Error('No ontology data received.');
         }

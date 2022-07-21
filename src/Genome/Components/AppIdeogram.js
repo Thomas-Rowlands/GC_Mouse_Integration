@@ -211,7 +211,6 @@ class AppIdeogram extends Component {
 
     draw_track_labels = () => {
         let chromosome_elements = document.getElementsByClassName("chromosome-set");
-        console.log(chromosome_elements);
         chromosome_elements.forEach((elem) => {
             elem.innerHTML += mouse_track_icon;
             elem.innerHTML += human_track_icon;

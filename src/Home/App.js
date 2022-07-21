@@ -5,9 +5,9 @@ import './App.css';
 // @ts-ignore
 import Home from "./Home.js";
 // @ts-ignore
-import {TransitionGroup, CSSTransition} from "react-transition-group";
+import {CSSTransition} from "react-transition-group";
 // @ts-ignore
-import {HashRouter, Route, Switch} from "react-router-dom";
+import {HashRouter, Route} from "react-router-dom";
 import PhenotypeSearch from "../PhenotypeSearch/PhenotypeSearch";
 import OntologyHierarchy from "../OntologyHierarchy/OntologyHierarchy";
 import Genome from "../Genome/Genome";
@@ -28,6 +28,7 @@ class App extends React.Component {
             {path: '/Genome', name: 'Genome', Component: Genome},
             {path: '/Genome/:termID', name: 'Genome', Component: Genome},
         ];
+        this.nodeRef = React.createRef();
     }
 
     setLoading = (status) => {
@@ -72,9 +73,6 @@ class App extends React.Component {
                                 <div style={{float: "right", width: "100%"}}>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a
-                                                href="https://www569.lamp.le.ac.uk/#/"
-                                                style={{fontSize: "0.8em"}}/></div>
                                             <a href="https://www569.lamp.le.ac.uk/#/"
                                                style={{fontSize: "0.8em"}}>
                                                 <img src="/images/mouse.svg" alt=""
@@ -84,9 +82,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{"width": "106px"}}><a
-                                                href="https://www.gwascentral.org/gwasphenomap"
-                                                style={{fontSize: "0.8em"}}/></div>
                                             <a href="https://www.gwascentral.org/gwasphenomap"
                                                style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/compass.png" alt=""
@@ -97,9 +92,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a href="https://www.gwascentral.org/biomart"
-                                                                             style={{fontSize: "0.8em"}}/>
-                                            </div>
                                             <a href="https://www.gwascentral.org/biomart" style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/gwasmart.png" alt=""
                                                      style={{width: "32px", height: "32px"}}/><br/>
@@ -108,9 +100,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a href="https://www.gwascentral.org/browser"
-                                                                             style={{fontSize: "0.8em"}}/>
-                                            </div>
                                             <a href="https://www.gwascentral.org/browser" style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/browser.png" alt=""
                                                      style={{width: "32px", height: "32px"}}/><br/>
@@ -119,9 +108,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a href="https://www.gwascentral.org/markers"
-                                                                             style={{fontSize: "0.8em"}}/>
-                                            </div>
                                             <a href="https://www.gwascentral.org/markers" style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/markers.png" alt=""
                                                      style={{width: "32px", height: "32px"}}/><br/>
@@ -130,9 +116,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a href="https://www.gwascentral.org/studies"
-                                                                             style={{fontSize: "0.8em"}}/>
-                                            </div>
                                             <a href="https://www.gwascentral.org/studies" style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/studies.png" alt=""
                                                      style={{width: "32px", height: "32px"}}/><br/>
@@ -141,9 +124,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a
-                                                href="https://www.gwascentral.org/generegion"
-                                                style={{fontSize: "0.8em"}}/></div>
                                             <a href="https://www.gwascentral.org/generegion"
                                                style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/genes.png" alt=""
@@ -153,9 +133,6 @@ class App extends React.Component {
                                     </div>
                                     <div className="main-tab-container">
                                         <div className="main-tab">
-                                            <div style={{width: "106px"}}><a
-                                                href="https://www.gwascentral.org/phenotypes"
-                                                style={{fontSize: "0.8em"}}/></div>
                                             <a href="https://www.gwascentral.org/phenotypes"
                                                style={{fontSize: "0.8em"}}>
                                                 <img src="/images/section/phenotypes.png" alt=""

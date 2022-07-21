@@ -175,5 +175,5 @@ class BinBuilder:
 
 if __name__ == "__main__":
     builder = BinBuilder()
-    # builder.build_marker_bins()
+    builder.build_marker_bins()
     builder.build_knockout_bins()
