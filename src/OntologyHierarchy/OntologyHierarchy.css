@@ -44,3 +44,6 @@ h3 {
 .fade-exit-active{
    transition: opacity 500ms, transform 500ms;
 }
+#mouseTree, #humanTree{
+    max-height: 48vh;
+}
