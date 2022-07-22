@@ -1,7 +1,6 @@
 import React from "react";
 import './PhenotypeResultBreakdown.css';
 import ResultTable from "../../UtilityComponents/ResultTable";
-import $ from "jquery";
 import axios from "axios";
 import {
     AppBar,
@@ -79,7 +78,7 @@ class PhenotypeResultBreakdown extends React.Component {
             humanPhenotype: "",
             breakdownData: null,
             backBtnClick: null,
-            loading: true,
+            loading: false,
             tabValue: 0,
             dataTabValue: 0,
             configData: api_server,
@@ -116,6 +115,8 @@ class PhenotypeResultBreakdown extends React.Component {
 
     getBreakdownData() {
         this.setState({loading: true});
+        if (this.props.setLoading)
+            this.props.setLoading(true);
         let mousePhenotype = this.props.mousePhenotype ? this.props.mousePhenotype : "";
         let humanPhenotype = this.props.humanPhenotype ? this.props.humanPhenotype : "";
         let humanOntology = this.props.humanOntology ? this.props.humanOntology : "";
@@ -227,12 +228,15 @@ class PhenotypeResultBreakdown extends React.Component {
                                 mappingGraphData: null,
                                 hasData: true,
                                 loading: false
-                            });
+                            }, this.props.setLoading(false));
                         }
                     } else {
-                        this.setState({breakdownData: null, loading: false, mappingGraphData: null, hasData: false});
+                        this.setState({breakdownData: null, loading: false, mappingGraphData: null, hasData: false},
+                            this.props.setLoading(false));
                     }
                 }
+                if (this.props.setLoading)
+                    this.props.setLoading(false);
                 this.props.onBreakdownFinish();
             })
             .catch((error) => {
@@ -394,7 +398,7 @@ class PhenotypeResultBreakdown extends React.Component {
     render() {
         const {breakdownData,loading, tabValue, dataTabValue, mappingGraphData, hasData} = this.state;
         const {classes} = this.props;
-        if (loading)
+        if (loading && !this.props.setLoading)
             return (
                 <div className="breakdown-loading-container">
                     <LoadingSpinner loading={loading}/>
@@ -601,7 +605,7 @@ class PhenotypeResultBreakdown extends React.Component {
                     </Paper>
                 </div>
             );
-        else
+        else if (!loading)
             return (
               <div>
                   <Paper id="phenotypeResultsContainer" className="container">
@@ -609,6 +613,8 @@ class PhenotypeResultBreakdown extends React.Component {
                   </Paper>
               </div>
             );
+        else
+            return null;
     }
 }
 
