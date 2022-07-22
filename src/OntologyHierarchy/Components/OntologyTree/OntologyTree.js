@@ -97,15 +97,6 @@ class OntologyTree extends React.Component {
         );
     }
 
-    getExpandedNodeIDs = () => {
-        let terms = this.props.expanded;
-        let result = [];
-        terms.forEach(term => function () {
-            // result.push($())
-        });
-        return result;
-    }
-
 
     render() {
         const {classes} = this.props;

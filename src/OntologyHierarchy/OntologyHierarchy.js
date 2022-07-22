@@ -420,37 +420,6 @@ class OntologyHierarchy extends React.Component {
             });
     }
 
-    getRootTree = (ontology, species) => {
-        this.props.setLoading(true);
-        let mappingOnt = ontology === "MP" ? this.state.humanOntology : "MP";
-        let url_string = this.state.configData.api_server + "controller.php?type=ontology&getRoot&ontology=" + ontology + "&mappingOnt=" + mappingOnt;
-        axios.get(url_string)
-            .then((response) => {
-                if (response.status === 200) {
-                    if (response.data) {
-                        if (species === "human") {
-                            let expandedHumanNodes = ["humanTree-term-1"];
-                            let tree = this.state.treeData;
-                            tree["humanTree"] = response.data.tree;
-                            this.setState({treeData: tree, expandedHumanNodes: expandedHumanNodes});
-                            this.props.setLoading(false);
-                        } else {
-                            let expandedMouseNodes = ["mouseTree-term-1"];
-                            let tree = this.state.treeData;
-                            tree["mouseTree"] = response.data.tree;
-                            this.setState({treeData: tree, expandedMouseNodes: expandedMouseNodes});
-                            this.props.setLoading(false);
-                        }
-                    }
-                }
-            })
-            .catch((error) => {
-                console.log("An error occurred retrieving root tree data.");
-                this.setState({conErrorStatus: true});
-                this.props.setLoading(false);
-            });
-    }
-
     getTermChildren = (e, tree, ont) => {
         let url_string = this.state.configData.api_server + "/controller.php?type=ontology&childSearch&term=" + e + "&ontology=" + ont + "&mappingOntology=" + this.state.humanOntology;
         axios.get(url_string)
@@ -473,11 +442,6 @@ class OntologyHierarchy extends React.Component {
                 this.setState({searchOpen: true, tableData: null});
                 console.log("An error occurred searching for ontology mappings.");
             });
-    }
-
-    termSearchBtnClick = (term) => {
-        this.setState({searchInput: term});
-        this.search();
     }
 
     genotypeHandler = () => {
@@ -582,7 +546,6 @@ class OntologyHierarchy extends React.Component {
         let treeData = this.state.treeData;
         treeData.humanID = e;
         treeData.mouseID = null;
-        this.props.setLoading(true);
         this.setState({
             treeData: treeData,
             mouseID: null,
@@ -596,7 +559,6 @@ class OntologyHierarchy extends React.Component {
         let treeData = this.state.treeData;
         treeData.humanID = null;
         treeData.mouseID = e;
-        this.props.setLoading(true);
         this.setState({
             treeData: treeData,
             mouseID: null,
@@ -630,21 +592,25 @@ class OntologyHierarchy extends React.Component {
                                                  mousePhenotype={this.state.treeData.mouseID}
                                                  humanPhenotype={this.state.treeData.humanID}
                                                  humanOntology={this.state.humanOntology}
+                                                 setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             case 1:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  humanPhenotype={this.state.treeData.humanID}
                                                  humanOntology={this.state.humanOntology}
+                                                 setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             case 2:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  mousePhenotype={this.state.treeData.mouseID}
+                                                 setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             default:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  mousePhenotype={this.state.treeData.mouseID}
                                                  humanPhenotype={this.state.treeData.humanID}
                                                  humanOntology={this.state.humanOntology}
+                                                 setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
         }
     }
