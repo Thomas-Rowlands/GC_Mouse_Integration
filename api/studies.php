@@ -21,7 +21,8 @@
             $this->neo = new Neo_Connection();
         }
 
-        public function get_phenotype_homology_breakdown($mouseID, $humanID, $humanOnt) {
+        public function get_phenotype_homology_breakdown($mouseID, $humanID, $humanOnt): array
+        {
             $humanOnt = strtoupper($humanOnt);
 
             $return_package = ["Mappings" => Mapper::getMappings($mouseID, $humanID, $humanOnt, $this->neo),
@@ -36,7 +37,8 @@
             return $return_package;
         }
 
-        public function get_mouse_term_breakdown($mouseID, $targetOnt) {
+        public function get_mouse_term_breakdown($mouseID, $targetOnt): array
+        {
             $ont = new Ontology();
             // Get mouse knockouts
             return ["Mappings" => $ont->get_human_mapping_by_id($mouseID, $targetOnt),
@@ -44,23 +46,23 @@
                 "Homologous Genes" => []];
         }
 
-        public function get_human_term_breakdown($humanID, $ontology) {
+        public function get_human_term_breakdown($humanID, $ontology): array
+        {
             $ont = new Ontology();
             $return_package = ["Mappings" => $ont->get_mp_mapping_by_id($humanID),
-                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID),
-                "Gene Knockouts" => [], "Homologous Genes" => []];
+                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID), "Homologous Genes" => []];
             // Get GWAS Records
             $return_package["Gene Knockouts"] = $return_package["Mappings"] ? $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]) : [];
             return $return_package;
         }
 
-        public function get_mapped_gwas_studies($ontology, $termID) {
+        public function get_mapped_gwas_studies($ontology, $termID): array
+        {
             $ont = new Ontology();
             if (strtoupper($ontology) != "MESH")
                 $termID = $this->get_mesh_id_from_db($termID);
             $descendants = $ont->get_term_descendants($termID, "MESH");
             array_push($descendants, $termID);
-            $result = [];
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
@@ -78,7 +80,7 @@
         }
 
         public function get_mesh_id_from_db($termID) {
-            $cmd = "CALL gc_mouse.get_mesh_mapping('{$termID}')";
+            $cmd = "CALL gc_mouse.get_mesh_mapping('$termID')";
             $cursor = $this->con->execute($cmd, "gc_mouse");
             $mesh_term = null;
             if ($cursor) {
@@ -90,7 +92,8 @@
             return $mesh_term;
         }
 
-        public function get_mouse_knockouts($termID) {
+        public function get_mouse_knockouts($termID): array
+        {
             $ont = new Ontology();
             $descendants = $ont->get_term_descendants($termID, "MP");
             array_push($descendants, $termID);
@@ -129,10 +132,10 @@
                 return [];
         }
 
-        public function search_by_term($user_input, $page, $limit, $human_pval, $mouse_pval, $species, $exact=false) {
+        public function search_by_term($user_input, $page, $limit, $human_pval, $mouse_pval, $species, $exact=false): array
+        {
             $species = strtolower($species);
             $ont = new Ontology();
-            $mapped_terms = [];
             if ($exact) {
                 if ($species == "mouse") {
                     //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
@@ -172,15 +175,6 @@
                     } else
                         array_push($humanIDs, $mapping["id"]);
                 if (!$skip_duplicate) {
-                    $humanOnt = "";
-                    $humanID = "";
-                    $humanLabel = "";
-                    $humanSynonyms = [];
-                    $mouseID = "";
-                    $mouseLabel = "";
-                    $mouseSynonyms = "";
-                    $gwas = 0;
-                    $experiments = 0;
                     if ($species == "mouse") {
                         $humanOnt = $mapping["mappedOnt"];
                         $humanID = $mapping["mappedID"];
@@ -207,7 +201,6 @@
                     "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$experiments];
                     array_push($results, $result);
                 }
-
             }
 
 
@@ -218,7 +211,8 @@
                 return [null, 0];
         }
 
-        public function homologSearch($mpid) {
+        public function homologSearch($mpid): ?array
+        {
             $mpid = $this->con->escape_input($mpid);
             $results = $this->con->execute("CALL gc_mouse.get_mouse_knockout_by_term('{$mpid}');", "gc_mouse");
             if ($results) {

@@ -269,9 +269,6 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
         }
 
         public function get_ontology_trees($term, $humanOntology, $mouseOntology, $searchOntology, $isExactTerm=false) {
-            $humanOntology = $humanOntology;
-            $mouseOntology = $mouseOntology;
-            $searchOntology = $searchOntology;
             $humanOntLabel = $humanOntology == "MESH" ? "MESH" : "HP";
             $mouseID = "";
             $humanID = "";
@@ -345,7 +342,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
                 $hasMapping = false;
                 if ($child->hasValue("hasMapping"))
                     $hasMapping = $child->get('hasMapping');
-                $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0 ? true : false;
+                $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0;
                 $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasMapping, $child->get('hasChildren'), $hasData);
                 $return_package[$child->get('id')] = $childNode;
             }
