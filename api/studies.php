@@ -7,40 +7,49 @@
 
     class StudySearch {
 
+        /**
+         * @var GC_Connection
+         */
+        private $con;
+        /**
+         * @var Neo_Connection
+         */
+        private $neo;
+
         public function __construct(){
             $this->con = new GC_Connection("gc_mouse");
             $this->neo = new Neo_Connection();
         }
 
         public function get_phenotype_homology_breakdown($mouseID, $humanID, $humanOnt) {
-            $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
-            // Get mappings & synonyms for the chosen phenotype.
             $humanOnt = strtoupper($humanOnt);
-            $mappings = Mapper::getMappings($mouseID, $humanID, $humanOnt, $this->neo);
-            $return_package["Mappings"] = $mappings;
+
+            $return_package = ["Mappings" => Mapper::getMappings($mouseID, $humanID, $humanOnt, $this->neo),
+                "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get GWAS Studies
-            if ($mappings) {
-                $return_package["GWAS Studies"] = $mappings["gwas"] > 0 ? $this->get_mapped_gwas_studies($humanOnt, $mappings["humanID"]) : [];
-                $return_package["Gene Knockouts"] = $mappings["experiments"] > 0 ? $this->get_mouse_knockouts($mappings["mouseID"]) : [];
+            if ($return_package["Mappings"]) {
+                $return_package["GWAS Studies"] = $return_package["Mappings"]["gwas"] > 0 ?
+                    $this->get_mapped_gwas_studies($humanOnt, $return_package["Mappings"]["humanID"]) : [];
+                $return_package["Gene Knockouts"] = $return_package["Mappings"]["experiments"] > 0 ?
+                    $this->get_mouse_knockouts($return_package["Mappings"]["mouseID"]) : [];
             }
             return $return_package;
         }
 
         public function get_mouse_term_breakdown($mouseID, $targetOnt) {
             $ont = new Ontology();
-            $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
-            // Get Mouse Knockouts
-            $return_package["Mappings"] = $ont->get_human_mapping_by_id($mouseID, $targetOnt);
-            $return_package["Gene Knockouts"] = $this->get_mouse_knockouts($mouseID);
-            return $return_package;
+            // Get mouse knockouts
+            return ["Mappings" => $ont->get_human_mapping_by_id($mouseID, $targetOnt),
+                "GWAS Studies" => [], "Gene Knockouts" => $this->get_mouse_knockouts($mouseID),
+                "Homologous Genes" => []];
         }
 
         public function get_human_term_breakdown($humanID, $ontology) {
             $ont = new Ontology();
-            $return_package = ["Mappings" => [], "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
+            $return_package = ["Mappings" => $ont->get_mp_mapping_by_id($humanID),
+                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID),
+                "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get GWAS Records
-            $return_package["GWAS Studies"] = $this->get_mapped_gwas_studies($ontology, $humanID);
-            $return_package["Mappings"] = $ont->get_mp_mapping_by_id($humanID);
             $return_package["Gene Knockouts"] = $return_package["Mappings"] ? $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]) : [];
             return $return_package;
         }
@@ -113,7 +122,7 @@
                     array_push($result, $record);
                 }
             }
-            
+
             if ($result)
                 return $result;
             else
@@ -152,13 +161,13 @@
                 // Check if at least 1 GWAS or Knockout is present for this phenotype
                 if ($species == "mouse")
                     if (in_array($mapping["id"], $mouseIDs)) {
-                        if (!$mapping["mappedID"]) 
+                        if (!$mapping["mappedID"])
                             $skip_duplicate = true;
                     } else
                         array_push($mouseIDs, $mapping["id"]);
                 else
                     if (in_array($mapping["id"], $humanIDs)) {
-                        if (!$mapping["mappedID"]) 
+                        if (!$mapping["mappedID"])
                             $skip_duplicate = true;
                     } else
                         array_push($humanIDs, $mapping["id"]);
@@ -193,8 +202,8 @@
                         $experiments = $mapping["experiments"];
                         $gwas = $mapping["gwas"];
                     }
-                    $result = ["Human Ontology"=>$humanOnt, "ID"=>$humanID, "Human Phenotype"=>$humanLabel, "Human Synonyms"=>$humanSynonyms, 
-                    "MP ID"=>$mouseID, "MP Label"=>$mouseLabel, "Mouse Synonyms"=>$mouseSynonyms, 
+                    $result = ["Human Ontology"=>$humanOnt, "ID"=>$humanID, "Human Phenotype"=>$humanLabel, "Human Synonyms"=>$humanSynonyms,
+                    "MP ID"=>$mouseID, "MP Label"=>$mouseLabel, "Mouse Synonyms"=>$mouseSynonyms,
                     "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$experiments];
                     array_push($results, $result);
                 }

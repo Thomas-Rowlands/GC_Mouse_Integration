@@ -9,7 +9,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $ont = strtolower($_GET["ontology"]);
     $entry = strtolower($_GET["entry"]);
     $cmd = "MATCH (n)
-    WHERE n.ontology in [" . ($ont == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\" 
+    WHERE n.ontology in [" . ($ont == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND  toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\"
     WITH n
     OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
     WITH n, m

@@ -5,8 +5,8 @@
 
     class GC_Connection {
         
-        private $con = null;
-        private $ini_array = null;
+        private $con;
+        private $ini_array;
         public function __construct($dataset){
             $this->ini_array = parse_ini_file("../config/config.ini");
             $this->open($dataset);
@@ -25,11 +25,12 @@
             $this->con->close();
         }
 
-        public function escape_input($input_string) {
+        public function escape_input($input_string): string
+        {
             return mysqli_escape_string($this->con, $input_string);
         }
 
-        public function execute($query, $dataset) {
+        public function execute($query, $dataset): mysqli_result{
             if ($this->open($dataset)) {
                 $res = $this->con->query($query);
                 $this->close();
@@ -65,8 +66,7 @@
         }
 
         public function execute($query, $params) {
-            $result = $this->client->run($query, $params);
-            return $result->getRecords();
+            return $this->client->run($query, $params)->getRecords();
         }
 
     }
