@@ -80,15 +80,6 @@ class ResultTable extends React.Component {
         return stabilizedThis.map((el) => el[0]);
     }
 
-    viewButtonHeader = () => {
-        if (this.props.isSearchResult) {
-            return (
-                <TableCell align="center" padding="normal"/>
-            );
-        } else
-            return null;
-    }
-
     getCellClickHandler = (header) => {
         if (this.props.cellClickHandlers) {
             return this.props.cellClickHandlers[header];
@@ -98,10 +89,14 @@ class ResultTable extends React.Component {
     getTableCell = (row, key) => {
         let clickFunc = this.getCellClickHandler(key);
         let dataLink = this.props.dataHeaders ? row[this.props.dataHeaders[key]] : null
-        if (dataLink)
-            return (<TableCell align="center" data-link={dataLink} onClick={clickFunc} data-study={row["ID"]} style={{textDecoration: 'underline blue'}}>{row[key]}</TableCell>);
+        let cell = dataLink ?
+            <TableCell align="center" data-link={dataLink} onClick={clickFunc} data-study={row["ID"]} style={{textDecoration: 'underline blue'}}>{row[key]}</TableCell>
+            : <TableCell align="center" data-study={row["ID"]} style={{textDecoration: 'none'}}>{row[key]}</TableCell>;
+
+        if (this.props.hoverDataMap && Object.keys(this.props.hoverDataMap).includes(key))
+            return <Tooltip title={row[this.props.hoverDataMap[key]]} arrow>{cell}</Tooltip>;
         else
-            return (<TableCell align="center" data-study={row["ID"]} style={{textDecoration: 'none'}}>{row[key]}</TableCell>);
+            return cell;
     }
 
     getCellHoverContent = (row, key) => {
