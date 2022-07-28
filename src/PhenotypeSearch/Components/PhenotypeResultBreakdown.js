@@ -471,6 +471,7 @@ class PhenotypeResultBreakdown extends React.Component {
 
                                     {breakdownData ?
                                         <ResultTable isSearchResult={false} orderBy={"name"} hiddenHeaders={["id"]} dataHeaders={{"name": "id"}}
+                                                     hoverDataMap={{"name": "id"}}
                                                      cellClickHandlers={{"name": this.gwasStudyClicked}}
                                                      tableData={this.getGWASData()}/> : null}
                                 </TabPanel>
