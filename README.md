@@ -9,7 +9,7 @@ This web application utilises React, so having node package manager installed on
 Due to the various peer dependencies specifying versions, you will likely get an error when simply using "npm install", so please use "npm install --legacy-peer-deps" to successfully install all dependencies (they do work together!).
 
 ### PHP Server Side
-Included within the "gcmouseapi" folder is a composer file, requiring composer to run. Due to legacy dependencies which are no longer updated, the command "composer install --ignore-platform-reqs" to ingore errors relating to PHP version (tested on PHP 7.3 and PHP 8)
+Included within the "gcmouseapi" folder is a composer file, requiring composer to run. Due to legacy dependencies which are no longer updated, the command "composer install --ignore-platform-reqs" to ingore errors relating to PHP version (tested on PHP 7.3)
 
 ## Data Setup
 ### GC_Mouse Database
