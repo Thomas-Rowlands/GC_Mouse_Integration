@@ -202,7 +202,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
         public function get_term_synonyms($termID, $ontology) {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
+            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} AND (S.gwas_total > 0 or S.experiment_total > 0) RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
             $synonyms = [];
             foreach ($result as $row) {
                 array_push($synonyms, $row->get("Synonym"));
@@ -213,7 +213,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
         public function get_phenotype_name($termID, $ontology) {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ") WHERE N.id = {termID} RETURN N.FSN AS phenotype", ["termID"=>$termID]);
+            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ") WHERE N.id = {termID} AND (n.gwas_total > 0 or n.experiment_total > 0) RETURN N.FSN AS phenotype", ["termID"=>$termID]);
             $phenotype = null;
             foreach ($result as $row) {
                 $phenotype = $row->get("phenotype");
@@ -244,7 +244,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
         public function get_term_descendants($termID, $ontology) {
             $ontology = strtoupper($ontology);
             $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
-            WHERE n.id = {termID} AND m.isObsolete = 'false'
+            WHERE n.id = {termID} AND m.isObsolete = 'false' AND (m.gwas_total > 0 or m.experiment_total > 0)
             RETURN DISTINCT m.id AS descendant", ["termID"=>$termID]);
             $descendants = [];
             foreach ($result as $row) {
@@ -333,7 +333,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
             $mappingOnt = strtoupper($mappingOnt);
             $mappingProperty = $ontLabel == "MP" ? "has" . $mappingOnt . "Mapping" : "hasMPMapping";
             $children = $this->neo->execute("MATCH (n:$ontLabel)<-[:ISA]-(m)
-            WHERE n.id = {termID}
+            WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
 

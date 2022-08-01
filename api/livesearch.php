@@ -7,9 +7,12 @@ include 'database.php';
 if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $cmd = "";
     $ont = strtolower($_GET["ontology"]);
+    if ($ont == "human")
+        $ont = "'mesh', 'hpo'";
     $entry = strtolower($_GET["entry"]);
-    $cmd = "MATCH (n)-[:hasGWASResult|:hasExperimentResult]-()
-    WHERE n.ontology in [" . ($ont == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND  toLower(n.FSN) STARTS WITH {entry} AND n.isObsolete = \"false\"
+    $cmd = "MATCH (n)
+    WHERE n.ontology in [{ont}] AND toLower(n.FSN) STARTS WITH {entry} 
+    AND n.isObsolete = \"false\" AND (n.gwas_total > 0 or n.experiment_total > 0)
     WITH n
     OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
     WITH n, m
@@ -18,7 +21,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     LIMIT 6
     ;";
     $neo = new Neo_Connection();
-    $result = $neo->execute($cmd, ['entry' => $entry]);
+    $result = $neo->execute($cmd, ['entry' => $entry, 'ont' => $ont]);
     $matches = [];
     foreach ($result as $row) {
         $type = $row->get("type");

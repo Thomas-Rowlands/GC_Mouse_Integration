@@ -128,7 +128,7 @@ class PhenotypeSearch extends React.Component {
         }
         this.liveCancelToken = axios.CancelToken.source();
         this.setState({liveLoading: true});
-        let ontology = this.state.selectedSpecies === "Human" ? "HPO" : "MP"
+        let ontology = this.state.selectedSpecies != "Human" ? "MP" : "Human";
         let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&ontology=" + ontology;
         if (input.length > 0) {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})

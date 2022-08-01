@@ -58,7 +58,7 @@ ini_set('display_errors', '1');
                 }
             }
             $result = $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
-            WHERE n.id = {termID}
+            WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
@@ -67,7 +67,7 @@ ini_set('display_errors', '1');
         private function getTermSiblings($termID) {
             $mappingProperty = "has{$this->mappingOntLabel}Mapping";
             $result = $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
-            WHERE n.id = {termID}
+            WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
             return $result;
@@ -76,7 +76,7 @@ ini_set('display_errors', '1');
         private function getTreeByID($id, $isMesh=false) {
             $root = $this->ontLabel == "MESH" ? "mesh" : "{$this->termIDLabel}:0000001";
             $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
-            WHERE startNode.id = {root} AND endNode.id = {termID}
+            WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.gwas_total > 0 or endNode.experiment_total > 0)
             RETURN p";
             $mappingProperty = "has" . $this->mappingOntLabel . "Mapping";
             $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
@@ -92,7 +92,7 @@ ini_set('display_errors', '1');
                             continue;
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
                             $hasMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
-                            $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0 ? true : false;
+                            $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
 
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
                             $sibs = $this->getTermSiblings($childNode->id, $isMesh);
@@ -101,7 +101,7 @@ ini_set('display_errors', '1');
                             foreach ($sibs as $sib) {
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
                                     $hasMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
-                                    $hasData = ($sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0) ? true : false;
+                                    $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
                                     if ($sib->hasValue("hasMapping"))
                                         $hasMapping = $sib->get('hasMapping');
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasMapping, $sib->get('hasChildren'), $hasData);
