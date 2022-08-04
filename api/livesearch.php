@@ -33,9 +33,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
         if (strtolower($row->get("FSN")) == $entry)
             array_unshift($matches, $parsed);
         else
-            array_push($matches, $parsed);
+            $matches[] = $parsed;
     }
     echo json_encode($matches);
 }
 
-?> 

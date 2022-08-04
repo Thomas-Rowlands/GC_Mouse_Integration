@@ -8,6 +8,18 @@
 
         private static $chromosomes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
         15, 16, 17, 18, 19, 20, 21, 22, "X", "Y"];
+        /**
+         * @var GC_Connection
+         */
+        private $con;
+        /**
+         * @var Neo_Connection
+         */
+        private $neo;
+        /**
+         * @var Ontology
+         */
+        private $ont;
 
         public function __construct()
         {
@@ -16,44 +28,7 @@
             $this->ont = new Ontology();
         }
 
-        public function getPhenotypeMarkers($termID, $search_ont)
-        {
-            $descendants = $this->ont->get_term_descendants($termID, "MESH");
-            array_push($descendants, $termID);
-            $result = [];
-            $term_string = "";
-            foreach ($descendants as $descendant) {
-                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
-            }
-            $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT m.Accession AS 'name', mc.Chr AS 'chr', mc.Start AS 'start', mc.Stop AS 'stop', si.NegLogPValue AS 'pval'
-            FROM GC_study.Study AS s
-            INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
-            INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
-            INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
-            INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
-            INNER JOIN GC_study.Resultset AS rs ON rs.ExperimentID = e.ExperimentID
-            INNER JOIN GC_study.Significance AS si ON si.ResultsetID = rs.ResultsetID
-            INNER JOIN GC_study.Usedmarkerset AS us ON us.UsedmarkersetID = si.UsedmarkersetID
-            INNER JOIN GC_marker.Marker AS m ON m.Identifier = us.MarkerIdentifier
-            INNER JOIN GC_marker.MarkerCoord AS mc ON mc.MarkerID = m.MarkerID
-WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 AND mc.Start > 0";
-           $markers_result = $this->con->execute($cmd, "gc_mouse");
-            if ($markers_result) {
-                $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
-                foreach ($markers as $marker) {
-                    array_push($result, $marker);
-                }
-            }
-            
-            if ($result)
-                return $result;
-            else
-                return [];
-
-        }
-
-        public function getPhenotypeMarkerBins($termID, $searchOnt)
+        public function getPhenotypeMarkerBins($termID, $searchOnt): array
         {
             if (strtoupper($searchOnt) !== "MESH") {
                 $study = new StudySearch();
@@ -62,7 +37,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                     return ["highest"=>null, "average"=>null, "bins"=>[]];
             }
             $descendants = $this->ont->get_term_descendants($termID, "MESH");
-            array_push($descendants, $termID);
+            $descendants[] = $termID;
             $result = ["highest"=>0, "average"=>0, "bins"=>[]];
             $term_string = "";
             foreach ($descendants as $descendant) {
@@ -83,7 +58,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
                     foreach ($markers as $marker) {
-                        array_push($result["bins"], $marker);
+                        $result["bins"][] = $marker;
                         $total += $marker["value"];
                         if ($marker["value"] > $result["highest"])
                             $result["highest"] = $marker["value"];
@@ -102,55 +77,13 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
 
         }
 
-        public function getHumanGenes() 
-        {
-            $cmd = "SELECT hg.gene_symbol AS \"Gene\", chr.name AS \"Chromosome\", hg.start, hg.stop, CASE hom.human_gene_id WHEN NULL THEN 0 ELSE 1 END AS \"is_homolog\"
-            FROM gc_mouse.human_genes AS hg
-            INNER JOIN chromosomes AS chr ON chr.id = hg.chromosome_id
-            RIGHT JOIN homologs AS hom ON hom.human_gene_id = hg.id;";
-            $genes_result = $this->con->execute($cmd, "gc_mouse");
-            $result = [];
-            if ($genes_result) {
-                $genes = mysqli_fetch_all($genes_result, MYSQLI_ASSOC);
-                foreach ($genes as $gene) {
-                    array_push($result, $gene);
-                }
-            }
-            
-            if ($result)
-                return $result;
-            else
-                return [];
-        }
-
-        public function getMouseGenes()
-        {
-            $cmd = "SELECT mg.gene_symbol AS \"Gene\", chr.name AS \"Chromosome\", mg.start, mg.stop, CASE hom.mouse_gene_id WHEN NULL THEN 0 ELSE 1 END AS \"is_homolog\"
-            FROM gc_mouse.mouse_genes AS mg
-            INNER JOIN chromosomes AS chr ON chr.id = mg.chromosome_id
-            RIGHT JOIN homologs AS hom ON hom.mouse_gene_id = mg.id;";
-           $markers_result = $this->con->execute($cmd, "gc_mouse");
-            if ($markers_result) {
-                $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
-                foreach ($markers as $marker) {
-                    array_push($result, $marker);
-                }
-            }
-            
-            if ($result)
-                return $result;
-            else
-                return [];
-        }
-
-        public function getMouseKnockoutBins($termID, $searchOnt)
+        public function getMouseKnockoutBins($termID, $searchOnt): array
         {
             if (strtoupper($searchOnt) != "MP") {
                 $termID = $this->ont->get_mp_mapping_by_id($termID);
                 if (!$termID)
                     return ["highest"=>null, "average"=>null, "bins"=>[]];
-                if (is_array($termID))
-                    $termID = $termID[0]["mappedID"];
+                $termID = $termID[0]["mappedID"];
             }
             $descendants = $this->ont->get_term_descendants($termID, "MP");
             $result = ["highest"=>0, "average"=>0, "bins"=>[]];
@@ -173,7 +106,7 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
                 if ($markers_result) {
                     $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
                     foreach ($markers as $marker) {
-                        array_push($result["bins"], $marker);
+                        $result["bins"][] = $marker;
                         $total += $marker["value"];
                         if ($marker["value"] > 0)
                             $used_bin_count += 1;
@@ -192,5 +125,3 @@ WHERE pa.PhenotypeIdentifier in (" . $term_string . ") AND si.NegLogPValue >= 0 
         }
 
     }
-
-?>

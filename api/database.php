@@ -30,7 +30,7 @@
             return mysqli_escape_string($this->con, $input_string);
         }
 
-        public function execute($query, $dataset): mysqli_result{
+        public function execute($query, $dataset){
             if ($this->open($dataset)) {
                 $res = $this->con->query($query);
                 $this->close();
@@ -39,7 +39,6 @@
                 exit("failed to open DB connection.");
             }
         }
-
     }
 
     class Neo_Connection {
@@ -57,17 +56,9 @@
             }
         }
 
-        private function close() {
-            $this->con->close();
-        }
-
-        public function escape_input($input_string) {
-            return mysqli_escape_string($this->con, $input_string);
-        }
-
         public function execute($query, $params) {
             return $this->client->run($query, $params)->getRecords();
         }
 
     }
-?>
+

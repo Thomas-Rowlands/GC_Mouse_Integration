@@ -62,7 +62,7 @@
             if (strtoupper($ontology) != "MESH")
                 $termID = $this->get_mesh_id_from_db($termID);
             $descendants = $ont->get_term_descendants($termID, "MESH");
-            array_push($descendants, $termID);
+            $descendants[] = $termID;
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
@@ -74,7 +74,7 @@
             $studies = [];
             if ($result)
                 foreach ($result as $row) {
-                    array_push($studies, ["id"=>$row->get("id"), "name"=>$row->get("name"), "-log P-value"=>round($row->get("p_value"), 2)]);
+                    $studies[] = ["id" => $row->get("id"), "name" => $row->get("name"), "-log P-value" => round($row->get("p_value"), 2)];
                 }
             return $studies;
         }
@@ -96,7 +96,7 @@
         {
             $ont = new Ontology();
             $descendants = $ont->get_term_descendants($termID, "MP");
-            array_push($descendants, $termID);
+            $descendants[] = $termID;
             $result = [];
             $term_string = "";
             foreach ($descendants as $descendant) {
@@ -122,7 +122,7 @@
             if ($knockout) {
                 $knockout_records = mysqli_fetch_all($knockout, MYSQLI_ASSOC);
                 foreach ($knockout_records as $record) {
-                    array_push($result, $record);
+                    $result[] = $record;
                 }
             }
 
@@ -132,25 +132,25 @@
                 return [];
         }
 
-        public function search_by_term($user_input, $page, $limit, $human_pval, $mouse_pval, $species, $exact=false): array
+        public function search_by_term($user_input, $species, $exact=false): array
         {
             $species = strtolower($species);
             $ont = new Ontology();
             if ($exact) {
                 if ($species == "mouse") {
                     //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH", true, $human_pval, $mouse_pval);
+                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH", true);
                 } else {
                     //$mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_human_term($user_input, "MESH", true, $human_pval, $mouse_pval);
+                    $mapped_terms = $ont->search_human_term($user_input, "MESH", true);
                 }
             } else {
                 if ($species == "mouse") {
                     //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH", false, $human_pval, $mouse_pval);
+                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH");
                 } else {
                     //$mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_human_term($user_input, "MESH", false, $human_pval, $mouse_pval);
+                    $mapped_terms = $ont->search_human_term($user_input, "MESH");
                 }
             }
 
@@ -167,13 +167,13 @@
                         if (!$mapping["mappedID"])
                             $skip_duplicate = true;
                     } else
-                        array_push($mouseIDs, $mapping["id"]);
+                        $mouseIDs[] = $mapping["id"];
                 else
                     if (in_array($mapping["id"], $humanIDs)) {
                         if (!$mapping["mappedID"])
                             $skip_duplicate = true;
                     } else
-                        array_push($humanIDs, $mapping["id"]);
+                        $humanIDs[] = $mapping["id"];
                 if (!$skip_duplicate) {
                     if ($species == "mouse") {
                         $humanOnt = $mapping["mappedOnt"];
@@ -199,7 +199,7 @@
                     $result = ["Human Ontology"=>$humanOnt, "ID"=>$humanID, "Human Phenotype"=>$humanLabel, "Human Synonyms"=>$humanSynonyms,
                     "MP ID"=>$mouseID, "MP Label"=>$mouseLabel, "Mouse Synonyms"=>$mouseSynonyms,
                     "GWAS Studies"=>$gwas, "Mouse Knockouts"=>$experiments];
-                    array_push($results, $result);
+                    $results[] = $result;
                 }
             }
 
@@ -214,11 +214,10 @@
         public function homologSearch($mpid): ?array
         {
             $mpid = $this->con->escape_input($mpid);
-            $results = $this->con->execute("CALL gc_mouse.get_mouse_knockout_by_term('{$mpid}');", "gc_mouse");
+            $results = $this->con->execute("CALL gc_mouse.get_mouse_knockout_by_term('$mpid');", "gc_mouse");
             if ($results) {
                 $total = $results->num_rows;
-                $return_package = array(mysqli_fetch_all($results, MYSQLI_ASSOC), $total);
-                return $return_package;
+                return array(mysqli_fetch_all($results, MYSQLI_ASSOC), $total);
             } else {
                 return null;
             }
