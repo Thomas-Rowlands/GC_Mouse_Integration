@@ -169,7 +169,7 @@ RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS F
 
         public function get_mp_mapping_by_id($termID) {
             $result = $this->neo->execute("
-            MATCH (n {id: '" . $termID . "'})-[:LOOM_MAPPING|HAS_SYNONYM*0..2]-(mappedTerm:Term)
+            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING|HAS_SYNONYM*0..2]-(mappedTerm:Term)
 WHERE mappedTerm:MP
 RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
             $mappings = [];
@@ -187,7 +187,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
             WITH n
             OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
             WITH n, COLLECT(syns) AS syns
-            MATCH p=(o)-[r:LOOM_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
+            MATCH p=(o)-[r:SPECIES_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
             WHERE (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
             RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt, COALESCE(mappedTerm.gwas_total, mappedSyn.gwas_total) AS gwas", []);
             $mappings = [];
