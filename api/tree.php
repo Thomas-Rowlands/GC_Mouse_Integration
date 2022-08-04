@@ -6,20 +6,19 @@ ini_set('display_errors', '1');
 
     class OntologyTree {
 
-        private $nodeIDs;
         private $tree;
         private $neo;
         private $ontLabel;
         private $mappingOntLabel;
         private $termIDLabel;
 
-        public function __construct($ontLabel, $termIDLabel, $termID=null, $isRoot=false, $mappingOntLabel){
+        public function __construct($ontLabel, $termIDLabel, $termID, $isRoot, $mappingOntLabel){
             $this->neo = new Neo_Connection();
             $this->ontLabel = $ontLabel;
             $this->termIDLabel = $termIDLabel;
             $this->mappingOntLabel = $mappingOntLabel;
             if ($termID) {
-                $this->getTreeByID($termID, $ontLabel == "MESH");
+                $this->getTreeByID($termID);
             } else if ($isRoot) {
                 $this->getRootTree($ontLabel == "MESH");
             }
@@ -31,58 +30,55 @@ ini_set('display_errors', '1');
 
 
         private function getRootTree($isMesh=false) {
-            $results = null;
             if (!$isMesh) {
                 $results = $this->getTermChildren("$this->termIDLabel:0000001");
             } else {
-                $results = $this->getTermChildren("mesh", $isMesh);
+                $results = $this->getTermChildren("mesh");
             }
-            $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, true, false);
+            $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, false, true, false);
             foreach ($results as $result) {
                 $hasData = $result->get("gwas_total") > 0 || $result->get("experiment_total") > 0;
-                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get('hasMapping'), $result->get('hasChildren'), $hasData);
+                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get('hasExactMapping'), $result->get('hasInferredMapping'), $result->get('hasChildren'), $hasData);
                 $rootNode->children[$result->get('id')] = $childNode;
             }
             $this->tree = $rootNode;
         }
 
-        private function getTermChildren($termID, $isMesh=false) {
-            $mappingProperty = "";
+        private function getTermChildren($termID) {
             if ($this->ontLabel != "MP") {
-                $mappingProperty = "hasMPMapping";
+                $mappingProperty = "hasExactMPMapping";
             } else {
                 if ($this->mappingOntLabel == "MESH") {
-                    $mappingProperty = "hasMESHMapping";
+                    $mappingProperty = "hasExactMESHMapping";
                 } else {
-                    $mappingProperty = "hasHPOMapping";
+                    $mappingProperty = "hasExactHPOMapping";
                 }
             }
-            $result = $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
+            return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
-            return $result;
         }
 
         private function getTermSiblings($termID) {
             $mappingProperty = "has{$this->mappingOntLabel}Mapping";
-            $result = $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
+            return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
-            return $result;
         }
 
-        private function getTreeByID($id, $isMesh=false) {
-            $root = $this->ontLabel == "MESH" ? "mesh" : "{$this->termIDLabel}:0000001";
+        private function getTreeByID($id) {
+            $root = $this->ontLabel == "MESH" ? "mesh" : "$this->termIDLabel:0000001";
             $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
             WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.gwas_total > 0 or endNode.experiment_total > 0)
             RETURN p";
-            $mappingProperty = "has" . $this->mappingOntLabel . "Mapping";
+            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
+            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
-                $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null, true, false); // Set the root node to begin tree building.
+                $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null, null, true, false); // Set the root node to begin tree building.
                 foreach ($result as $row) { // Iterate through paths returned (could be multiple to the same node)
                     $path = $row->get("p");
                     $nodes = $path->nodes();
@@ -91,20 +87,32 @@ ini_set('display_errors', '1');
                         if ($i == 0)//first node will be the root which is already added.
                             continue;
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
-                            $hasMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
+                            $hasExactMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
+                            $hasInferredMapping = $nodes[$i]->hasValue($inferredMappingProperty) ? $nodes[$i]->get($inferredMappingProperty) : false;
                             $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
 
-                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
-                            $sibs = $this->getTermSiblings($childNode->id, $isMesh);
+                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasExactMapping, $hasInferredMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
+                            $sibs = $this->getTermSiblings($childNode->id);
 
                             $parentTreeNode->children[$nodes[$i]->value('id')] = $childNode;
                             foreach ($sibs as $sib) {
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
-                                    $hasMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
+                                    $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
+                                    $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
                                     $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
-                                    if ($sib->hasValue("hasMapping"))
-                                        $hasMapping = $sib->get('hasMapping');
-                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasMapping, $sib->get('hasChildren'), $hasData);
+                                    if ($sib->hasValue("hasExactMPMapping"))
+                                        $hasExactMapping = $sib->get('hasExactMPMapping');
+                                    else if ($sib->hasValue("hasExactMESHMapping"))
+                                        $hasExactMapping = $sib->get('hasExactMESHMapping');
+                                    else if ($sib->hasValue("hasExactHPOMapping"))
+                                        $hasExactMapping = $sib->get('hasExactHPOMapping');
+                                    if ($sib->hasValue("hasInferredMPMapping"))
+                                        $hasInferredMapping = $sib->get('hasInferredMPMapping');
+                                    else if ($sib->hasValue("hasInferredMESHMapping"))
+                                        $hasInferredMapping = $sib->get('hasInferredMESHMapping');
+                                    else if ($sib->hasValue("hasInferredHPOMapping"))
+                                        $hasInferredMapping = $sib->get('hasInferredHPOMapping');
+                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildren'), $hasData);
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }
                             }
@@ -122,20 +130,18 @@ ini_set('display_errors', '1');
         public $label;
         public $children = [];
         public $hasChildren = false;
-        public $hasMapping = false;
+        public $hasExactMapping = false;
+        public $hasInferredMapping = false;
         public $hasData = false;
 
-        public function __construct($id, $label, $hasMapping, $hasChildren, $hasData) {
+        public function __construct($id, $label, $hasExactMapping, $hasInferredMapping, $hasChildren, $hasData) {
             $this->id = $id;
             $this->label = $label;
-            $this->hasMapping = $hasMapping;
+            $this->hasExactMapping = $hasExactMapping;
+            $this->hasInferredMapping = $hasInferredMapping;
             $this->hasChildren = $hasChildren;
             $this->hasData = $hasData;
         }
 
 
     }
-
-
-
-?>
