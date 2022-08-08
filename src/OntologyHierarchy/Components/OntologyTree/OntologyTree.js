@@ -69,15 +69,23 @@ class OntologyTree extends React.Component {
 
     getTreeNodes = (nodes, parentPath) => {
         const {classes} = this.props;
-        const btn = nodes.hasMapping ?
+        const btn = nodes.hasExactMapping ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
-                    color="primary" variant="outlined" id={nodes.id}
-            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse" width="20px" src={"/images/mouse.png"} /></Button>
-            : nodes.hasData ?
-                <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
+                    color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={nodes.id}
+            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
+                                                                                       width="20px"
+                                                                                       src={"/images/mouse.png"}/></Button>
+            : nodes.hasInferredMapping ?
+                <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
                         color="primary" variant="outlined" id={nodes.id}
-                ><img width="20px" alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
-                      src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
+                ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
+                                                                                           width="20px"
+                                                                                           src={"/images/mouse.png"}/></Button> : nodes.hasData ?
+                    <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
+                            color="primary" variant="outlined" id={nodes.id}
+                    ><img width="20px"
+                          alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
+                          src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
             <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {
