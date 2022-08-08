@@ -106,8 +106,53 @@ def create_inferred_relationships():
         print(e)
 
 
+def create_term_properties():
+    """
+    Create mapping-related node properties.
+    """
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        # MESH exact mapping properties
+        g.run("""MATCH (n:MESH)-[r:SPECIES_MAPPING {relation: 'EXACT'}]->(m:MP)
+        SET n.hasExactMPMapping = true, m.hasExactMESHMapping = true""")
+        # HPO exact mapping properties
+        g.run("""MATCH (n:HPO)-[r:SPECIES_MAPPING {relation: 'EXACT'}]->(m:MP)
+        SET n.hasExactMPMapping = true, m.hasExactHPOMapping = true""")
+        # MESH inferred mapping properties
+        g.run("""MATCH (n:MESH)-[r:SPECIES_MAPPING {relation: 'INFERRED'}]->(m:MP)
+        SET n.hasInferredMPMapping = true, m.hasInferredMESHMapping = true""")
+        # HPO inferred mapping properties
+        g.run("""MATCH (n:HPO)-[r:SPECIES_MAPPING {relation: 'INFERRED'}]->(m:MP)
+        SET n.hasInferredMPMapping = true, m.hasInferredHPOMapping = true""")
+    except SyntaxError as se:
+        print(se)
+    except ConnectionRefusedError as cre:
+        print(cre)
+    except Exception as e:
+        print(e)
+
+
+def reset_term_properties():
+    """
+    Remove mapping-related node properties.
+    """
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        g.run("""MATCH (n)
+        SET n.hasExactHPOMapping = false, n.hasExactMESHMapping = false, n.hasExactMPMapping = false,
+        n.hasInferredHPOMapping = false, n.hasInferredMESHMapping = false, n.hasInferredMPMapping = false""")
+    except SyntaxError as se:
+        print(se)
+    except ConnectionRefusedError as cre:
+        print(cre)
+    except Exception as e:
+        print(e)
+
+
 new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
 if new_mappings:
     reset_relationships()
+    reset_term_properties()
     update_database(new_mappings)
     create_inferred_relationships()
+    create_term_properties()
