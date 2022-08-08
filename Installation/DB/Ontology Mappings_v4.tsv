@@ -1,5 +1,5 @@
 MP ID	MP Label	MeSH ID	MeSH Label	HP ID	HP Label	Mapping Source	Notes
-MP:0002459	abnormal B cell physiology						
+MP:0002459	abnormal B cell physiology			HP:0005372	Abnormality of B cell physiology	Manual	
 MP:0013509	abnormal CD4-negative NK T cell number						
 MP:0002206	abnormal CNS synaptic transmission						
 MP:0020173	abnormal IgE level	D007073	Immunoglobulin E			Manual	
@@ -12,7 +12,7 @@ MP:0004156	abnormal QT variability
 MP:0010504	abnormal RR interval						
 MP:0003897	abnormal ST segment			HP:0012249	Abnormal ST segment	LOOM	
 MP:0008037	abnormal T cell morphology	D013601	T-Lymphocytes	HP:0002843	Abnormal T cell morphology	LOOM	
-MP:0006387	abnormal T cell number						
+MP:0006387	abnormal T cell number			HP:0011839	Abnormal T cell count 	Manual	
 MP:0002420	abnormal adaptive immunity	D056704	Adaptive Immunity			LOOM	
 MP:0005452	abnormal adipose tissue amount						
 MP:0000003	abnormal adipose tissue morphology	D000273	Adipose Tissue	HP:0009124	Abnormal adipose tissue morphology	LOOM	
@@ -22,7 +22,7 @@ MP:0012763	abnormal alpha-beta T cell number
 MP:0005332	abnormal amino acid level	D000596	Amino Acids				
 MP:0005193	abnormal anterior eye segment morphology	D000869	Anterior Eye Segment	HP:0004328	Abnormal anterior eye segment morphology	LOOM	
 MP:0005194	abnormal anterior uvea morphology						
-MP:0001362	abnormal anxiety-related response	D001007	Anxiety			Manual	
+MP:0001362	abnormal anxiety-related response	D001007	Anxiety	HP:0100852	Abnormal fear/anxiety-related behavior	Manual	
 MP:0000272	abnormal aorta morphology	D001011	Aorta	HP:0001679	Abnormal aortic morphology	LOOM	
 MP:0009250	abnormal appendicular skeleton morphology			HP:0011844	Abnormal appendicular skeleton morphology	LOOM	
 MP:0002191	abnormal artery morphology	D001158	Arteries			LOOM	
@@ -31,54 +31,59 @@ MP:0006141	abnormal atrioventricular node conduction
 MP:0004738	abnormal auditory brainstem response	D016057	Evoked Potentials, Auditory, Brain Stem			LOOM	
 MP:0000572	abnormal autopod morphology						
 MP:0002114	abnormal axial skeleton morphology			HP:0009121	Abnormal axial skeleton morphology	LOOM	
-MP:0012442	abnormal basophil cell number						
+MP:0012442	abnormal basophil cell number			HP:0031806	Abnormal basophil count	Manual	
 MP:0002422	abnormal basophil morphology	D001491	Basophils	HP:0001912	Abnormal basophil morphology	LOOM	
 MP:0004924	abnormal behavior	D001519	Behavior			LOOM	
+MP:0004924	abnormal behavior			HP:0000708	Behavioral abnormality	Manual	
 MP:0013657	abnormal blood cell morphology	D001773	Blood Cells			Manual	
 MP:0012382	abnormal blood cell physiology						
 MP:0002128	abnormal blood circulation	D001775	Blood Circulation			LOOM	
+MP:0002128	abnormal blood circulation			HP:0011028	Abnormality of blood circulation	Manual	
 MP:0009642	abnormal blood homeostasis						
-MP:0005265	abnormal blood urea nitrogen level	D001806	Blood Urea Nitrogen			Manual	
+MP:0005265	abnormal blood urea nitrogen level	D001806	Blood Urea Nitrogen	HP:0031970	Abnormal blood urea nitrogen concentration	Manual	HP<->MP based on term definitions
 MP:0008820	abnormal blood uric acid level						
 MP:0001614	abnormal blood vessel morphology	D001808	Blood Vessels	HP:0033353	Abnormal blood vessel morphology	LOOM	
 MP:0005451	abnormal body composition	D001823	Body Composition			LOOM	
 MP:0001256	abnormal body length						
 MP:0003956	abnormal body size	D049628	Body Size			LOOM	
 MP:0001259	abnormal body weight	D001835	Body Weight			LOOM	
-MP:0002398	abnormal bone marrow cell morphology/development	D001854	Bone Marrow Cells			Manual	
+MP:0001259	abnormal body weight			HP:0004323	Abnormality of body weight	Manual	
+MP:0002398	abnormal bone marrow cell morphology/development	D001854	Bone Marrow Cells	HP:0005561	Abnormality of bone marrow cell morphology	Manual	
 MP:0010122	abnormal bone mineral content	D015519	Bone Density			LOOM	
-MP:0010119	abnormal bone mineral density	D015519	Bone Density			Manual	
+MP:0010119	abnormal bone mineral density	D015519	Bone Density	HP:0004348	Abnormality of bone mineral density	Manual	
 MP:0003795	abnormal bone structure			HP:0003330	Abnormal bone structure	LOOM	
 MP:0002152	abnormal brain morphology	D001921	Brain			LOOM	
+MP:0002152	abnormal brain morphology			HP:0012443	Abnormality of brain morphology	Manual	
 MP:0000771	abnormal brain size						
 MP:0012775	abnormal brain weight						
-MP:0001951	abnormal breathing pattern						
+MP:0001951	abnormal breathing pattern			HP:0002793	Abnormal pattern of respiration	Manual	Nice example
 MP:0004231	abnormal calcium ion homeostasis						
 MP:0020879	abnormal calcium level	D002118	Calcium			Manual	
 MP:0002972	abnormal cardiac muscle contractility						
 MP:0002127	abnormal cardiovascular system morphology	D002319	Cardiovascular System			LOOM	
+MP:0002127	abnormal cardiovascular system morphology			HP:0030680	Abnormality of cardiovascular system morphology	Manual	
 MP:0001544	abnormal cardiovascular system physiology			HP:0011025	Abnormal cardiovascular system physiology	LOOM	
 MP:0002421	abnormal cell-mediated immunity						
 MP:0012007	abnormal chloride level	D002712	Chlorides				
 MP:0005278	abnormal cholesterol homeostasis			HP:0003107	Abnormal circulating cholesterol concentration	LOOM	
 MP:0003947	abnormal cholesterol level	D002784	Cholesterol			Manual	
-MP:0000184	abnormal circulating HDL cholesterol level	D008076	Cholesterol, HDL			Manual	
-MP:0000181	abnormal circulating LDL cholesterol level	D008078	Cholesterol, LDL			Manual	
+MP:0000184	abnormal circulating HDL cholesterol level	D008076	Cholesterol, HDL	HP:0031888	Abnormal HDL cholesterol concentration	Manual	
+MP:0000181	abnormal circulating LDL cholesterol level	D008078	Cholesterol, LDL	HP:0031886	Abnormal LDL cholesterol concentration	Manual	
 MP:0001573	abnormal circulating alanine transaminase level	D000410	Alanine Transaminase			Manual	
-MP:0000202	abnormal circulating alkaline phosphatase level	D000469	Alkaline Phosphatase			Manual	
-MP:0005311	abnormal circulating amino acid level	D000596	Amino Acids			Manual	
+MP:0000202	abnormal circulating alkaline phosphatase level	D000469	Alkaline Phosphatase	HP:0004379	Abnormality of alkaline phosphatase level	Manual	
+MP:0005311	abnormal circulating amino acid level	D000596	Amino Acids	HP:0003112	Abnormal circulating amino acid concentration	Manual	
 MP:0008804	abnormal circulating amylase level			HP:0410282	Abnormal circulating amylase level	LOOM	
 MP:0008804	abnormal circulating amylase level	D000681	Amylases			Manual	
 MP:0000203	abnormal circulating aspartate transaminase level	D001219	Aspartate Aminotransferases			Manual	
-MP:0001569	abnormal circulating bilirubin level	D001663	Bilirubin			Manual	
-MP:0001562	abnormal circulating calcium level	D002118	Calcium			Manual	
-MP:0003018	abnormal circulating chloride level	D002712	Chlorides			Manual	
-MP:0000180	abnormal circulating cholesterol level	D002784	Cholesterol			Manual	
+MP:0001569	abnormal circulating bilirubin level	D001663	Bilirubin	HP:0033479	Abnormal circulating bilirubin concentration	Manual	
+MP:0001562	abnormal circulating calcium level	D002118	Calcium	HP:0004363	Abnormal circulating calcium concentration	Manual	
+MP:0003018	abnormal circulating chloride level	D002712	Chlorides	HP:0011422	Abnormal blood chloride concentration	Manual	
+MP:0000180	abnormal circulating cholesterol level	D002784	Cholesterol	HP:0003107	Abnormal circulating cholesterol concentration	Manual	
 MP:0005328	abnormal circulating creatinine level			HP:0012100	Abnormal circulating creatinine concentration	LOOM	
 MP:0005328	abnormal circulating creatinine level	D003404	Creatinine			Manual	
-MP:0001570	abnormal circulating enzyme level	D004798	Enzymes			Manual	
+MP:0001570	abnormal circulating enzyme level	D004798	Enzymes	HP:0011021	Abnormality of circulating enzyme level	Manual	
 MP:0010086	abnormal circulating fructosamine level	D019270	Fructosamine			Manual	
-MP:0000188	abnormal circulating glucose level	D005947	Glucose			Manual	
+MP:0000188	abnormal circulating glucose level	D005947	Glucose	HP:0011015	Abnormal blood glucose concentration	Manual	
 MP:0011973	abnormal circulating glycerol level			HP:0031795	Abnormal circulating glycerol level	LOOM	
 MP:0011973	abnormal circulating glycerol level	D005990	Glycerol			Manual	
 MP:0005418	abnormal circulating hormone level			HP:0003117	Abnormal circulating hormone level	LOOM	
@@ -86,35 +91,36 @@ MP:0005418	abnormal circulating hormone level	D006728	Hormones			Manual
 MP:0001560	abnormal circulating insulin level			HP:0040215	Abnormal circulating insulin level	LOOM	
 MP:0001560	abnormal circulating insulin level	D007328	Insulin			Manual	
 MP:0004152	abnormal circulating iron level	D007501	Iron			Manual	
-MP:0003949	abnormal circulating lipid level	D008055	Lipids			Manual	
+MP:0003949	abnormal circulating lipid level	D008055	Lipids	HP:0003119	Abnormal circulating lipid concentration	Manual	
 MP:0010330	abnormal circulating lipoprotein level	D008074	Lipoproteins			Manual	
-MP:0001771	abnormal circulating magnesium level	D008274	Magnesium			Manual	
+MP:0001771	abnormal circulating magnesium level	D008274	Magnesium	HP:0004921	Abnormal magnesium concentration	Manual	
 MP:0006357	abnormal circulating mineral level	D008903	Minerals			Manual	
 MP:0020151	abnormal circulating non-HDL cholesterol level						
-MP:0001565	abnormal circulating phosphate level	D010710	Phosphates			Manual	
-MP:0002668	abnormal circulating potassium level	D011188	Potassium			Manual	
+MP:0001565	abnormal circulating phosphate level	D010710	Phosphates	HP:0100529	Abnormal blood phosphate concentration	Manual	
+MP:0002668	abnormal circulating potassium level	D011188	Potassium	HP:0011042	Abnormal blood potassium concentration	Manual	
 MP:0005416	abnormal circulating protein level			HP:0010876	Abnormal circulating protein level	LOOM	
 MP:0005416	abnormal circulating protein level	D011506	Proteins			Manual	
 MP:0000199	abnormal circulating serum albumin level	D012709	Serum Albumin			Manual	
-MP:0001776	abnormal circulating sodium level	D012964	Sodium			Manual	
+MP:0001776	abnormal circulating sodium level	D012964	Sodium	HP:0010931	Abnormal blood sodium concentration	Manual	
 MP:0011888	abnormal circulating total protein level						
 MP:0011969	abnormal circulating triglyceride level	D014280	Triglycerides			Manual	
 MP:0001510	abnormal coat appearance						
-MP:0000367	abnormal coat/ hair morphology	D006197	Hair			Manual	
-MP:0002075	abnormal coat/hair pigmentation	D006200	Hair Color			Manual	
+MP:0000367	abnormal coat/ hair morphology	D006197	Hair	HP:0001595	Abnormal hair morphology	Manual	
+MP:0002075	abnormal coat/hair pigmentation	D006200	Hair Color	HP:0009887	Abnormality of hair pigmentation	Manual	
 MP:0014114	abnormal cognition	D003071	Cognition			LOOM	
+MP:0014114	abnormal cognition			HP:0100543	Cognitive impairment	Manual	Nice example
 MP:0002069	abnormal consumption behavior			HP:0040202	Abnormal consumption behavior	LOOM	
 MP:0001469	abnormal contextual conditioning behavior						
 MP:0003062	abnormal coping response						
 MP:0001312	abnormal cornea morphology	D003315	Cornea	HP:0000481	Abnormal cornea morphology	LOOM	
-MP:0011961	abnormal cornea thickness						
+MP:0011961	abnormal cornea thickness			HP:0011486	Abnormality of corneal thickness	Manual	
 MP:0001056	abnormal cranial nerve morphology	D003391	Cranial Nerves	HP:0001291	Abnormal cranial nerve morphology	LOOM	
 MP:0002116	abnormal craniofacial bone morphology						
 MP:0000428	abnormal craniofacial morphology	D019465	Craniofacial Abnormalities			Manual	
 MP:0000438	abnormal cranium morphology	D012886	Skull	HP:0002648	Abnormality of calvarial morphology	LOOM	
 MP:0001454	abnormal cued conditioning behavior						
 MP:0030254	abnormal dental arch morphology	D003724	Dental Arch			LOOM	
-MP:0003360	abnormal depression-related behavior	D003863	Depression				
+MP:0003360	abnormal depression-related behavior	D003863	Depression	HP:0000716	Depression	Manual	
 MP:0002110	abnormal digit morphology			HP:0011297	Abnormal digit morphology	LOOM	
 MP:0002102	abnormal ear morphology	D004423	Ear	HP:0031703	Abnormal ear morphology	LOOM	
 MP:0003878	abnormal ear physiology			HP:0031704	Abnormal ear physiology	LOOM	
@@ -123,7 +129,7 @@ MP:0002435	abnormal effector T cell morphology
 MP:0013762	abnormal effector T cell number						
 MP:0002572	abnormal emotion/affect behavior			HP:0100851	Abnormal emotion/affect behavior	LOOM	
 MP:0005319	abnormal enzyme/coenzyme level						
-MP:0002602	abnormal eosinophil cell number						
+MP:0002602	abnormal eosinophil cell number			HP:0020064	Abnormal eosinophil count	Manual	
 MP:0005061	abnormal eosinophil morphology	D004804	Eosinophils	HP:0001879	Abnormal eosinophil morphology	LOOM	
 MP:0001586	abnormal erythrocyte cell number						
 MP:0002447	abnormal erythrocyte morphology	D004912	Erythrocytes	HP:0001877	Abnormal erythrocyte morphology	LOOM	
@@ -131,27 +137,28 @@ MP:0013659	abnormal erythroid lineage cell morphology			HP:0012130	Abnormal eryt
 MP:0013189	abnormal exploration in a new environment						
 MP:0009389	abnormal extracutaneous pigmentation						
 MP:0011960	abnormal eye anterior chamber depth						
-MP:0005205	abnormal eye anterior chamber morphology	D000867	Anterior Chamber			Manual	
+MP:0005205	abnormal eye anterior chamber morphology	D000867	Anterior Chamber	HP:0000593	Abnormal anterior chamber morphology	Manual	
 MP:0001286	abnormal eye development						
 MP:0002092	abnormal eye morphology	D005123	Eye	HP:0012372	Abnormal eye morphology	LOOM	
 MP:0005253	abnormal eye physiology			HP:0012373	Abnormal eye physiology	LOOM	
-MP:0001324	abnormal eye pigmentation	D005127	Eye Color			Manual	
+MP:0001324	abnormal eye pigmentation	D005127	Eye Color	HP:0008034	Abnormal iris pigmentation	Manual	Nice example (iris is part of the eye)
 MP:0003671	abnormal eyelid aperture						
 MP:0001340	abnormal eyelid morphology	D005143	Eyelids	HP:0000492	Abnormal eyelid morphology	LOOM	
-MP:0003743	abnormal facial morphology	D005145	Face				
+MP:0003743	abnormal facial morphology	D005145	Face	HP:0001999	Abnormal facial shape	Manual	
 MP:0002065	abnormal fear/anxiety-related behavior			HP:0100852	Abnormal fear/anxiety-related behavior	LOOM	
-MP:0005449	abnormal food intake	D004435	Eating			Manual	
+MP:0005449	abnormal food intake	D004435	Eating	HP:0100738	Abnormal eating behavior	Manual	
 MP:0020420	abnormal freezing behavior						
 MP:0001406	abnormal gait	D005684	Gait	HP:0001288	Gait disturbance	LOOM	
 MP:0003948	abnormal gas homeostasis						
 MP:0002078	abnormal glucose homeostasis			HP:0011014	Abnormal glucose homeostasis	LOOM	
-MP:0005291	abnormal glucose tolerance	D018149	Glucose Intolerance			Manual	Nice example
+MP:0005291	abnormal glucose tolerance	D018149	Glucose Intolerance	HP:0001952	Glucose intolerance	Manual	Nice example
 MP:0003439	abnormal glycerol level	D005990	Glycerol			Manual	
 MP:0002441	abnormal granulocyte morphology	D006098	Granulocytes	HP:0001911	Abnormal granulocyte morphology	LOOM	
-MP:0020201	abnormal granulocyte number						
+MP:0020201	abnormal granulocyte number			HP:0032309	Abnormal granulocyte count	Manual	
 MP:0001515	abnormal grip strength						
-MP:0002073	abnormal hair growth						
+MP:0002073	abnormal hair growth			HP:0040170	Abnormality of hair growth	Manual	
 MP:0000432	abnormal head morphology	D006257	Head			LOOM	
+MP:0000432	abnormal head morphology			HP:0000234	Abnormality of the head	Manual	
 MP:0006335	abnormal hearing electrophysiology						
 MP:0001963	abnormal hearing physiology						
 MP:0010508	abnormal heart electrocardiography waveform feature						
@@ -162,13 +169,15 @@ MP:0000266	abnormal heart morphology	D006321	Heart	HP:0001627	Abnormal heart mor
 MP:0001629	abnormal heart rate	D006339	Heart Rate	HP:0011675	Arrhythmia	LOOM	
 MP:0005406	abnormal heart size						
 MP:0005294	abnormal heart ventricle morphology	D006352	Heart Ventricles			LOOM	
+MP:0005294	abnormal heart ventricle morphology			HP:0001713	Abnormal cardiac ventricle morphology	Manual	Nice example
 MP:0020135	abnormal heart ventricle wall thickness						
 MP:0004857	abnormal heart weight						
 MP:0004085	abnormal heartbeat	D006339	Heart Rate			LOOM	
+MP:0004085	abnormal heartbeat			HP:0011675	Arrhythmia	Manual	
 MP:0002596	abnormal hematocrit	D006400	Hematocrit	HP:0031850	Abnormal hematocrit	LOOM	
 MP:0013656	abnormal hematopoietic cell morphology						
 MP:0011180	abnormal hematopoietic cell number						
-MP:0002396	abnormal hematopoietic system morphology/development						
+MP:0002396	abnormal hematopoietic system morphology/development			HP:0001871	Abnormality of blood and blood-forming tissues	Manual	
 MP:0001545	abnormal hematopoietic system physiology						
 MP:0001588	abnormal hemoglobin	D006454	Hemoglobins	HP:0011902	Abnormal hemoglobin	LOOM	
 MP:0005563	abnormal hemoglobin content						
@@ -183,14 +192,14 @@ MP:0002723	abnormal immune serum protein physiology
 MP:0000716	abnormal immune system cell morphology						
 MP:0000685	abnormal immune system morphology	D007107	Immune System	HP:0032251	Abnormal immune system morphology	LOOM	
 MP:0002722	abnormal immune system organ morphology						
-MP:0001790	abnormal immune system physiology						
+MP:0001790	abnormal immune system physiology			HP:0010978	Abnormality of immune system physiology	Manual	
 MP:0002490	abnormal immunoglobulin level			HP:0010701	Abnormal immunoglobulin level	LOOM	
 MP:0002490	abnormal immunoglobulin level	D007136	Immunoglobulins			Manual	
 MP:0003137	abnormal impulse conducting system conduction						
 MP:0003492	abnormal involuntary movement	D020820	Dyskinesias			LOOM	
-MP:0001765	abnormal ion homeostasis						
+MP:0001765	abnormal ion homeostasis			HP:0003111	Abnormal blood ion concentration	Manual	
 MP:0001322	abnormal iris morphology	D007498	Iris			LOOM	
-MP:0005637	abnormal iron homeostasis						
+MP:0005637	abnormal iron homeostasis			HP:0011031	Abnormality of iron homeostasis	Manual	
 MP:0001770	abnormal iron level	D007501	Iron			Manual	
 MP:0000454	abnormal jaw morphology	D007568	Jaw	HP:0030791	Abnormal jaw morphology	LOOM	
 MP:0002932	abnormal joint morphology	D007596	Joints	HP:0001367	Abnormal joint morphology	LOOM	
@@ -200,10 +209,10 @@ MP:0003959	abnormal lean body mass
 MP:0002063	abnormal learning/memory/conditioning						
 MP:0005545	abnormal lens development						
 MP:0001303	abnormal lens morphology	D007908	Lens, Crystalline			Manual	Eye Lens
-MP:0000217	abnormal leukocyte cell number						
+MP:0000217	abnormal leukocyte cell number			HP:0011893	Abnormal leukocyte count	Manual	
 MP:0008246	abnormal leukocyte morphology	D007962	Leukocytes	HP:0001881	Abnormal leukocyte morphology	LOOM	
-MP:0002442	abnormal leukocyte physiology						
-MP:0002115	abnormal limb bone morphology						
+MP:0002442	abnormal leukocyte physiology			HP:0033796	Abnormal leukocyte physiology	Manual	
+MP:0002115	abnormal limb bone morphology			HP:0002813	Abnormality of limb bone morphology	Manual	
 MP:0011504	abnormal limb long bone morphology						
 MP:0002109	abnormal limb morphology	D005121	Extremities			LOOM	
 MP:0002118	abnormal lipid homeostasis						
@@ -215,30 +224,31 @@ MP:0004847	abnormal liver weight
 MP:0003313	abnormal locomotor activation						
 MP:0001392	abnormal locomotor behavior						
 MP:0003312	abnormal locomotor coordination						
-MP:0003723	abnormal long bone morphology						
+MP:0003723	abnormal long bone morphology			HP:0011314	Abnormality of long bone morphology	Manual	
 MP:0002333	abnormal lung compliance	D008170	Lung Compliance			LOOM	
 MP:0001175	abnormal lung morphology	D008168	Lung	HP:0002088	Abnormal lung morphology	LOOM	
 MP:0004881	abnormal lung size						
 MP:0005629	abnormal lung weight						
 MP:0002221	abnormal lymph organ size						
-MP:0000717	abnormal lymphocyte cell number						
+MP:0000717	abnormal lymphocyte cell number			HP:0040088	Abnormal lymphocyte count	Manual	
 MP:0002619	abnormal lymphocyte morphology	D008214	Lymphocytes	HP:0004332	Abnormal lymphocyte morphology	LOOM	
 MP:0003945	abnormal lymphocyte physiology			HP:0031409	Abnormal lymphocyte physiology	LOOM	
 MP:0011979	abnormal magnesium ion homeostasis						
-MP:0020883	abnormal magnesium level	D008274	Magnesium			Manual	
+MP:0020883	abnormal magnesium level	D008274	Magnesium	HP:0004921	Abnormal magnesium concentration	Manual	
 MP:0001589	abnormal mean corpuscular hemoglobin	D004909	Erythrocyte Indices			LOOM	
 MP:0005640	abnormal mean corpuscular hemoglobin concentration			HP:0025546	Abnormal mean corpuscular hemoglobin concentration	LOOM	
 MP:0000226	abnormal mean corpuscular volume	D004909	Erythrocyte Indices	HP:0025065	Abnormal mean corpuscular volume	LOOM	
 MP:0013512	abnormal memory-marker CD4-negative NK T cell number						
 MP:0005636	abnormal mineral homeostasis						
 MP:0000192	abnormal mineral level	D008903	Minerals			Manual	
-MP:0012441	abnormal monocyte cell number						
+MP:0012441	abnormal monocyte cell number			HP:0012310	Abnormal monocyte count	Manual	
 MP:0002620	abnormal monocyte morphology	D009000	Monocytes	HP:0012144	Abnormal monocyte morphology	LOOM	
 MP:0008247	abnormal mononuclear cell morphology						
 MP:0008248	abnormal mononuclear phagocyte morphology						
 MP:0002066	abnormal motor capabilities/coordination/movement						
 MP:0001516	abnormal motor coordination/balance						
-MP:0000452	abnormal mouth morphology	D009055|D000293	Mouth|Adolescent			LOOM	"Adolescent/D000293 incorrect mapping of ""mouth"" <=> ""youth"""
+MP:0000452	abnormal mouth morphology	D009055	Mouth			LOOM	"Adolescent/D000293 incorrect mapping of ""mouth"" <=> ""youth"""
+MP:0000452	abnormal mouth morphology			HP:0031816	Abnormal oral morphology	Manual	
 MP:0005620	abnormal muscle contractility						
 MP:0002106	abnormal muscle physiology			HP:0011804	Abnormal muscle physiology	LOOM	
 MP:0002414	abnormal myeloblast morphology/development	D042381	Granulocyte Precursor Cells			Manual	
@@ -249,15 +259,17 @@ MP:0003632	abnormal nervous system morphology	D009420	Nervous System	HP:0012639	
 MP:0003633	abnormal nervous system physiology	D009424	Nervous System Physiological Phenomena	HP:0012638	Abnormal nervous system physiology	LOOM	
 MP:0012440	abnormal neutrophil cell number			HP:0011991	Abnormal neutrophil count	LOOM	
 MP:0005065	abnormal neutrophil morphology	D009504	Neutrophils			LOOM	
+MP:0005065	abnormal neutrophil morphology			HP:0011992	Abnormality of neutrophil morphology	Manual	
 MP:0002864	abnormal ocular fundus morphology						
 MP:0008259	abnormal optic disk morphology	D009898	Optic Disk			LOOM	
 MP:0001330	abnormal optic nerve morphology	D009900	Optic Nerve			LOOM	
+MP:0001330	abnormal optic nerve morphology			HP:0000587	Abnormality of the optic nerve	Manual	
 MP:0008251	abnormal phagocyte morphology	D010586	Phagocytes			LOOM	
 MP:0020885	abnormal phosphate level	D010710	Phosphates			Manual	
 MP:0004262	abnormal physical strength						
 MP:0001485	abnormal pinna reflex						
 MP:0006241	abnormal placement of pupils						
-MP:0011898	abnormal platelet cell number						
+MP:0011898	abnormal platelet cell number			HP:0011873	Abnormal platelet count	Manual	
 MP:0004720	abnormal platelet morphology	D001792	Blood Platelets	HP:0011875	Abnormal platelet morphology	LOOM	
 MP:0002586	abnormal platelet volume			HP:0011876	Abnormal platelet volume	LOOM	
 MP:0005195	abnormal posterior eye segment morphology	D057972	Posterior Eye Segment	HP:0004329	Abnormal posterior eye segment morphology	LOOM	
@@ -274,28 +286,30 @@ MP:0002338	abnormal pulmonary ventilation	D012123	Pulmonary Ventilation			LOOM
 MP:0001317	abnormal pupil morphology	D011680	Pupil	HP:0000615	Abnormal pupil morphology	LOOM	
 MP:0010066	abnormal red blood cell distribution width						
 MP:0001961	abnormal reflex	D012018	Reflex	HP:0031826	Abnormal reflex	LOOM	
-MP:0005502	abnormal renal/urinary system physiology						
+MP:0005502	abnormal renal/urinary system physiology			HP:0011277	Abnormality of the urinary system physiology	Manual	
 MP:0001943	abnormal respiration	D012119	Respiration	HP:0002795	Functional respiratory abnormality	LOOM	
 MP:0002327	abnormal respiratory function						
 MP:0002314	abnormal respiratory mechanics	D015656	Respiratory Mechanics			LOOM	
 MP:0004129	abnormal respiratory quotient						
 MP:0002132	abnormal respiratory system morphology	D012137	Respiratory System	HP:0012252	Abnormal respiratory system morphology	LOOM	
-MP:0002133	abnormal respiratory system physiology						
+MP:0002133	abnormal respiratory system physiology			HP:0002795	Abnormal respiratory system physiology	Manual	
 MP:0001413	abnormal response to new environment						
 MP:0003107	abnormal response to novelty						
-MP:0001325	abnormal retina morphology	D012160|D014212	Retina|Tretinoin	HP:0000479	Abnormal retinal morphology	LOOM	Tretinoin/D014212 incorrect
+MP:0001325	abnormal retina morphology	D012160	Retina	HP:0000479	Abnormal retinal morphology	LOOM	Tretinoin/D014212 incorrect
 MP:0003733	abnormal retinal inner nuclear layer morphology						
 MP:0003727	abnormal retinal layer morphology						
 MP:0006069	abnormal retinal neuronal layer morphology						
 MP:0003731	abnormal retinal outer nuclear layer morphology						
 MP:0002792	abnormal retinal vasculature morphology	D012171	Retinal Vessels			LOOM	
+MP:0002792	abnormal retinal vasculature morphology			HP:0008046	Abnormal retinal vascular morphology	Manual	
 MP:0000150	abnormal rib morphology	D012272	Ribs			LOOM	
+MP:0000150	abnormal rib morphology			HP:0000772	Abnormal rib morphology	Manual	Not sure why LOOM didn't find this one?
 MP:0002862	abnormal righting response	D057897	Reflex, Righting			LOOM	
 MP:0002067	abnormal sensory capabilities/reflexes/nociception						
 MP:0004122	abnormal sinus arrhythmia	D001146	Arrhythmia, Sinus			LOOM	
 MP:0005508	abnormal skeleton morphology	D012863	Skeleton			LOOM	
-MP:0010678	abnormal skin adnexa morphology						
-MP:0011239	abnormal skin coloration	D012880	Skin Pigmentation			Manual	
+MP:0010678	abnormal skin adnexa morphology			HP:0011138	Abnormality of skin adnexa morphology	Manual	
+MP:0011239	abnormal skin coloration	D012880	Skin Pigmentation	HP:0001000	Abnormality of skin pigmentation 	Manual	
 MP:0002060	abnormal skin morphology	D012867	Skin	HP:0011121	Abnormality of skin morphology	LOOM	
 MP:0002095	abnormal skin pigmentation	D012880	Skin Pigmentation	HP:0001000	Abnormality of skin pigmentation	LOOM	
 MP:0011396	abnormal sleep behavior						
@@ -303,7 +317,7 @@ MP:0000443	abnormal snout morphology
 MP:0011977	abnormal sodium ion homeostasis						
 MP:0020889	abnormal sodium level	D012964	Sodium			Manual	
 MP:0002752	abnormal somatic nervous system morphology						
-MP:0004174	abnormal spine curvature						
+MP:0004174	abnormal spine curvature			HP:0010674	Abnormality of the curvature of the vertebral column	Manual	
 MP:0000689	abnormal spleen morphology	D013154	Spleen	HP:0025408	Abnormal spleen morphology	LOOM	
 MP:0002224	abnormal spleen size						
 MP:0004951	abnormal spleen weight						
@@ -317,23 +331,26 @@ MP:0001391	abnormal tail movements
 MP:0001468	abnormal temporal memory						
 MP:0004624	abnormal thoracic cage morphology						
 MP:0000558	abnormal tibia morphology	D013977	Tibia			LOOM	
+MP:0000558	abnormal tibia morphology			HP:0002992	Abnormality of tibia morphology	Manual	
 MP:0002100	abnormal tooth morphology	D014070	Tooth			LOOM	
+MP:0002100	abnormal tooth morphology			HP:0006482	Abnormality of dental morphology	Manual	
 MP:0011963	abnormal total retina thickness						
 MP:0012321	abnormal total tissue mass						
 MP:0000187	abnormal triglyceride level	D014280	Triglycerides			Manual	
 MP:0001756	abnormal urination	D014554	Urination			LOOM	
-MP:0009643	abnormal urine homeostasis						
+MP:0009643	abnormal urine homeostasis			HP:0003110	Abnormality of urine homeostasis	Manual	
 MP:0006315	abnormal urine protein level			HP:0020129	Abnormal urine protein level	LOOM	
 MP:0005197	abnormal uvea morphology	D014602	Uvea	HP:0000553	Abnormal uvea morphology	LOOM	
 MP:0000137	abnormal vertebrae morphology	D013131	Spine	HP:0003468	Abnormal vertebral morphology	LOOM	
-MP:0004599	abnormal vertebral arch morphology						
+MP:0004599	abnormal vertebral arch morphology			HP:0008438	Vertebral arch anomaly	Manual	
 MP:0004703	abnormal vertebral column morphology	D013131	Spine			LOOM	
+MP:0004703	abnormal vertebral column morphology			HP:0000925	Abnormality of the vertebral column	Manual	
 MP:0020167	abnormal vertical activity						
 MP:0005274	abnormal viscerocranium morphology						
 MP:0002699	abnormal vitreous body morphology	D014822	Vitreous Body			LOOM	
 MP:0001529	abnormal vocalization	D014828	Vocalization, Animal			Manual	
 MP:0003491	abnormal voluntary movement						
-MP:0005270	abnormal zygomatic bone morphology						
+MP:0005270	abnormal zygomatic bone morphology			HP:0010668	Abnormal zygomatic bone morphology	Manual	Not sure why LOOM didn't find this one?
 MP:0006358	absent pinna reflex						
 MP:0005375	adipose tissue phenotype	D000273	Adipose Tissue			Manual	
 MP:0010463	aorta stenosis						
@@ -350,63 +367,63 @@ MP:0002492	decreased IgE level
 MP:0008040	decreased NK T cell number						
 MP:0005018	decreased T cell number						
 MP:0001364	decreased anxiety-related response						
-MP:0002607	decreased basophil cell number						
-MP:0005566	decreased blood urea nitrogen level						
+MP:0002607	decreased basophil cell number			HP:0031808	Decreased basophil count	Manual	
+MP:0005566	decreased blood urea nitrogen level			HP:0031969	Reduced blood urea nitrogen	Manual	
 MP:0001258	decreased body length						
 MP:0001265	decreased body size					LOOM	MeSH removed
 MP:0001262	decreased body weight			HP:0004325	Decreased body weight	LOOM	MeSH removed
 MP:0010124	decreased bone mineral content					LOOM	MeSH removed
 MP:0000063	decreased bone mineral density			HP:0004349	Reduced bone mineral density	LOOM	
 MP:0003983	decreased cholesterol level						
-MP:0000186	decreased circulating HDL cholesterol level						
-MP:0000183	decreased circulating LDL cholesterol level						
+MP:0000186	decreased circulating HDL cholesterol level			HP:0003233	Decreased HDL cholesterol concentration	Manual	
+MP:0000183	decreased circulating LDL cholesterol level			HP:0003563	Decreased LDL cholesterol concentration	Manual	
 MP:0002942	decreased circulating alanine transaminase level						
-MP:0002966	decreased circulating alkaline phosphatase level						
+MP:0002966	decreased circulating alkaline phosphatase level			HP:0003282	Low alkaline phosphatase	Manual	
 MP:0008805	decreased circulating amylase level			HP:0410289	Hypoamylasemia	LOOM	
 MP:0005632	decreased circulating aspartate transaminase level						
-MP:0005635	decreased circulating bilirubin level						
-MP:0000195	decreased circulating calcium level						
+MP:0005635	decreased circulating bilirubin level			HP:0033480	Hypobilirubinemia	Manual	
+MP:0000195	decreased circulating calcium level			HP:0002901	Hypocalcemia	Manual	
 MP:0005179	decreased circulating cholesterol level			HP:0003146	Hypocholesterolemia	LOOM	
-MP:0005554	decreased circulating creatinine level						
+MP:0005554	decreased circulating creatinine level			HP:0012101	Decreased serum creatinine	Manual	
 MP:0010088	decreased circulating fructosamine level						
-MP:0005560	decreased circulating glucose level						
+MP:0005560	decreased circulating glucose level			HP:0001943	Hypoglycemia	Manual	
 MP:0003442	decreased circulating glycerol level			HP:0031794	Decreased circulating glycerol level	LOOM	
-MP:0002727	decreased circulating insulin level						
+MP:0002727	decreased circulating insulin level			HP:0040216	Hypoinsulinemia	Manual	
 MP:0004151	decreased circulating iron level						
-MP:0010093	decreased circulating magnesium level						
-MP:0000198	decreased circulating phosphate level						
-MP:0005628	decreased circulating potassium level						
+MP:0010093	decreased circulating magnesium level			HP:0002917	Hypomagnesemia	Manual	
+MP:0000198	decreased circulating phosphate level			HP:0002148	Hypophosphatemia	Manual	
+MP:0005628	decreased circulating potassium level			HP:0002900	Hypokalemia	Manual	
 MP:0005419	decreased circulating serum albumin level						
 MP:0005567	decreased circulating total protein level						
-MP:0002644	decreased circulating triglyceride level						
-MP:0005012	decreased eosinophil cell number						
+MP:0002644	decreased circulating triglyceride level			HP:0012153	Hypotriglyceridemia		
+MP:0005012	decreased eosinophil cell number			HP:0031891	Decreased eosinophil count	Manual	
 MP:0002875	decreased erythrocyte cell number						
 MP:0001417	decreased exploration in new environment						
 MP:0011940	decreased food intake						
 MP:0020422	decreased freezing behavior						
 MP:0003440	decreased glycerol level						
-MP:0000334	decreased granulocyte number						
+MP:0000334	decreased granulocyte number			HP:0001913	Granulocytopenia	Manual	
 MP:0010053	decreased grip strength						
 MP:0010580	decreased heart left ventricle size						
 MP:0005333	decreased heart rate					LOOM	MeSH removed
 MP:0003929	decreased heart rate variability			HP:0031861	Decreased heart rate variability	LOOM	
 MP:0002834	decreased heart weight						
-MP:0000208	decreased hematocrit					LOOM	MeSH removed
+MP:0000208	decreased hematocrit			HP:0031851	Reduced hematocrit	Manual	MeSH LOOM mappingremoved
 MP:0011182	decreased hematopoietic cell number						
 MP:0002874	decreased hemoglobin content						
 MP:0002460	decreased immunoglobulin level			HP:0004313	Decreased circulating antibody level	LOOM	
 MP:0003961	decreased lean body mass						
 MP:0004686	decreased length of long bones						
-MP:0000221	decreased leukocyte cell number						
+MP:0000221	decreased leukocyte cell number			HP:0001882	Leukopenia	Manual	
 MP:0005631	decreased lung weight						
-MP:0005016	decreased lymphocyte cell number						
+MP:0005016	decreased lymphocyte cell number			HP:0001888	Lymphopenia	Manual	
 MP:0005562	decreased mean corpuscular hemoglobin					LOOM	MeSH removed
 MP:0005642	decreased mean corpuscular hemoglobin concentration			HP:0025547	Decreased mean corpuscular hemoglobin concentration	LOOM	
 MP:0002591	decreased mean corpuscular volume			HP:0025066	Decreased mean corpuscular volume	LOOM	MeSH removed
 MP:0008935	decreased mean platelet volume			HP:0005537	Decreased mean platelet volume	LOOM	MeSH removed
 MP:0013513	decreased memory-marker CD4-negative NK T cell number						
 MP:0013662	decreased myeloid cell number						
-MP:0000222	decreased neutrophil cell number						
+MP:0000222	decreased neutrophil cell number			HP:0001875	Neutropenia	Manual	
 MP:0009142	decreased prepulse inhibition					LOOM	MeSH removed
 MP:0005576	decreased pulmonary ventilation					LOOM	MeSH removed
 MP:0010068	decreased red blood cell distribution width						
@@ -417,7 +434,7 @@ MP:0020870	decreased thigmotaxis
 MP:0010025	decreased total body fat amount						
 MP:0011965	decreased total retina thickness						
 MP:0012322	decreased total tissue mass						
-MP:0005318	decreased triglyceride level						
+MP:0005318	decreased triglyceride level			HP:0012153	Hypotriglyceridemia	Manual	
 MP:0002757	decreased vertical activity						
 MP:0004937	dilated heart						
 MP:0002753	dilated heart left ventricle						
@@ -428,6 +445,7 @@ MP:0000599	enlarged liver			HP:0002240	Hepatomegaly	LOOM
 MP:0000599	enlarged liver	D006529	Hepatomegaly			Manual	
 MP:0004882	enlarged lung						
 MP:0006203	eye hemorrhage	D005130	Eye Hemorrhage			LOOM	
+MP:0006203	eye hemorrhage			HP:0011885	Hemorrhage of the eye	Manual	
 MP:0001307	fused cornea and lens						
 MP:0003189	fused joints						
 MP:0005378	growth/size/body region phenotype						
@@ -447,8 +465,8 @@ MP:0001523	impaired righting response
 MP:0005292	improved glucose tolerance						
 MP:0005655	increased aggression					LOOM	MeSH removed
 MP:0001363	increased anxiety-related response						
-MP:0002606	increased basophil cell number						
-MP:0005565	increased blood urea nitrogen level						
+MP:0002606	increased basophil cell number			HP:0031807	Increased basophil count	Manual	
+MP:0005565	increased blood urea nitrogen level			HP:0003138	Increased blood urea nitrogen	Manual	
 MP:0008821	increased blood uric acid level						
 MP:0001257	increased body length						
 MP:0001264	increased body size					LOOM	MeSH removed
@@ -459,35 +477,35 @@ MP:0005238	increased brain size
 MP:0002176	increased brain weight						
 MP:0005599	increased cardiac muscle contractility						
 MP:0003982	increased cholesterol level						
-MP:0001556	increased circulating HDL cholesterol level						
-MP:0000182	increased circulating LDL cholesterol level						
+MP:0001556	increased circulating HDL cholesterol level			HP:0012184	Increased HDL cholesterol concentration	Manual	
+MP:0000182	increased circulating LDL cholesterol level			HP:0003141	Increased LDL cholesterol concentration	Manual	
 MP:0002941	increased circulating alanine transaminase level						
-MP:0002968	increased circulating alkaline phosphatase level						
+MP:0002968	increased circulating alkaline phosphatase level			HP:0003155	Elevated circulating alkaline phosphatase concentration	Manual	
 MP:0008806	increased circulating amylase level			HP:0410288	Hyperamylasemia	LOOM	
-MP:0005344	increased circulating bilirubin level						
-MP:0000194	increased circulating calcium level						
-MP:0003019	increased circulating chloride level						
-MP:0005178	increased circulating cholesterol level						
-MP:0005553	increased circulating creatinine level						
+MP:0005344	increased circulating bilirubin level			HP:0002904	Hyperbilirubinemia	Manual	
+MP:0000194	increased circulating calcium level			HP:0003072	Hypercalcemia	Manual	
+MP:0003019	increased circulating chloride level			HP:0011423	Hyperchloremia	Manual	
+MP:0005178	increased circulating cholesterol level			HP:0003124	Hypercholesterolemia	Manual	
+MP:0005553	increased circulating creatinine level			HP:0003259	Elevated circulating creatinine concentration 	Manual	
 MP:0010087	increased circulating fructosamine level						
-MP:0005559	increased circulating glucose level						
-MP:0003443	increased circulating glycerol level						
+MP:0005559	increased circulating glucose level			HP:0003074	Hyperglycemia	Manual	
+MP:0003443	increased circulating glycerol level			HP:0040302	Hyperglycerolemia	Manual	
 MP:0008810	increased circulating iron level						
-MP:0010092	increased circulating magnesium level						
-MP:0005627	increased circulating potassium level						
-MP:0005633	increased circulating sodium level						
+MP:0010092	increased circulating magnesium level			HP:0002918	Hypermagnesemia	Manual	
+MP:0005627	increased circulating potassium level			HP:0002153	Hyperkalemia	Manual	
+MP:0005633	increased circulating sodium level			HP:0003228	Hypernatremia	Manual	
 MP:0005568	increased circulating total protein level						
 MP:0001552	increased circulating triglyceride level						
 MP:0003063	increased coping response						
 MP:0011962	increased cornea thickness			HP:0011487	Increased corneal thickness	LOOM	
-MP:0005011	increased eosinophil cell number						
+MP:0005011	increased eosinophil cell number			HP:0001880	Eosinophilia	Manual	
 MP:0003131	increased erythrocyte cell number						
 MP:0001415	increased exploration in new environment						
 MP:0003441	increased glycerol level						
-MP:0000322	increased granulocyte number						
+MP:0000322	increased granulocyte number			HP:0032310	Granulocytosis	Manual	
 MP:0010052	increased grip strength						
 MP:0010579	increased heart left ventricle size						
-MP:0002626	increased heart rate					LOOM	MeSH removed
+MP:0002626	increased heart rate			HP:0001649	Tachycardia	Manual	MeSH LOOM mappingremoved
 MP:0008772	increased heart ventricle size						
 MP:0002833	increased heart weight						
 MP:0002608	increased hematocrit			HP:0001899	Increased hematocrit	LOOM	MeSH removed
@@ -496,17 +514,17 @@ MP:0005564	increased hemoglobin content
 MP:0002944	increased lactate dehydrogenase level			HP:0025435	Increased lactate dehydrogenase level	LOOM	
 MP:0003960	increased lean body mass						
 MP:0004695	increased length of long bones						
-MP:0000218	increased leukocyte cell number						
+MP:0000218	increased leukocyte cell number			HP:0001974	Leukocytosis	Manual	
 MP:0002981	increased liver weight						
 MP:0010895	increased lung compliance					LOOM	MeSH removed
 MP:0005630	increased lung weight						
-MP:0005013	increased lymphocyte cell number						
+MP:0005013	increased lymphocyte cell number			HP:0100827	Lymphocytosis	Manual	
 MP:0005561	increased mean corpuscular hemoglobin					LOOM	MeSH removed
 MP:0002590	increased mean corpuscular volume			HP:0005518	Increased mean corpuscular volume	LOOM	MeSH removed
 MP:0002599	increased mean platelet volume			HP:0011877	Increased mean platelet volume	LOOM	MeSH removed
-MP:0000220	increased monocyte cell number						
+MP:0000220	increased monocyte cell number			HP:0012311	Monocytosis	Manual	
 MP:0013663	increased myeloid cell number						
-MP:0000219	increased neutrophil cell number						
+MP:0000219	increased neutrophil cell number			HP:0011897	Neutrophilia	Manual	
 MP:0009141	increased prepulse inhibition					LOOM	MeSH removed
 MP:0005573	increased pulmonary respiratory rate						
 MP:0005575	increased pulmonary ventilation					LOOM	MeSH removed
@@ -516,9 +534,9 @@ MP:0012226	increased sterol level
 MP:0002797	increased thigmotaxis						
 MP:0010024	increased total body fat amount						
 MP:0012323	increased total tissue mass						
-MP:0005317	increased triglyceride level						
+MP:0005317	increased triglyceride level			HP:0002155	Hypertriglyceridemia	Manual	
 MP:0002959	increased urine microalbumin level						
-MP:0002962	increased urine protein level						
+MP:0002962	increased urine protein level			HP:0000093	Proteinuria	Manual	
 MP:0002574	increased vertical activity						
 MP:0010771	integument phenotype						
 MP:0001634	internal hemorrhage			HP:0011029	Internal hemorrhage	LOOM	
@@ -545,7 +563,7 @@ MP:0010571	shortened ST segment
 MP:0005390	skeleton phenotype	D012863	Skeleton			Manual	
 MP:0002188	small heart			HP:0001961	Hypoplastic heart	LOOM	
 MP:0003641	small lung			HP:0002089	Pulmonary hypoplasia	LOOM	
-MP:0000692	small spleen						
+MP:0000692	small spleen			HP:0006270	Hypoplastic spleen	Manual	
 MP:0002953	thick ventricular wall						
 MP:0003179	thrombocytopenia	D013921	Thrombocytopenia	HP:0001873	Thrombocytopenia	LOOM	
 MP:0005505	thrombocytosis	D013922	Thrombocytosis	HP:0001894	Thrombocytosis	LOOM	

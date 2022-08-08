@@ -29,10 +29,8 @@ class Mapping:
 def update_database(input_mappings: list):
     """
     Bulk imports the provided mapping data into the Neo4J graph database.
-    :param input_mappings:
-    :type input_mappings:
-    :return: None
-    :rtype: None
+    :param input_mappings: Mappings for new Neo4J relationships.
+    :type input_mappings: List[Mapping]
     """
     try:
         hp_mapping_data = [
@@ -53,6 +51,13 @@ def update_database(input_mappings: list):
 
 
 def read_mappings_file(file_path):
+    """
+    Parse the input TSV file's mappings into a list of Mapping objects.
+    :param file_path: Path of the mappings TSV file.
+    :type file_path: str
+    :return: mappings: List of mapping objects
+    :rtype: list[Mapping]
+    """
     mappings = []
     skip_headers = True
     try:
@@ -71,5 +76,38 @@ def read_mappings_file(file_path):
     return mappings
 
 
-new_mappings = read_mappings_file("Ontology Mappings_v3.tsv")
-update_database(new_mappings)
+def reset_relationships():
+    """
+    Remove all current SPECIES_MAPPING relationships in the database.
+    """
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        g.run("""MATCH ()-[r:SPECIES_MAPPING]-()
+        DELETE r """)
+    except SyntaxError as se:
+        print(se)
+    except ConnectionRefusedError as cre:
+        print(cre)
+    except Exception as e:
+        print(e)
+
+
+def create_inferred_relationships():
+    """
+    Create inferred SPECIES_MAPPING relationships between ontology nodes.
+    """
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        g.run("""MATCH (n)-[:ISA]-()-[r:SPECIES_MAPPING]->(m)
+        CREATE (n)-[:SPECIES_MAPPING {type: r.type, relation: "INFERRED"}]->(m)""")
+    except ConnectionRefusedError as cre:
+        print(cre)
+    except Exception as e:
+        print(e)
+
+
+new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
+if new_mappings:
+    reset_relationships()
+    update_database(new_mappings)
+    create_inferred_relationships()
