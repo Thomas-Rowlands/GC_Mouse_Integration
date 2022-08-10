@@ -69,18 +69,26 @@ class OntologyTree extends React.Component {
 
     getTreeNodes = (nodes, parentPath) => {
         const {classes} = this.props;
-        const btn = nodes.hasExactMapping ?
+        const btn = nodes.hasExactMapping && nodes.hasData ?
             <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
                     color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={nodes.id}
             ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
                                                                                        width="20px"
                                                                                        src={"/images/mouse.png"}/></Button>
             : nodes.hasInferredMapping ?
-                <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
-                        color="primary" variant="outlined" id={nodes.id}
-                ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
-                                                                                           width="20px"
-                                                                                           src={"/images/mouse.png"}/></Button> : nodes.hasData ?
+                nodes.hasExactMapping ?
+                    <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
+                            color="primary" variant="outlined" id={nodes.id}
+                    ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
+                        alt="small icon of a mouse"
+                        width="20px"
+                        src={"/images/mouse.png"}/></Button>
+                    : <Button className={classes.btn} size="small" onClick={(e) => e.preventDefault()}
+                              color="primary" variant="outlined" id={nodes.id}
+                    ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
+                                                                                               width="20px"
+                                                                                               src={"/images/mouse.png"}/></Button>
+                : nodes.hasData ?
                     <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
                             color="primary" variant="outlined" id={nodes.id}
                     ><img width="20px"

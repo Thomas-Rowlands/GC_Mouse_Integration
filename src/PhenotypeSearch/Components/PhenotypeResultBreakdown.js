@@ -208,7 +208,7 @@ class PhenotypeResultBreakdown extends React.Component {
                                 let link = {
                                     source: source ? match["humanNodeId"] : response.data["Mappings"]["humanNodeId"],
                                     target: target ? match["mouseNodeId"] : response.data["Mappings"]["mouseNodeId"],
-                                    linkType: match["isExact"] ? "Exact Match" : "Partial Match"
+                                    linkType: match["mappingType"] + " Mapping"
                                 }
                                 if (!data.links.includes(link)) {
                                     data.links.push(link);

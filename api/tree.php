@@ -64,10 +64,11 @@ ini_set('display_errors', '1');
         }
 
         private function getTermSiblings($termID) {
-            $mappingProperty = "has{$this->mappingOntLabel}Mapping";
+            $mappingProperty = "hasExact{$this->mappingOntLabel}Mapping";
+            $inferredMappingProperty = "hasInferred{$this->mappingOntLabel}Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -103,18 +104,10 @@ ini_set('display_errors', '1');
                                     $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
                                     $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
-                                    if ($sib->hasValue("hasExactMPMapping"))
-                                        $hasExactMapping = $sib->get('hasExactMPMapping');
-                                    else if ($sib->hasValue("hasExactMESHMapping"))
-                                        $hasExactMapping = $sib->get('hasExactMESHMapping');
-                                    else if ($sib->hasValue("hasExactHPOMapping"))
-                                        $hasExactMapping = $sib->get('hasExactHPOMapping');
-                                    if ($sib->hasValue("hasInferredMPMapping"))
-                                        $hasInferredMapping = $sib->get('hasInferredMPMapping');
-                                    else if ($sib->hasValue("hasInferredMESHMapping"))
-                                        $hasInferredMapping = $sib->get('hasInferredMESHMapping');
-                                    else if ($sib->hasValue("hasInferredHPOMapping"))
-                                        $hasInferredMapping = $sib->get('hasInferredHPOMapping');
+                                    if ($sib->hasValue("hasExactMapping"))
+                                        $hasExactMapping = $sib->get("hasExactMapping");
+                                    if ($sib->hasValue("hasInferredMapping"))
+                                        $hasInferredMapping = $sib->get("hasInferredMapping");
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildren'), $hasData);
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }

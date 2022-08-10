@@ -530,10 +530,10 @@ class OntologyHierarchy extends React.Component {
                 humanTree.scrollTop(0);
                 mouseTree.scrollTop(0);
                 humanTree.animate({
-                    scrollTop: $(humanElement).offset().top - (humanTree.position().top + 90)
+                    scrollTop: $(humanElement).offset().top - (humanTree.position().top + (humanTree.position() / 2))
                 }, 1500);
                 mouseTree.animate({
-                    scrollTop: $(mouseElement).offset().top - (mouseTree.position().top + 90)
+                    scrollTop: $(mouseElement).offset().top - (mouseTree.position().top)
                 }, 1500);
                 obj.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
             }, 500);
@@ -725,9 +725,9 @@ class OntologyHierarchy extends React.Component {
                                                               this.handleHumanSelect(e, val);
                                                               let newVals = this.state.expandedHumanNodes;
                                                               if (newVals.includes(val))
-                                                                newVals = newVals.filter(elem => elem !== val);
+                                                                  newVals = newVals.filter(elem => elem !== val);
                                                               else
-                                                                newVals.push(val);
+                                                                  newVals.push(val);
                                                               this.handleHumanToggle(e, newVals);
                                                           }}
                                                           onToggle={this.handleHumanToggle}
@@ -780,7 +780,9 @@ class OntologyHierarchy extends React.Component {
                                             options={this.state.mouseLiveSearchResults}
                                             getOptionLabel={(option) => option.FSN ? option.FSN : this.state.mouseSearchInput}
                                             renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
-                                        <p>Search for MP terms which map to the selected human ontology.</p>
+                                        <div className={"center"}>Search for MP terms which map to the selected human
+                                            ontology.<InfoDialog title={"Ontology Hierarchy"}
+                                                                 contentText={this.getInfoText()}/></div>
                                         <Button size="large" color="primary" variant="contained" id="search_btn"
                                                 onClick={this.mouseSearchBtnClick}>Search</Button>
                                         {this.state.mouseSearchFailed ?
@@ -799,7 +801,7 @@ class OntologyHierarchy extends React.Component {
                                                           if (newVals.includes(val))
                                                               newVals = newVals.filter(elem => elem !== val);
                                                           else
-                                                            newVals.push(val);
+                                                              newVals.push(val);
                                                           this.handleMouseToggle(e, newVals);
                                                       }}
                                                       onToggle={this.handleMouseToggle} treeData={mouseTree}

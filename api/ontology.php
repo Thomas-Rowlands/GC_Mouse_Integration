@@ -148,7 +148,7 @@ RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mapped
             WITH n
             OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
             WITH n, COLLECT(syns) AS syns
-            MATCH p=(o)-[r:SPECIES_MAPPING]->(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
+            MATCH p=(o)<-[r:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
             WHERE (mappedSyn.gwas_total > 0 or mappedTerm.gwas_total > 0)
             AND (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
             RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt, COALESCE(mappedTerm.gwas_total, mappedSyn.gwas_total) AS gwas", []);
