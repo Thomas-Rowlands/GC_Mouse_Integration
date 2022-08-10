@@ -327,7 +327,7 @@ class GenomeBrowser extends React.Component {
                 hideHeader: false,
                 hideCloseButton: true,
                 hideControls: false,
-                trackSelectorType: "hierarchical",
+                trackSelectorType: "hierarchical"
             },
         };
     }
