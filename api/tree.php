@@ -59,7 +59,7 @@ ini_set('display_errors', '1');
             }
             return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildren AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -68,7 +68,7 @@ ini_set('display_errors', '1');
             $inferredMappingProperty = "hasInferred{$this->mappingOntLabel}Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildren AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildrenWithData AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
