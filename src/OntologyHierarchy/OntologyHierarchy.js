@@ -723,12 +723,15 @@ class OntologyHierarchy extends React.Component {
                                                           selected={selectedHumanNodes}
                                                           onSelect={(e, val) => {
                                                               this.handleHumanSelect(e, val);
-                                                              let newVals = this.state.expandedHumanNodes;
-                                                              if (newVals.includes(val))
-                                                                  newVals = newVals.filter(elem => elem !== val);
-                                                              else
-                                                                  newVals.push(val);
-                                                              this.handleHumanToggle(e, newVals);
+                                                              if (e.target.dataset["hasChildren"]) {
+                                                                  let newVals = this.state.expandedHumanNodes;
+                                                                  if (newVals.includes(val))
+                                                                      newVals = newVals.filter(elem => elem !== val);
+                                                                  else
+                                                                      newVals.push(val);
+                                                                  this.handleHumanToggle(e, newVals);
+                                                              }
+
                                                           }}
                                                           onToggle={this.handleHumanToggle}
                                                           treeData={humanTree}
@@ -797,12 +800,14 @@ class OntologyHierarchy extends React.Component {
                                                       selected={selectedMouseNodes}
                                                       onSelect={(e, val) => {
                                                           this.handleMouseSelect(e, val);
-                                                          let newVals = this.state.expandedMouseNodes;
-                                                          if (newVals.includes(val))
-                                                              newVals = newVals.filter(elem => elem !== val);
-                                                          else
-                                                              newVals.push(val);
-                                                          this.handleMouseToggle(e, newVals);
+                                                          if (e.target.dataset["hasChildren"]) {
+                                                              let newVals = this.state.expandedMouseNodes;
+                                                              if (newVals.includes(val))
+                                                                  newVals = newVals.filter(elem => elem !== val);
+                                                              else
+                                                                  newVals.push(val);
+                                                              this.handleMouseToggle(e, newVals);
+                                                          }
                                                       }}
                                                       onToggle={this.handleMouseToggle} treeData={mouseTree}
                                                       sourceOntology="MP" mappingOntology="HPO"/>}

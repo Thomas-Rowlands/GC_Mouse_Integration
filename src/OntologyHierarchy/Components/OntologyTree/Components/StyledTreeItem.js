@@ -52,18 +52,17 @@ class StyledTreeItem extends React.Component {
 
 
     render() {
-        const {classes} = this.props;
-        const {labelText, labelIcon, labelInfo, color, bgColor,key, ...other} = this.props;
+        const {classes, labelInfo, labelText, nodeId, labelIcon, color, bgColor,key,hasChildren, ...other} = this.props;
 
         return (
             <TreeItem
                 label={
-                    <div className={classes.label}>
+                    <div className={classes.label} data-has-children={hasChildren}>
                         <Typography variant="body2" className={classes.content} component="span">
-                            {this.props.labelText}
+                            {labelText}
                         </Typography>
                         <Typography variant="caption" color="inherit">
-                            {this.props.labelInfo}
+                            {labelInfo}
                         </Typography>
                         <div className={classes.labelIcon} style={{float: 'right'}}>
                             {labelIcon}
@@ -74,8 +73,8 @@ class StyledTreeItem extends React.Component {
                     '--tree-view-color': color,
                     '--tree-view-bg-color': bgColor,
                 }}
-                key={this.props.key}
-             nodeId={this.props.nodeId}
+                key={key}
+             nodeId={nodeId}
             classes={{
         root: classes.root,
         content: classes.content,

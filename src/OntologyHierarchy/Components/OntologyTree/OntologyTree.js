@@ -95,7 +95,7 @@ class OntologyTree extends React.Component {
                           alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
                           src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
-            <StyledTreeItem labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
+            <StyledTreeItem hasChildren={nodes.hasChildren} labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {
             nodes.children = _.orderBy(nodes.children, ['label'], ['asc']); // all nodes must be sorted alphabetically!
         }
@@ -106,7 +106,7 @@ class OntologyTree extends React.Component {
             path = nodes.id;
         let id = this.props.treeID + "-" + path;
         return (
-            <StyledTreeItem id={id} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={id}
+            <StyledTreeItem hasChildren={nodes.hasChildren} id={id} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={id}
                             data-term={nodes.id} labelText={nodes.label} labelIcon={btn}>
                 {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key], path)) : tempChildNode}
             </StyledTreeItem>
