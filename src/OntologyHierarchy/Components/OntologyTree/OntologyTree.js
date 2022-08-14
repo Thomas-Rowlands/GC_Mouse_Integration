@@ -67,35 +67,36 @@ class OntologyTree extends React.Component {
         };
     }
 
-    getTreeNodes = (nodes, parentPath) => {
+    getNodeButton = (node) => {
         const {classes} = this.props;
-        const btn = nodes.hasExactMapping && nodes.hasData ?
-            <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
-                    color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={nodes.id}
-            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
-                                                                                       width="20px"
-                                                                                       src={"/images/mouse.png"}/></Button>
-            : nodes.hasInferredMapping ?
-                nodes.hasExactMapping ?
-                    <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(nodes.id)}
-                            color="primary" variant="outlined" id={nodes.id}
-                    ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
-                        alt="small icon of a mouse"
-                        width="20px"
-                        src={"/images/mouse.png"}/></Button>
-                    : <Button className={classes.btn} size="small" onClick={(e) => e.preventDefault()}
-                              color="primary" variant="outlined" id={nodes.id}
-                    ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
-                                                                                               width="20px"
-                                                                                               src={"/images/mouse.png"}/></Button>
-                : nodes.hasData ?
-                    <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(nodes.id)}
-                            color="primary" variant="outlined" id={nodes.id}
-                    ><img width="20px"
-                          alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
-                          src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button> : null;
+        if (node.hasExactMapping && node.hasData) {
+            return <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(node.id)}
+                        color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={node.id}
+                ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
+                                                                                           width="20px"
+                                                                                           src={"/images/mouse.png"}/></Button>;
+        } else if (node.hasInferredMapping) {
+            return <Button className={classes.btn} size="small" onClick={(e) => node.hasExactMapping ? this.props.onMappingClick(node.id) : e.preventDefault()}
+                    color="primary" variant="outlined" id={node.id}
+            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
+                alt="small icon of a mouse"
+                width="20px"
+                src={"/images/mouse.png"}/></Button>;
+        } else if (node.hasData) {
+            return <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(node.id)}
+                    color="primary" variant="outlined" id={node.id}
+            ><img width="20px"
+                  alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
+                  src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button>;
+        }
+        return null;
+    }
+
+    getTreeNodes = (nodes, parentPath) => {
+        const btn = this.getNodeButton(nodes);
         const tempChildNode = (nodes.hasChildren === true) && (_.isEmpty(nodes.children)) ?
-            <StyledTreeItem hasChildren={nodes.hasChildren} labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
+            <StyledTreeItem hasChildren={nodes.hasChildren}
+                            labelText={<CircularProgress color="inherit" size={15}/>}/> : null;
         if (!_.isEmpty(nodes.children)) {
             nodes.children = _.orderBy(nodes.children, ['label'], ['asc']); // all nodes must be sorted alphabetically!
         }
@@ -106,7 +107,8 @@ class OntologyTree extends React.Component {
             path = nodes.id;
         let id = this.props.treeID + "-" + path;
         return (
-            <StyledTreeItem hasChildren={nodes.hasChildren} id={id} onLabelClick={(e) => e.preventDefault()} key={nodes.id} nodeId={id}
+            <StyledTreeItem hasChildren={nodes.hasChildren} id={id} onLabelClick={(e) => e.preventDefault()}
+                            key={nodes.id} nodeId={id}
                             data-term={nodes.id} labelText={nodes.label} labelIcon={btn}>
                 {!_.isEmpty(nodes.children) ? Object.keys(nodes.children).map((key, index) => this.getTreeNodes(nodes.children[key], path)) : tempChildNode}
             </StyledTreeItem>

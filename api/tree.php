@@ -104,10 +104,6 @@ ini_set('display_errors', '1');
                                     $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
                                     $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
-                                    if ($sib->hasValue("hasExactMapping"))
-                                        $hasExactMapping = $sib->get("hasExactMapping");
-                                    if ($sib->hasValue("hasInferredMapping"))
-                                        $hasInferredMapping = $sib->get("hasInferredMapping");
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildren'), $hasData);
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }
