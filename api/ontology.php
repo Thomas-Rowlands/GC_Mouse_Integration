@@ -44,8 +44,8 @@
         {
             $result = $this->neo->execute("
             MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
-    WHERE ontTerm.id = {search}
-RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
+            WHERE ontTerm.id = {search}
+            RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
             ", ["search"=>$search]);
             return $this->get_term_search_results($result, $search);
         }
@@ -129,9 +129,12 @@ RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS F
         public function get_mp_mapping_by_id($termID): array
         {
             $result = $this->neo->execute("
-            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING|HAS_SYNONYM*0..2]-(mappedTerm:Term)
-WHERE mappedTerm:MP AND mappedTerm.experiment_total > 0
-RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
+            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm)
+            WITH mappedTerm
+            OPTIONAL MATCH (mappedTerm)-[:HAS_SYNONYM]-(m)
+            WITH COALESCE(m, mappedTerm) AS mappedTerm
+            WHERE mappedTerm:MP AND mappedTerm.experiment_total > 0
+            RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
