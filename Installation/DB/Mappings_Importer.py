@@ -98,8 +98,8 @@ def create_inferred_relationships():
     """
     try:
         g = Graph(scheme="bolt", host="localhost", password="12345")
-        g.run("""MATCH (n)-[:ISA]-()-[r:SPECIES_MAPPING]->(m)
-        CREATE (n)-[:SPECIES_MAPPING {type: r.type, relation: "INFERRED"}]->(m)""")
+        g.run("""MATCH (n)-[:ISA*1..]-(m)-[r:SPECIES_MAPPING]->(o)
+        CREATE (n)-[:SPECIES_MAPPING {type: r.type, relation: "INFERRED"}]->(o)""")
     except ConnectionRefusedError as cre:
         print(cre)
     except Exception as e:
