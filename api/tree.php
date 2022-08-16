@@ -64,8 +64,8 @@ ini_set('display_errors', '1');
         }
 
         private function getTermSiblings($termID) {
-            $mappingProperty = "hasExact{$this->mappingOntLabel}Mapping";
-            $inferredMappingProperty = "hasInferred{$this->mappingOntLabel}Mapping";
+            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
+            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildrenWithData AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
@@ -77,8 +77,8 @@ ini_set('display_errors', '1');
             $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
             WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.gwas_total > 0 or endNode.experiment_total > 0)
             RETURN p";
-            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
-            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
+            $mappingProperty = "hasExactMapping";
+            $inferredMappingProperty = "hasInferredMapping";
             $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
@@ -94,7 +94,6 @@ ini_set('display_errors', '1');
                             $hasExactMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
                             $hasInferredMapping = $nodes[$i]->hasValue($inferredMappingProperty) ? $nodes[$i]->get($inferredMappingProperty) : false;
                             $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
-
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasExactMapping, $hasInferredMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
                             $sibs = $this->getTermSiblings($childNode->id);
 
