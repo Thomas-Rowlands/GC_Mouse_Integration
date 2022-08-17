@@ -476,6 +476,7 @@ class OntologyHierarchy extends React.Component {
         this.tempExpandedmouseIds = ids;
         return Array.isArray(nodes.isa) ? nodes.isa.map((node) => this.setExpandedMouseNodes(node, ids)) : ids;
     }
+
     setExpandedHumanNodes = (nodes, ids) => {
         if (Array.isArray(ids[0]))
             ids = ids[0];
@@ -718,7 +719,7 @@ class OntologyHierarchy extends React.Component {
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
                                     <Button style={{marginLeft: "1em"}} size="large" color="primary"
-                                            onClick={this.resetBtnClick} variant="contained" id="reset_btn">Reset</Button>
+                                            onClick={this.resetBtnClick} variant="contained" id="reset_btn">Collapse All</Button>
                                     {this.state.humanSearchFailed ?
                                         <p style={{color: "red"}}>No match found.</p> : null}
                                     {
