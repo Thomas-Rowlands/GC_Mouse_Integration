@@ -451,6 +451,12 @@ class OntologyHierarchy extends React.Component {
         });
     }
 
+    resetBtnClick = (e) => {
+        let {expandedHumanNodes, expandedMouseNodes} = this.state;
+        this.setState({expandedHumanNodes: [expandedHumanNodes[0]],
+            expandedMouseNodes: [expandedMouseNodes[0]]});
+    }
+
     mouseSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("mouseSearchInput").value;
         this.setState({mouseSearchInput: input});
@@ -711,6 +717,8 @@ class OntologyHierarchy extends React.Component {
                                                             contentText={this.getInfoText()}/></div>
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
+                                    <Button style={{marginLeft: "1em"}} size="large" color="primary"
+                                            onClick={this.resetBtnClick} variant="contained" id="reset_btn">Reset</Button>
                                     {this.state.humanSearchFailed ?
                                         <p style={{color: "red"}}>No match found.</p> : null}
                                     {
@@ -738,7 +746,6 @@ class OntologyHierarchy extends React.Component {
                                                           sourceOntology={this.state.humanOntology}
                                                           mappingOntology="MP"/>
                                     }
-
                                 </Paper>
                             </Grid>
                             <Grid item xs>
