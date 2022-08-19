@@ -1,11 +1,27 @@
 /*
-  $Id: gwascentral.css 1860 2012-03-20 11:51:22Z rcf8 $
- CSS styles for the GWAS Central website
+   $Id: gwascentral.css 1860 2012-03-20 11:51:22Z rcf8 $
+  CSS styles for the GWAS Central website
  */
 
 /* site wide styles */
 html {
-  font-size:100%;
+    font-size:100%;
+
+}
+
+/* keep IE happy */
+body {
+    font-size: 0.9em;
+	/* default browse font size across site, unless otherwise specified */
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 500px;
+    min-width: 850px;
+    padding: 0;
+    margin-left: 60px;
+    margin-right: 60px;
+    margin-top: 0px;
+    margin-bottom:0px;
+    overflow: visible;
 }
 table#menu {
 	font-size: 0.9em;
@@ -47,13 +63,13 @@ h4 {
 	font-style:italic;
 }
 #header {
-  display: block;
-  min-height: 1%;
-  min-width: 900px;
-  margin: 0px 0px 0em 0em;
-  overflow: visible;
-  background-color:#F4F9FF;
-  width:100%;
+    display: block;
+    min-height: 1%;
+    min-width: 900px;
+    margin: 0px  0px 0em 0em;
+    overflow: hidden;
+    background-color:#F4F9FF;
+    width:100%;
 }
 ul {
 	margin:0;
@@ -99,20 +115,20 @@ img {
 	border:none;
 }
 #footer {
-  display: block;
-  clear: both;
-  margin-left: 0px;
-  margin-right: 0px;
-  min-width: inherit;
+    display: block;
+    clear: both;
+    margin-left: 0px;
+    margin-right: 0px;
+    min-width: inherit;
 	padding-bottom:1em;
 	padding-top:1em;
 
 }
 #content {
-  height: 100%;
-  min-width: inherit;
-  min-height: 450px;
-  padding-top: 1em;
+    height: 100%;
+    min-width: inherit;
+    min-height: 450px;
+    padding-top: 1em;
 	background-color:white;
 	padding-left:0.5em;
 	padding-right:0.5em;
@@ -127,8 +143,8 @@ div.option_detail {
 	color:#444444;
 }
 select,input {
-  background-color: #eeeeee;
-  border:solid 1px #999999;
+    background-color: #eeeeee;
+    border:solid 1px #999999;
 }
 
 input.button, input.search_button {
@@ -147,7 +163,7 @@ input.search_button {
 }
 
 input:active {
-  background-color: #aaaaaa;
+    background-color: #aaaaaa;
 }
 
 .resultsummary {
@@ -178,7 +194,7 @@ div.explore_panel table {
 	border-collapse:collapse;
 }
 
-div.main-tab-base-row, div.main-tab-base {
+div.main-tab-base-row, div.main-tab-base  {
 	background-color:#cdcdcd;
 	height:4px;
 	margin:0px;
@@ -194,7 +210,7 @@ div.main-tab-container {
 }
 
 div.main-tab {
-	background: transparent no-repeat;
+	background: transparent  no-repeat;
 	width:108px;
 	padding-top:0.8em;
 	padding-left:0;
@@ -204,6 +220,7 @@ div.main-tab {
 }
 
 div.main-tab-selected {
+	background: transparent  no-repeat url(https://www.gwascentral.org/images/main-tab.gif);
 	width:108px;
 	padding-top:0.8em;
 	padding-left:0;
@@ -296,7 +313,7 @@ span.panel_heading_text {
 	font-size:0.9em;
 	font-weight:bold;
 	color:#0066dd;
-	font-family:"trebuchet MS",Arial,Helvetica,sans-serif;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
 span.panel_heading_links {
@@ -347,7 +364,7 @@ div.bluepanel_pheno_b table{
 	border: none;
 }
 
-div.bluepanel_pheno_b table tr, div.bluepanel_pheno_b table td, div.bluepanel_pheno_b table th {
+div.bluepanel_pheno_b table tr, div.bluepanel_pheno_b table td, div.bluepanel_pheno_b table th  {
 	border: none;
 }
 div.explore_panel {
@@ -367,22 +384,23 @@ div.explore_panel table td img {
 	padding-bottom:0.3em;
 }
 input.checkbox {
-  background-color: transparent;
-  border:none;
+    background-color: transparent;
+    border:none;
 }
 /* Standard layout for regular text paragraphs across site */
 p {
-  text-align: left;
-  clear: both;
-  margin-left: 1em;
-  margin-bottom: 0.6em;
-  /* line-height:1.3em; */
+    text-align: left;
+    clear: both;
+    margin-left: 1em;
+    margin-bottom: 0.6em;
+    /* line-height:1.3em; */
 }
 
 
 /* header and footer elements */
 div#header_banner {
 	margin-left:0px;
+	background: transparent  no-repeat url(https://www.gwascentral.org/images/gwas-central-logo.png);
 	width:100%;
 }
 div#logobox {
@@ -414,8 +432,8 @@ div#menubar {
 }
 
 div#header_banner {
-  height: 80px;
-  background-color: white;
+    height: 80px;
+    background-color: white;
 	padding-bottom:0px;
 	padding-right:0px;
 	margin-right:0px;
@@ -423,30 +441,30 @@ div#header_banner {
 }
 
 div#header_menulinks, div#footer_menulinks {
-  background-color: transparent;
-  text-align: right;
-  padding-right: 0em;
-  font-size: 0.9em;
+    background-color: transparent;
+    text-align: right;
+    padding-right: 0em;
+    font-size: 0.9em;
 }
 
 div#header_menulinks {
-  padding-top: 5px;
-  float:right;
-  width:100%;
+    padding-top: 5px;
+    float:right;
+    width:100%;
 }
 div#footer_menulinks {
-  padding-top:12px;
-  border-bottom: 0.5em;
+    padding-top:12px;
+    border-bottom: 0.5em;
 
 }
 div#menulinks a {
-  color: #0066dd;
-  font-size:0.9em;
+    color: #0066dd;
+    font-size:0.9em;
 }
 
 div#footer_w3c {
-  float: left;
-  padding: 0px;
+    float: left;
+    padding: 0px;
 }
 
 #menutabs{
@@ -465,7 +483,7 @@ width:100%;
 }
 
 #menutabs ul{
-font: 1.2em Arial, Verdana, sans-serif;
+font:  1.2em Arial, Verdana, sans-serif;
 margin:0;
 padding:0;
 list-style:none;
@@ -484,6 +502,7 @@ font-weight:bold;
 #menutabs a{
 float:left;
 color: white;
+background: #0066dd url(https://www.gwascentral.org/images/tabs/color_left_top.gif) no-repeat left top;
 margin:0 2px 0 0;
 padding:0 0 1px 3px;
 text-decoration:none;
@@ -493,6 +512,7 @@ letter-spacing: 1px;
 #menutabs a span{
 float:left;
 display:block;
+background: transparent url(https://www.gwascentral.org/images/tabs/color_right_top.gif) no-repeat right top;
 padding:4px 9px 2px 6px;
 }
 
@@ -541,14 +561,14 @@ scrollbar-shadow-color:#000000;
 }
 
 div#news_table {
-  border: none;
-  background:transparent;
-  font-weight:normal;
-  color: black;
-  padding:0.5em;
-  overflow-y:visible;
-  height:8em;
-  margin-right:0.5em;
+    border: none;
+    background:transparent;
+    font-weight:normal;
+    color: black;
+    padding:0.5em;
+    overflow-y:visible;
+    height:8em;
+    margin-right:0.5em;
 }
 
 div#news_table table {
@@ -582,6 +602,42 @@ td.round_blue {
 td.round_grey {
 	background-color:#eeeeee;
 }
+span.top_left_round_blue, span.top_left_round_grey {
+	float:left;
+	width:45%;
+	height:6px;
+	background:#d9eaff url(https://www.gwascentral.org/images/tabs/color_left_top.gif) no-repeat scroll left top;
+}
+
+span.top_right_round_blue, span.top_right_round_grey  {
+	float:right;
+	width:45%;
+	height:6px;
+	background:#d9eaff url(https://www.gwascentral.org/images/tabs/color_right_top.gif) no-repeat scroll right top;
+}
+
+span.btm_left_round_blue, span.btm_left_round_grey  {
+float:left;width:45%;height:6px;
+background:#d9eaff url(https://www.gwascentral.org/images/tabs/color_left_btm.gif) no-repeat scroll left bottom
+}
+span.btm_right_round_blue, span.btm_right_round_grey  {
+float:right;
+width:45%;
+height:6px;
+background:#d9eaff url(https://www.gwascentral.org/images/tabs/color_right_btm.gif) no-repeat scroll right bottom
+}
+span.top_left_round_grey {
+background:#eeeeee url(https://www.gwascentral.org/images/tabs/color_left_top.gif) no-repeat scroll left top
+}
+span.top_right_round_grey {
+background:#eeeeee url(https://www.gwascentral.org/images/tabs/color_right_top.gif) no-repeat scroll right top
+}
+span.btm_left_round_grey {
+background:#eeeeee url(https://www.gwascentral.org/images/tabs/color_left_btm.gif) no-repeat scroll left bottom
+}
+span.btm_right_round_grey {
+background:#eeeeee url(https://www.gwascentral.org/images/tabs/color_right_btm.gif) no-repeat scroll right bottom
+}
 
 DIV.box {
 	padding:0.5em;
@@ -602,10 +658,10 @@ div#about_panel p {
 
 div.heading {
 	border: none;
-  background-color:transparent;
-  font-weight:bold;
-  text-decoration:underline;
-  color: #555555;
+    background-color:transparent;
+    font-weight:bold;
+    text-decoration:underline;
+    color: #555555;
 	padding-left:0.5em;
 	padding-top:1em;
 	margin:0;
@@ -614,10 +670,10 @@ div.heading {
 
 div#about_panel h1 p {
 	border: none;
-  background-color:#ffffff;
-  font-weight:bold;
-  text-decoration:underline;
-  color: #555555;
+    background-color:#ffffff;
+    font-weight:bold;
+    text-decoration:underline;
+    color: #555555;
 	padding-left:0.5em;
 	margin:0;
 	font-size:0.8em;
@@ -625,18 +681,18 @@ div#about_panel h1 p {
 
 div#about_panel h2 p {
 	margin:0;
-  clear: both;
-  font-size:1.2em;
+    clear: both;
+    font-size:1.2em;
 	padding-left:0.8em;
 	font-size:0.7em;
 }
 
 div.text {
-  border: none;
-  background-color:transparent;
-  font-weight:normal;
-  color: black;
-  padding:0.5em;
+    border: none;
+    background-color:transparent;
+    font-weight:normal;
+    color: black;
+    padding:0.5em;
 }
 
 
@@ -668,10 +724,10 @@ div.sub_text {
 }
 
 div.table {
-  width:100%;
-  border:none;
-  background-color:transparent;
-  padding:0.5em;
+    width:100%;
+    border:none;
+    background-color:transparent;
+    padding:0.5em;
 }
 
 table.layout {
@@ -683,22 +739,22 @@ table.layout td {
 }
 
 table.toggle {
-  background-color:#ffffff;
-  font-weight:normal;
-  color: black;
-  padding:0px;
-  width:100%;
-  border-collapse:collapse;
+    background-color:#ffffff;
+    font-weight:normal;
+    color: black;
+    padding:0px;
+    width:100%;
+    border-collapse:collapse;
 }
 
 table.toggle_panel {
-  background-color:#ffffff;
-  font-weight:normal;
-  color: black;
-  padding:0px;
-  width:100%;
-  border-collapse:collapse;
-  border:none;
+    background-color:#ffffff;
+    font-weight:normal;
+    color: black;
+    padding:0px;
+    width:100%;
+    border-collapse:collapse;
+    border:none;
 }
 
 a.toggle_title {
@@ -725,17 +781,17 @@ td.toggle_table {
 
 div.toggle {
 	border: none;
-  background-color:#ffffff;
-  font-weight:normal;
-  color: black;
-  margin-right: 0em;
-  margin-bottom: 0.5em;
-  padding-top:1em;
-  padding-bottom:1em;
+    background-color:#ffffff;
+    font-weight:normal;
+    color: black;
+    margin-right: 0em;
+    margin-bottom: 0.5em;
+    padding-top:1em;
+    padding-bottom:1em;
 }
 
 th.toggle_panel {
-	background-color: transparent;
+	background-color: none;
 	width: 12px;
 	padding-top: 6px;
 	padding-left: 5px;
@@ -806,8 +862,8 @@ div.tab_panel {
 }
 
 table.summary {
-  border:none;
-  border-collapse:separate;
+    border:none;
+    border-collapse:separate;
 }
 
 table.summary th {
@@ -830,8 +886,8 @@ margin-left:0.5em;
 }
 
 table.info {
-  border:1px solid #d3d3d3;
-  border-collapse:collapse;
+    border:1px solid #d3d3d3;
+    border-collapse:collapse;
 }
 
 table.info th {
@@ -852,26 +908,26 @@ table.info td {
 }
 
 div#navigation_breadcrumb {
-  clear: both;
-  background-color: white;
-  display: block;
-  margin-bottom: 0;
-  /*border-top: solid 2px lightgray; */
-  color: #777777;
+    clear: both;
+    background-color: white;
+    display: block;
+    margin-bottom: 0;
+    /*border-top: solid 2px lightgray; */
+    color: #777777;
 }
 
 span.sectionname {
-  padding-left: 5px;
-  font-weight:bold;
+    padding-left: 5px;
+    font-weight:bold;
 }
 div.section, div.searchresults_section {
-  padding: 3px;
-  margin: 5px;
-  float: left;
-  border: thin solid #B0C4DE;
-  min-width: 46em;
-  vertical-align: top;
-  clear: both;
+    padding: 3px;
+    margin: 5px;
+    float: left;
+    border: thin solid #B0C4DE;
+    min-width: 46em;
+    vertical-align: top;
+    clear: both;
 }
 
 table.searchresults {
@@ -884,83 +940,84 @@ table.searchresults td {
 	padding:0.5em;
 }
 div.collapsible_section_header {
-  clear: both;
+    clear: both;
 }
 .searchresults_header {
-  padding: 5px;
+    padding: 5px;
 }
 .searchresults_summary {
-  padding:0.5em;
-  margin:0;
-  font-size: 80%;
+    padding:0.5em;
+    margin:0;
+    font-size: 80%;
 }
 .searchform {
-  padding: 5px;
-  margin: 5px;
+    padding: 5px;
+    margin: 5px;
 }
 .reportpage, .searchresults_panel {
-  padding-left: 1em;
-  padding-right:1em;
-  width: 98%;
-  min-width: 900px;
-  clear: both;
+    padding-left: 1em;
+    padding-right:1em;
+    width: 98%;
+    min-width:  900px;
+    clear: both;
 }
 .searchresults_item {
-  width:100%;
+    width:100%;
 }
 
-/* gets rid of the border spacing between cells and no border for cells in a table unless required */
+/* gets rid of the border spacing between cells  and no border for cells in a table unless required */
 table {
 	border:none;
 	border-collapse:separate;
-  table-layout: auto;
+    table-layout: auto;
 }
 
 /* border and bgd colour around no table elements */
 th {
-  text-align: left;
-  padding-left: 4px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  border-spacing:0;
-  border:none;
+    text-align: left;
+    padding-left: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-spacing:0;
+    border:none;
 }
 tr.hover td {
-  background:#C8DCFA none repeat scroll 0%;
+    background:#C8DCFA none repeat scroll 0%;
 }
 
 td {
-  border: none;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  vertical-align: top;
+    border: none;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    vertical-align: top;
 }
 
 
 /* Override certain Exhibit styles and/or define new ones relating to Exhibit */
 .optionfilter_panel {
-	width: 28%;
-  font-size: 0.85em;
-  float: left;
-	padding: 1em 16px 0.5em 0;
+    padding: 1em 0.5 0.5em 0;
+    width: 28%;
+    font-size: 0.85em;
+    float: left;
+    padding-right: 16px;
 }
 
 a {
-  text-decoration:none;
+    text-decoration:none;
 }
 a:hover {
-  text-decoration:underline;
+    text-decoration:underline;
 }
 img:hover {
 	text-decoration:none;
 }
 
 div#home_subtoolbar a {
-  /* border-top: solid #d3d3d3; */
-  color: #888888;
-  /*color: #000000; */
+    /* border-top: solid #d3d3d3; */
+    color: #888888;
+    /*color: #000000; */
 }
 
 
@@ -1004,6 +1061,10 @@ div#home_subtoolbar a {
 	
 }
 
+.ac_loading {
+	background: white url('https://www.gwascentral.org/images/small-ajax-loader.gif') right center no-repeat;
+}
+
 .ac_odd {
 	background-color: #eee;
 }
@@ -1016,8 +1077,8 @@ div#home_subtoolbar a {
 
 span.origin {
 	position: absolute;
-  top: 0;
-  right: 5px;;
+    top: 0;
+    right: 5px;;
 	font-style:italic;
 	font-weight:bold;
 }
@@ -1026,34 +1087,34 @@ span.origin {
 /* From Catalyst */
 .message {
 background-color:#d9ffea;
-  border:solid 1px #00ff00;
-      padding:0.5em;
-	        margin-right:0.5em;
-			        display:block;
+    border:solid 1px #00ff00;
+            padding:0.5em;
+	                margin-right:0.5em;
+			                display:block;
 					}
 
 .error {
-  background-color:#ffeeee;
-  border:solid 2px #F33;
-  padding:0.5em;
-  margin-right:0.5em;
-  display:block;
+    background-color:#ffeeee;
+    border:solid 2px #F33;
+    padding:0.5em;
+    margin-right:0.5em;
+    display:block;
 }
 
 .issue {
-  background-color:#ffaa77;
-  border:solid 1px #ffff00;
-  padding:0.5em;
-  margin-right:0.5em;
-  display:block;
+    background-color:#ffaa77;
+    border:solid 1px #ffff00;
+    padding:0.5em;
+    margin-right:0.5em;
+    display:block;
 }
 
 /* fixes to IE CSS-bugs and other cross-browser issues */
 /* The so-called Holly Hack to prevent content from 'falling out' of container-divs. */
 /* Hides from IE-mac \ */
 * html .floatholder {
-  min-height: 1%;
-  padding-left:0.5em;
+    min-height: 1%;
+    padding-left:0.5em;
 }
 /* End hide from IE-mac */
 
@@ -1077,7 +1138,8 @@ padding-left:0;
 ul.panel_links {
 	padding-left:0;
 	display:inline;
-	list-style: none none;
+	list-style-type:none; 
+	list-style-image:none;
 	margin:0;
 }
 
@@ -1086,11 +1148,11 @@ ul.panel_links li {
 }
 
 div.treetext {
-  border: none;
-  background-color:transparent;
-  font-weight:normal;
-  color: black;
-  padding:1.0em;
+    border: none;
+    background-color:transparent;
+    font-weight:normal;
+    color: black;
+    padding:1.0em;
 }
 
 /* ideas */
@@ -1246,7 +1308,7 @@ fieldset.browser_opts, fieldset.options-browser_region {
 fieldset.options-generegion {
 	height:8em;
 }
-fieldset.options-phenotypes_term {
+fieldset.options-phenotypes_term  {
 	height:7em;
 }
 fieldset.result_opts-study, fieldset.result_opts-phenotype, fieldset.options-browser_regionmarkers, fieldset.result_opts-genes, fieldset.result_opts-study_markers,fieldset.result_opts-browser_genome,fieldset.result_opts-browser_topmarkers, fieldset.result_opts-browser_region 
