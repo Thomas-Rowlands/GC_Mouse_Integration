@@ -1,7 +1,5 @@
 import React from 'react';
-import './gwascentral.css';
 import './App.css';
-import "./gwascentral.css";
 // @ts-ignore
 import Home from "./Home.js";
 // @ts-ignore
@@ -14,6 +12,7 @@ import Genome from "../Genome/Genome";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
 import {ThemeProvider} from "@material-ui/styles";
 import GCTheme from "./theme";
+import "./gwascentral.css";
 
 class App extends React.Component {
 
@@ -38,14 +37,14 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <div className="floatholder" style={{height:"20%"}}>
+                <div className="floatholder" style={{height: "20%"}}>
                     <div id="header">
-                        <div className="floatholder" style={{height:"20%"}}>
+                        <div className="floatholder" style={{height: "20%"}}>
                             <div id="header">
                                 <div>
                                     <div>
                                         <div style={{width: "100%"}}>
-                                            <img onClick={() => window.href='https://www.gwascentral.org/index'}
+                                            <img onClick={() => window.href = 'https://www.gwascentral.org/index'}
                                                  src="https://www.gwascentral.org/images/gwas-central-logo.png"
                                                  alt="logo"
                                                  style={{
@@ -94,8 +93,8 @@ class App extends React.Component {
                                                 <div style={{width: "100%"}}>
                                                     <div style={{float: "right", width: "100%"}}>
                                                         <div className="main-tab-container">
-                                                            <div className="main-tab-selected"><a
-                                                                href="https://www.gwascentral.org/homology"
+                                                            <div className="main-tab-selected">
+                                                            <a href="https://www.gwascentral.org/homology"
                                                                 style={{fontSize: "0.8em"}}>
                                                                 <div style={{width: "106px"}}></div>
                                                                 <img
@@ -103,7 +102,13 @@ class App extends React.Component {
                                                                     alt=""
                                                                     style={{width: "32px", height: "32px"}}/><br/>
                                                                 <div
-                                                                    style={{height: "2em", marginTop: "0.5em"}}>Homology
+                                                                    style={{
+                                                                        height: "2em",
+                                                                        marginTop: "0.5em",
+                                                                        top: "0.25em",
+                                                                        zIndex: 10,
+                                                                        position: "relative"
+                                                                    }}>Homology
                                                                 </div>
                                                             </a>
                                                             </div>
@@ -229,8 +234,8 @@ class App extends React.Component {
                                                     <div style={{float: "right", width: "100%"}}
                                                          className="main-tab-base-row">
                                                         <div className="main-tab-container">
-                                                            <div className="main-tab-base-selected"><img
-                                                                src="https://www.gwascentral.org/images/main-tab-base.gif"/>
+                                                            <div className="main-tab-base-selected" style={{width: "6.5em", marginLeft: "0.5em"}}>
+                                                                <img src="/images/main-tab-base.gif"/>
                                                             </div>
                                                         </div>
 
