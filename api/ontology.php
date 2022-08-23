@@ -300,7 +300,7 @@
             $inferredMappingProperty = $ontLabel == "MP" ? "hasInferred" . $mappingOnt . "Mapping" : "hasInferredMPMapping";
             $children = $this->neo->execute("MATCH (n:$ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
 
             $return_package = [];
@@ -312,7 +312,7 @@
                 if ($child->hasValue("hasInferredMapping"))
                     $hasInferredMapping = $child->get('hasInferredMapping');
                 $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0;
-                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasExactMapping, $hasInferredMapping, $child->get('hasChildren'), $hasData);
+                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData);
                 $return_package[$child->get('id')] = $childNode;
             }
             return $return_package;

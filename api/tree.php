@@ -38,7 +38,7 @@
             $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, false, true, false);
             foreach ($results as $result) {
                 $hasData = $result->get("gwas_total") > 0 || $result->get("experiment_total") > 0;
-                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get('hasExactMapping'), $result->get('hasInferredMapping'), $result->get('hasChildren'), $hasData);
+                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get('hasExactMapping'), $result->get('hasInferredMapping'), $result->get('hasChildrenWithData'), $hasData);
                 $rootNode->children[$result->get('id')] = $childNode;
             }
             $this->tree = $rootNode;
@@ -59,7 +59,7 @@
             }
             return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildren, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -68,7 +68,7 @@
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildrenWithData AS hasChildren, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildrenWithData AS hasChildrenWithData, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -94,7 +94,7 @@
                             $hasExactMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
                             $hasInferredMapping = $nodes[$i]->hasValue($inferredMappingProperty) ? $nodes[$i]->get($inferredMappingProperty) : false;
                             $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
-                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasExactMapping, $hasInferredMapping, $nodes[$i]->hasValue('hasChildren'), $hasData);
+                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasExactMapping, $hasInferredMapping, $nodes[$i]->hasValue('hasChildrenWithData'), $hasData);
                             $sibs = $this->getTermSiblings($childNode->id);
 
                             $parentTreeNode->children[$nodes[$i]->value('id')] = $childNode;
@@ -103,7 +103,7 @@
                                     $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
                                     $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
-                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildren'), $hasData);
+                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildrenWithData'), $hasData);
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }
                             }
