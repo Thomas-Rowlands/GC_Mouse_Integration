@@ -131,7 +131,7 @@
             $result = $this->neo->execute("
             MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm)
             WITH mappedTerm
-            OPTIONAL MATCH (mappedTerm)-[:HAS_SYNONYM]-(m)
+            OPTIONAL MATCH (mappedTerm)<-[:HAS_SYNONYM]-(m)
             WITH COALESCE(m, mappedTerm) AS mappedTerm
             WHERE mappedTerm:MP AND mappedTerm.experiment_total > 0
             RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
@@ -312,7 +312,8 @@
                 if ($child->hasValue("hasInferredMapping"))
                     $hasInferredMapping = $child->get('hasInferredMapping');
                 $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0;
-                $childNode = new TreeNode($child->get('id'), $child->get('label'), $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData);
+                $childNode = new TreeNode($child->get('id'), $child->get('label'),
+                    $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData);
                 $return_package[$child->get('id')] = $childNode;
             }
             return $return_package;

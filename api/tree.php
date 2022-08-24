@@ -36,30 +36,22 @@
                 $results = $this->getTermChildren("mesh");
             }
             $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, false, true, false);
+            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
+            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             foreach ($results as $result) {
                 $hasData = $result->get("gwas_total") > 0 || $result->get("experiment_total") > 0;
-                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get('hasExactMapping'), $result->get('hasInferredMapping'), $result->get('hasChildrenWithData'), $hasData);
+                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get($mappingProperty), $result->get($inferredMappingProperty), $result->get('hasChildrenWithData'), $hasData);
                 $rootNode->children[$result->get('id')] = $childNode;
             }
             $this->tree = $rootNode;
         }
 
         private function getTermChildren($termID) {
-            if ($this->ontLabel != "MP") {
-                $mappingProperty = "hasExactMPMapping";
-                $inferredMappingProperty = "hasInferredMPMapping";
-            } else {
-                if ($this->mappingOntLabel == "MESH") {
-                    $mappingProperty = "hasExactMESHMapping";
-                    $inferredMappingProperty = "hasInferredMESHMapping";
-                } else {
-                    $mappingProperty = "hasExactHPOMapping";
-                    $inferredMappingProperty = "hasInferredHPOMapping";
-                }
-            }
+            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
+            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
             WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS $mappingProperty, m.$inferredMappingProperty AS $inferredMappingProperty, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -68,7 +60,7 @@
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
             WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS hasExactMapping, sib.$inferredMappingProperty AS hasInferredMapping, sib.hasChildrenWithData AS hasChildrenWithData, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS $mappingProperty, sib.$inferredMappingProperty AS $inferredMappingProperty, sib.hasChildrenWithData AS hasChildrenWithData, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -77,8 +69,8 @@
             $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
             WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.gwas_total > 0 or endNode.experiment_total > 0)
             RETURN p";
-            $mappingProperty = "hasExactMapping";
-            $inferredMappingProperty = "hasInferredMapping";
+            $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
+            $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
