@@ -7,18 +7,73 @@ include 'database.php';
 if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $cmd = "";
     $ont = strtolower($_GET["ontology"]);
-    if ($ont != "MP")
-        $ont = "(n:MESH OR n:HPO)";
-    else
-        $ont = "n:MP";
     $entry = strtolower($_GET["entry"]);
-    $cmd = "MATCH (n)-[:HAS_SYNONYM*0..1]->(m)
-    WHERE " . $ont . " AND (toLower(n.FSN) STARTS WITH {entry} OR toLower(m.FSN) STARTS WITH {entry})
-    AND (n.gwas_total > 0 OR n.experiment_total > 0)
-    RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology, COALESCE(n.id, m.id) AS id, COALESCE(m.FSN, n.FSN) AS Term, COALESCE(m.id, n.id) AS TermID
-    ORDER BY FSN
-    LIMIT 20
-    ;";
+    if ($ont != "mp")
+        $cmd = "MATCH (n:MESH)
+                USING INDEX n:MESH(lowerFSN)
+                WHERE n.lowerFSN = {entry}
+                OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+                WHERE (m.hasData or n.hasData)
+                RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
+                n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
+                LIMIT 1
+                
+                UNION 
+                
+                MATCH (n:HPO)
+                USING INDEX n:HPO(lowerFSN)
+                WHERE n.lowerFSN = {entry}
+                OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+                WHERE (m.hasData or n.hasData)
+                RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
+                n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
+                LIMIT 1
+                
+                UNION
+                
+                MATCH (n:MESH)
+                USING INDEX n:MESH(lowerFSN)
+                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasData
+                WITH n
+                MATCH (o:HPO)
+                USING INDEX o:HPO(lowerFSN)
+                WHERE o.lowerFSN STARTS WITH {entry} AND o.hasData
+                WITH COLLECT(n) + COLLECT(o) AS x
+                UNWIND x AS n
+                
+                OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+                WITH n, m
+                
+                RETURN DISTINCT COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
+                n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology, n.FSN AS Term, n.id AS TermID
+                ORDER BY FSN
+                LIMIT 20
+        ;";
+    else
+        $cmd = "MATCH (n:MP)
+                USING INDEX n:MP(lowerFSN)
+                WHERE n.lowerFSN = {entry}
+                OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+                WHERE (m.hasData or n.hasData)
+                RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
+                n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
+                LIMIT 1
+                
+                UNION 
+                
+                MATCH (n:MP)
+                USING INDEX n:MP(lowerFSN)
+                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasData
+                WITH n
+                
+                OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+                WITH n, m
+                
+                RETURN DISTINCT COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, 
+                COALESCE(m.originalType, n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology, 
+                n.FSN AS Term, n.id AS TermID
+                ORDER BY FSN
+                LIMIT 20";
     $neo = new Neo_Connection();
     $result = $neo->execute($cmd, ['entry' => $entry]);
     $matches = [];
@@ -28,7 +83,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
             $type = "Term";
         else
             $type = "Synonym";
-        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology"), "id"=> $row->get("id"), "term"=> $row->get("Term"), "termID"=> $row->get("TermID")];
+        $parsed = ["FSN"=> $row->get("FSN"), "type"=> $type,"ontology"=> $row->get("ontology"), "id"=> $row->get("id"),
+            "term"=> $row->get("Term"), "termID"=> $row->get("TermID")];
         if (strtolower($row->get("FSN")) == $entry)
             array_unshift($matches, $parsed);
         else
