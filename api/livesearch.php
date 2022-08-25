@@ -17,7 +17,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     AND (n.gwas_total > 0 OR n.experiment_total > 0)
     RETURN DISTINCT n.FSN AS FSN, n.originalType AS type, n.ontology AS ontology, COALESCE(n.id, m.id) AS id, COALESCE(m.FSN, n.FSN) AS Term, COALESCE(m.id, n.id) AS TermID
     ORDER BY FSN
-    LIMIT 6
+    LIMIT 20
     ;";
     $neo = new Neo_Connection();
     $result = $neo->execute($cmd, ['entry' => $entry]);
