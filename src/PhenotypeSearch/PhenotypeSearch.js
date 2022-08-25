@@ -128,17 +128,13 @@ class PhenotypeSearch extends React.Component {
         }
         this.liveCancelToken = axios.CancelToken.source();
         this.setState({liveLoading: true});
-        let ontology = this.state.selectedSpecies != "Human" ? "MP" : "Human";
+        let ontology = this.state.selectedSpecies !== "Human" ? "MP" : "Human";
         let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&ontology=" + ontology;
         if (input.length > 0) {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
-                        if (response.data.length === 0) {
-                            this.setState({liveSearchResults: [], liveLoading: false});
-                        } else {
-                            this.setState({liveSearchResults: response.data, liveLoading: false});
-                        }
+                        this.setState({liveSearchResults: response.data.length > 0 ? response.data : [], liveLoading: false});
                     }
                 })
                 .catch((error) => {
@@ -326,7 +322,7 @@ class PhenotypeSearch extends React.Component {
                                                 newVal.forEach(val => {
                                                     termList.push({
                                                         "FSN": (val.term ? val.term : val.FSN),
-                                                        "id": (val.termID ? val.termID : val.id)
+                                                        "id": (val.id ? val.id : val.termID)
                                                     });
                                                 });
                                                 this.setState({
@@ -345,7 +341,7 @@ class PhenotypeSearch extends React.Component {
                                                         maxWidth: "30ch",
                                                         overflow: "hidden"
                                                     }}>
-                                                        {option.FSN + " (" + option.type + ") "}
+                                                        {option.term}
                                                     </div>
                                                     <div style={{
                                                         display: "inline-block",

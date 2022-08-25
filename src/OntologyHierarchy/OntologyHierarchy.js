@@ -76,83 +76,37 @@ class OntologyHierarchy extends React.Component {
         if (input.length < 1) {
             $("#live-search").hide();
             if (ontology === "MP") {
-                this.mouseLiveLoading = false;
-                this.setState({mouseLiveSearchResults: []});
+                this.setState({mouseLiveSearchResults: [], mouseLiveLoading: false});
             } else {
-                this.humanLiveLoading = false;
-                this.setState({humanLiveSearchResults: []});
+                this.setState({humanLiveSearchResults: [], humanLiveLoading: false});
             }
             return;
         }
-        if (ontology === "MP")
-            this.mouseLiveLoading = true;
-        else
-            this.humanLiveLoading = true;
         this.searchInput = input;
         this.liveCancelToken = axios.CancelToken.source();
+        if (ontology === "MP")
+            this.setState({mouseLiveLoading: true});
+        else
+            this.setState({humanLiveLoading: true});
         let url_string = this.state.configData.api_server + "livesearch.php?entry=" + encodeURIComponent(input) + "&ontology=" + ontology;
-
-        if (input.length > 0) {
-            axios.get(url_string, {cancelToken: this.liveCancelToken.token})
-                .then((response) => {
-                    if (response.status === 200) {
-                        if (response.data.length === 0) {
-                            if (ontology === "MP") {
-                                this.mouseLiveLoading = false;
-                                this.setState({mouseLiveSearchResults: []});
-                            } else {
-                                this.humanLiveLoading = false;
-                                this.setState({humanLiveSearchResults: []});
-                            }
-                        } else {
-                            if (ontology === "MP") {
-                                this.mouseLiveLoading = false;
-                                this.setState({mouseLiveSearchResults: response.data});
-                            } else {
-                                this.humanLiveLoading = false;
-                                this.setState({humanLiveSearchResults: response.data});
-                            }
-                        }
-                    }
-                })
-                .catch((error) => {
-                    if (!axios.isCancel(error)) {
-                        console.log("An error occurred retrieving live search results.");
+        axios.get(url_string, {cancelToken: this.liveCancelToken.token})
+            .then((response) => {
+                if (response.status === 200) {
+                    if (ontology === "MP") {
+                        this.setState({mouseLiveSearchResults: response.data.length > 0 ? response.data : [], mouseLiveLoading: false});
                     } else {
-                        if (ontology === "MP") {
-                            this.mouseLiveSearchResults = [];
-                            this.mouseLiveLoading = false;
-                        } else {
-                            this.humanLiveSearchResults = [];
-                            this.humanLiveLoading = false;
-                        }
+                        this.setState({humanLiveSearchResults: response.data.length > 0 ? response.data : [], humanLiveLoading: false});
                     }
-
-
-                });
-        }
-    }
-
-    appendSearchResult = (objValue, srcValue) => {
-        if (_.isArray(objValue)) {
-            for (let i = 0; i < objValue.length; i++) {
-                if (objValue[i].FSN === srcValue[0].FSN) {
-                    objValue[i] = _.merge(objValue[i], srcValue[0]);
-                    return objValue;
                 }
-            }
-        }
+            })
+            .catch((error) => {
+                if (!axios.isCancel(error)) {
+                    console.log("An error occurred retrieving live search results.");
+                }
+            });
     }
-    tempExpandedmouseIds = [];
 
-    isNodeDuplicate = (source, newItem) => {
-        for (let i = 0; i < source.length; i++) {
-            if (source[i].id === newItem.id) {
-                return true;
-            }
-        }
-        return false;
-    }
+    tempExpandedmouseIds = [];
 
     findPath = (a, obj) => {
         for (let key in obj) {                                         // for each key in the object obj
@@ -451,10 +405,14 @@ class OntologyHierarchy extends React.Component {
         });
     }
 
-    resetBtnClick = (e) => {
-        let {expandedHumanNodes, expandedMouseNodes} = this.state;
-        this.setState({expandedHumanNodes: [expandedHumanNodes[0]],
-            expandedMouseNodes: [expandedMouseNodes[0]]});
+    resetMouseBtnClick = (e) => {
+        let {expandedMouseNodes} = this.state;
+        this.setState({expandedMouseNodes: [expandedMouseNodes[0]]});
+    }
+
+    resetHumanBtnClick = (e) => {
+        let {expandedHumanNodes} = this.state;
+        this.setState({expandedHumanNodes: [expandedHumanNodes[0]]});
     }
 
     mouseSearchBtnClick = (e) => {
@@ -546,7 +504,7 @@ class OntologyHierarchy extends React.Component {
             }, 500);
 
         }
-        this.props.setLoading(false);
+        // this.props.setLoading(false);
     }
 
     getHumanPhenotypeBreakdown = (e) => {
@@ -650,7 +608,11 @@ class OntologyHierarchy extends React.Component {
             mappedMousePhenotype,
             mappedHumanPhenotype,
             mouseSearchInput,
-            humanSearchInput
+            humanSearchInput,
+            humanLiveSearchResults,
+            mouseLiveSearchResults,
+            humanLiveLoading,
+            mouseLiveLoading
         } = this.state;
         const mouseTree = treeData ? treeData.mouseTree : null;
         const humanTree = treeData ? treeData.humanTree : null;
@@ -696,7 +658,7 @@ class OntologyHierarchy extends React.Component {
                                                     ...params.InputProps,
                                                     endAdornment: (
                                                         <React.Fragment>
-                                                            {this.humanLiveLoading ?
+                                                            {humanLiveLoading ?
                                                                 <CircularProgress color="inherit"
                                                                                   size={20}/> : null}
                                                             {params.InputProps.endAdornment}
@@ -710,16 +672,32 @@ class OntologyHierarchy extends React.Component {
                                                 }}
                                             />
                                         )}
-                                        options={this.state.humanLiveSearchResults}
+                                        options={humanLiveSearchResults}
                                         getOptionLabel={(option) => option.FSN ? option.FSN : this.state.humanSearchInput}
-                                        renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
+                                        renderOption={(option) =>
+                                                <div style={{width: "100%"}}>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        maxWidth: "30ch",
+                                                        overflow: "hidden"
+                                                    }}>
+                                                        {option.term}
+                                                    </div>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        float: "right",
+                                                        fontWeight: "bold"
+                                                    }}>
+                                                        {option.ontology.toUpperCase()}
+                                                    </div>
+                                                </div>}/>
                                     <div className={"center"}>Search for terms with mappings to the MP
                                         ontology<InfoDialog title={"Ontology Hierarchy"}
                                                             contentText={this.getInfoText()}/></div>
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
                                     <Button style={{marginLeft: "1em"}} size="large" color="primary"
-                                            onClick={this.resetBtnClick} variant="contained" id="reset_btn">Collapse All</Button>
+                                            onClick={this.resetHumanBtnClick} variant="contained">Collapse</Button>
                                     {this.state.humanSearchFailed ?
                                         <p style={{color: "red"}}>No match found.</p> : null}
                                     {
@@ -774,7 +752,7 @@ class OntologyHierarchy extends React.Component {
                                                         ...params.InputProps,
                                                         endAdornment: (
                                                             <React.Fragment>
-                                                                {this.mouseLiveLoading ?
+                                                                {mouseLiveLoading ?
                                                                     <CircularProgress color="inherit"
                                                                                       size={20}/> : null}
                                                                 {params.InputProps.endAdornment}
@@ -796,6 +774,8 @@ class OntologyHierarchy extends React.Component {
                                                                  contentText={this.getInfoText()}/></div>
                                         <Button size="large" color="primary" variant="contained" id="search_btn"
                                                 onClick={this.mouseSearchBtnClick}>Search</Button>
+                                        <Button style={{marginLeft: "1em"}} size="large" color="primary"
+                                            onClick={this.resetMouseBtnClick} variant="contained">Collapse</Button>
                                         {this.state.mouseSearchFailed ?
                                             <p style={{color: "red"}}>No match found.</p> : null}
                                     </div>
