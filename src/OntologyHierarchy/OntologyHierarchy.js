@@ -424,13 +424,13 @@ class OntologyHierarchy extends React.Component {
     mouseSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("mouseSearchInput").value;
         this.setState({mouseSearchInput: input});
-        this.search(input, "MP", true);
+        this.search(input, "MP", false);
     }
 
     humanSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("humanSearchInput").value;
         this.setState({humanSearchInput: input});
-        this.search(input, this.state.humanOntology, true);
+        this.search(input, this.state.humanOntology, false);
     }
 
     setExpandedMouseNodes = (nodes, ids) => {
@@ -781,9 +781,34 @@ class OntologyHierarchy extends React.Component {
                                                     }}
                                                 />
                                             )}
-                                            options={this.state.mouseLiveSearchResults}
-                                            getOptionLabel={(option) => option.FSN ? option.FSN : this.state.mouseSearchInput}
-                                            renderOption={(option) => option.FSN + " (" + option.type + ")"}/>
+                                            options={mouseLiveSearchResults}
+                                            getOptionLabel={(option) => {
+                                                if (option) {
+                                                    if (option.term)
+                                                        return option.term;
+                                                    else
+                                                        return option.FSN;
+                                                }
+                                                return this.state.mouseSearchInput;
+                                            }}
+                                            renderOption={(option) =>
+                                                <div style={{width: "100%"}}>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        maxWidth: "30ch",
+                                                        overflow: "hidden"
+                                                    }}>
+                                                        {option.term}
+                                                    </div>
+                                                    <div style={{
+                                                        display: "inline-block",
+                                                        float: "right",
+                                                        fontWeight: "bold"
+                                                    }}>
+                                                        {option.ontology.toUpperCase()}
+                                                    </div>
+                                                </div>}
+                                        />
                                         <div className={"center"}>Search for MP terms which map to the selected human
                                             ontology.<InfoDialog title={"Ontology Hierarchy"}
                                                                  contentText={this.getInfoText()}/></div>
