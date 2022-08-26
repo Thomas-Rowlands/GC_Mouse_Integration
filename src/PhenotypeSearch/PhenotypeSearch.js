@@ -2,7 +2,8 @@ import React from 'react';
 import './PhenotypeSearch.css';
 import $ from 'jquery';
 import {
-    Button, Chip,
+    Button,
+    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -134,7 +135,10 @@ class PhenotypeSearch extends React.Component {
             axios.get(url_string, {cancelToken: this.liveCancelToken.token})
                 .then((response) => {
                     if (response.status === 200) {
-                        this.setState({liveSearchResults: response.data.length > 0 ? response.data : [], liveLoading: false});
+                        this.setState({
+                            liveSearchResults: response.data.length > 0 ? response.data : [],
+                            liveLoading: false
+                        });
                     }
                 })
                 .catch((error) => {
@@ -264,7 +268,9 @@ class PhenotypeSearch extends React.Component {
                                 <div className="searchResultsContainer">
                                     {/* Orthology Selection */}
                                     <div className="orthology-menu">
-                                        <Typography variant="h6">Comparative data on human-mouse orthologues. <InfoDialog title={"Phenotype Search"} contentText={this.getSearchInfoContent()}/></Typography>
+                                        <Typography variant="h6">Comparative data on human-mouse orthologues. <InfoDialog
+                                            title={"Phenotype Search"}
+                                            contentText={this.getSearchInfoContent()}/></Typography>
                                         <br/>
                                         <Autocomplete
                                             freeSolo
@@ -332,7 +338,15 @@ class PhenotypeSearch extends React.Component {
                                                 });
                                             }
                                             }
-                                            getOptionLabel={(option) => option.FSN ? option.FSN : this.state.searchInput}
+                                            getOptionLabel={(option) => {
+                                                if (option) {
+                                                    if (option.term)
+                                                        return option.term;
+                                                    else
+                                                        return option.FSN;
+                                                }
+                                                return this.state.searchInput;
+                                            }}
                                             selectOnFocus={false}
                                             renderOption={(option) =>
                                                 <div style={{width: "100%"}}>

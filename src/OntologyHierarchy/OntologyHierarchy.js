@@ -93,9 +93,15 @@ class OntologyHierarchy extends React.Component {
             .then((response) => {
                 if (response.status === 200) {
                     if (ontology === "MP") {
-                        this.setState({mouseLiveSearchResults: response.data.length > 0 ? response.data : [], mouseLiveLoading: false});
+                        this.setState({
+                            mouseLiveSearchResults: response.data.length > 0 ? response.data : [],
+                            mouseLiveLoading: false
+                        });
                     } else {
-                        this.setState({humanLiveSearchResults: response.data.length > 0 ? response.data : [], humanLiveLoading: false});
+                        this.setState({
+                            humanLiveSearchResults: response.data.length > 0 ? response.data : [],
+                            humanLiveLoading: false
+                        });
                     }
                 }
             })
@@ -673,24 +679,33 @@ class OntologyHierarchy extends React.Component {
                                             />
                                         )}
                                         options={humanLiveSearchResults}
-                                        getOptionLabel={(option) => option.FSN ? option.FSN : this.state.humanSearchInput}
+                                        getOptionLabel={(option) => {
+                                            if (option) {
+                                                if (option.term)
+                                                    return option.term;
+                                                else
+                                                    return option.FSN;
+                                            }
+                                            return this.state.humanSearchInput;
+                                        }}
                                         renderOption={(option) =>
-                                                <div style={{width: "100%"}}>
-                                                    <div style={{
-                                                        display: "inline-block",
-                                                        maxWidth: "30ch",
-                                                        overflow: "hidden"
-                                                    }}>
-                                                        {option.term}
-                                                    </div>
-                                                    <div style={{
-                                                        display: "inline-block",
-                                                        float: "right",
-                                                        fontWeight: "bold"
-                                                    }}>
-                                                        {option.ontology.toUpperCase()}
-                                                    </div>
-                                                </div>}/>
+                                            <div style={{width: "100%"}}>
+                                                <div style={{
+                                                    display: "inline-block",
+                                                    maxWidth: "30ch",
+                                                    overflow: "hidden"
+                                                }}>
+                                                    {option.term}
+                                                </div>
+                                                <div style={{
+                                                    display: "inline-block",
+                                                    float: "right",
+                                                    fontWeight: "bold"
+                                                }}>
+                                                    {option.ontology.toUpperCase()}
+                                                </div>
+                                            </div>}
+                                    />
                                     <div className={"center"}>Search for terms with mappings to the MP
                                         ontology<InfoDialog title={"Ontology Hierarchy"}
                                                             contentText={this.getInfoText()}/></div>
@@ -775,7 +790,7 @@ class OntologyHierarchy extends React.Component {
                                         <Button size="large" color="primary" variant="contained" id="search_btn"
                                                 onClick={this.mouseSearchBtnClick}>Search</Button>
                                         <Button style={{marginLeft: "1em"}} size="large" color="primary"
-                                            onClick={this.resetMouseBtnClick} variant="contained">Collapse</Button>
+                                                onClick={this.resetMouseBtnClick} variant="contained">Collapse</Button>
                                         {this.state.mouseSearchFailed ?
                                             <p style={{color: "red"}}>No match found.</p> : null}
                                     </div>
