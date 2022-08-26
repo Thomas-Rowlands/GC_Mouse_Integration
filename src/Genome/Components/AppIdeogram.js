@@ -188,8 +188,7 @@ class AppIdeogram extends Component {
             return val >= knockoutPval;
         });
 
-        let results = this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 2]].top(Infinity);
-        return results;
+        return this.ideogram.annotsByFacet[this.ideogram.facets[this.ideogram.facets.length - 2]].top(Infinity);
     }
 
     filterAnnots = (markerPval, knockoutPval) => {
