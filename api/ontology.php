@@ -22,21 +22,67 @@
 
         public function term_search($search, $ont): array
         {
-            $result = $this->neo->execute("
-            MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
-                WHERE ontTerm.ontology in [" . (strtolower($ont) == "mp" ? "'mp'" : "'mesh', 'hpo'") . "] AND (toLOWER(syn.FSN) STARTS WITH {search} OR toLOWER(syn.FSN) CONTAINS {searchContains} OR toLOWER(ontTerm.FSN) STARTS WITH {search} OR toLOWER(ontTerm.FSN) CONTAINS {searchContains}) AND ontTerm.id IS NOT NULL AND (ontTerm.gwas_total > 0 OR ontTerm.experiment_total > 0)
-            RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
-            ", ["search"=>$search, "searchContains"=>" " . $search]);
+            $cmd = "";
+            $ont = strtolower($ont) == "mp" ? ["mp"] : ["mesh", "hpo"];
+            foreach ($ont as $o) {
+                $cmd .= "MATCH (n:" . $ont . ")
+            USING INDEX n:MESH(lowerFSN)
+            WHERE n.lowerFSN = {search}
+            OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+            WHERE (m.hasData or n.hasData)
+            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
+            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+            n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
+            n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
+            COALESCE(m.experiment_total, n.experiment_total) AS experiment_total 
+            LIMIT 1";
+            }
+            $cmd .= "
+            
+            UNION
+            
+            MATCH (n:" . $ont . ")
+            USING INDEX n:" . $ont . "(lowerFSN)
+            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
+            OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
+            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
+            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+            n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
+            n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
+            COALESCE(m.experiment_total, n.experiment_total) AS experiment_total LIMIT 1;
+            ";
+            $result = $this->neo->execute($cmd, ["search"=>$search, "searchContains"=>" " . $search]);
             return $this->get_term_search_results($result, $search);
         }
 
         public function term_search_limited($search, $ont): array
         {
+            $ont = strtoupper($ont);
             $result = $this->neo->execute("
-            MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
-                WHERE ontTerm.ontology = {ontology} AND (toLOWER(syn.FSN) STARTS WITH {search} OR toLOWER(syn.FSN) CONTAINS {searchContains} OR toLOWER(ontTerm.FSN) STARTS WITH {search} OR toLOWER(ontTerm.FSN) CONTAINS {searchContains}) AND ontTerm.id IS NOT NULL
-            RETURN ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total LIMIT 1;
-            ", ["search"=>$search, "searchContains"=>" " . $search, "ontology"=>strtolower($ont)]);
+            MATCH (n:" . $ont . ")
+            USING INDEX n:" . $ont . "(lowerFSN)
+            WHERE n.lowerFSN = {search}
+            OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+            WHERE (m.hasData or n.hasData)
+            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
+            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+            n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
+            n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
+            COALESCE(m.experiment_total, n.experiment_total) AS experiment_total
+            LIMIT 1
+            
+            UNION
+            
+            MATCH (n:" . $ont . ")
+            USING INDEX n:" . $ont . "(lowerFSN)
+            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
+            OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
+            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
+            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+            n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
+            n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
+            COALESCE(m.experiment_total, n.experiment_total) AS experiment_total LIMIT 1;
+            ", ["search"=>$search, "searchContains"=>" " . $search]);
             return $this->get_term_search_results($result, $search);
         }
 
@@ -69,8 +115,6 @@
                 else
                     $matches = array_merge($matches, $this->term_search_limited($search, "MP"));
             }
-            
-
             if (!$matches)
                 return [];
             for ($i = 0; $i < sizeof($matches); $i++) {
