@@ -94,23 +94,23 @@ class App extends React.Component {
                                                     <div style={{float: "right", width: "100%"}}>
                                                         <div className="main-tab-container">
                                                             <div className="main-tab-selected">
-                                                            <a href="https://www.gwascentral.org/homology"
-                                                                style={{fontSize: "0.8em"}}>
-                                                                <div style={{width: "106px"}}></div>
-                                                                <img
-                                                                    src="https://www.gwascentral.org/images/section/homology.png"
-                                                                    alt=""
-                                                                    style={{width: "32px", height: "32px"}}/><br/>
-                                                                <div
-                                                                    style={{
-                                                                        height: "2em",
-                                                                        marginTop: "0.5em",
-                                                                        top: "0.25em",
-                                                                        zIndex: 10,
-                                                                        position: "relative"
-                                                                    }}>Homology
-                                                                </div>
-                                                            </a>
+                                                                <a href="https://www.gwascentral.org/homology"
+                                                                   style={{fontSize: "0.8em"}}>
+                                                                    <div style={{width: "106px"}}></div>
+                                                                    <img
+                                                                        src="https://www.gwascentral.org/images/section/homology.png"
+                                                                        alt=""
+                                                                        style={{width: "32px", height: "32px"}}/><br/>
+                                                                    <div
+                                                                        style={{
+                                                                            height: "2em",
+                                                                            marginTop: "0.5em",
+                                                                            top: "0.25em",
+                                                                            zIndex: 10,
+                                                                            position: "relative"
+                                                                        }}>Homology
+                                                                    </div>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                         <div className="main-tab-container">
@@ -234,7 +234,8 @@ class App extends React.Component {
                                                     <div style={{float: "right", width: "100%"}}
                                                          className="main-tab-base-row">
                                                         <div className="main-tab-container">
-                                                            <div className="main-tab-base-selected" style={{width: "6.5em", marginLeft: "0.5em"}}>
+                                                            <div className="main-tab-base-selected"
+                                                                 style={{width: "6.5em", marginLeft: "0.5em"}}>
                                                                 <img src="/images/main-tab-base.gif"/>
                                                             </div>
                                                         </div>
@@ -265,8 +266,6 @@ class App extends React.Component {
                                                             <div className="main-tab-base"></div>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>

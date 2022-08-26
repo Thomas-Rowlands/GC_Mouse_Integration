@@ -3,6 +3,10 @@ html, body, .App{
     transition: background-color ease-in-out 500ms;
     font-family: Roboto, "Trebuchet MS", serif;
 }
+.App{
+    margin-left: 60px;
+    margin-right: 60px;
+}
 .App-header {
     height: 10em;
 }
@@ -36,8 +40,8 @@ html, body, .App{
 }
 .page {
   position: absolute;
-  left: 15px;
-  right: 15px;
+    left: 60px;
+    right: 60px;
 }
 
 .page-enter {
