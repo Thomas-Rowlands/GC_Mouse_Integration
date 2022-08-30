@@ -76,7 +76,7 @@ class OntologyTree extends React.Component {
                                                                                            width="20px"
                                                                                            src={"/images/mouse.png"}/></Button>;
         } else if (node.hasInferredMapping) {
-            return <Button className={classes.btn} size="small" onClick={(e) => node.hasData ? this.props.onMappingClick(node.id) : e.preventDefault()}
+            return <Button className={classes.btn} size="small" onClick={(e) => node.hasData ? this.props.onBtnClick(node.id) : e.preventDefault()}
                     color="primary" variant="outlined" id={node.id}
             ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
                 alt="small icon of a mouse"

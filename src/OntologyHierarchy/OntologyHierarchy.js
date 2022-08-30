@@ -427,6 +427,14 @@ class OntologyHierarchy extends React.Component {
         this.search(input, "MP", false);
     }
 
+    mouseTreeBtnClick = (termID) => {
+        this.search(termID, "MP", true);
+    }
+
+    humanTreeBtnClick = (termID) => {
+        this.search(termID, this.state.humanOntology, true);
+    }
+
     humanSearchBtnClick = (e) => {
         let input = typeof e === "string" ? e : document.getElementById("humanSearchInput").value;
         this.setState({humanSearchInput: input});
@@ -719,7 +727,7 @@ class OntologyHierarchy extends React.Component {
                                         !humanTree ? null :
                                             <OntologyTree treeID="humanTree"
                                                           selectedPhenotypeLabel={mappedHumanPhenotype}
-                                                          onMappingClick={this.humanSearchBtnClick}
+                                                          onMappingClick={this.humanTreeBtnClick}
                                                           expanded={expandedHumanNodes}
                                                           onBtnClick={this.getHumanPhenotypeBreakdown}
                                                           selected={selectedHumanNodes}
@@ -822,7 +830,7 @@ class OntologyHierarchy extends React.Component {
                                     {!mouseTree ? null :
                                         <OntologyTree treeID="mouseTree"
                                                       selectedPhenotypeLabel={mappedMousePhenotype}
-                                                      onMappingClick={this.mouseSearchBtnClick}
+                                                      onMappingClick={this.mouseTreeBtnClick}
                                                       expanded={expandedMouseNodes}
                                                       onBtnClick={this.getMousePhenotypeBreakdown}
                                                       selected={selectedMouseNodes}
