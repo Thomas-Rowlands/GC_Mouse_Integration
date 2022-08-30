@@ -165,7 +165,7 @@ class PhenotypeSearch extends React.Component {
         this.setState({loading: true, displayError: false, tableData: null, tableOrder: ordering});
         let human_pval = this.state.humanPval;
         let mouse_pval = this.state.mousePval;
-        let url_string = this.state.configData.api_server + "/controller.php?type=study&search=" +
+        let url_string = this.state.configData.api_server + "controller.php?type=study&search=" +
             encodeURIComponent(search_input) + "&page=" + this.page_num + "&human_pval=" + human_pval + "&mouse_pval="
             + mouse_pval + "&species=" + this.state.selectedSpecies + (this.state.isSearchExact ? "&exact" : "");
         axios.get(url_string)
@@ -307,6 +307,13 @@ class PhenotypeSearch extends React.Component {
                                                     helperText={this.state.inputErrorText}
                                                     InputProps={{
                                                         ...params.InputProps,
+                                                        onKeyDown: (e) => {
+                                                          if (e.key === "Enter") {
+                                                              this.search();
+                                                              document.getElementById("phenotypeSearchInput").blur();
+                                                              e.stopPropagation();
+                                                          }
+                                                        },
                                                         endAdornment: (
                                                             <React.Fragment>
                                                                 {liveLoading ?
