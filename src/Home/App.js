@@ -298,9 +298,16 @@ class App extends React.Component {
                                     )}
                                 </Route>
                             ))}
-
                         </HashRouter>
                     </div>
+                </div>
+                <div id="footer_menulinks">
+                    <a href="https://www.gwascentral.org/info/about">About</a> &nbsp;&nbsp;
+                    <a href="https://www.gwascentral.org/info/about/disclaimer">Disclaimer</a>&nbsp;&nbsp;
+                    <a href="https://www.gwascentral.org/info/about/citations">Cite</a>&nbsp;&nbsp;
+                    <a href="https://www.gwascentral.org/info/about/contact">Contact us</a>&nbsp;&nbsp;
+                    ©&nbsp;GWAS Central
+                    <br/>
                 </div>
             </div>
         );

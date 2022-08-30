@@ -6,6 +6,7 @@ html, body, .App{
 .App{
     margin-left: 60px;
     margin-right: 60px;
+    padding-bottom: 1em; /* Allowance for GC footer */
 }
 .App-header {
     height: 10em;

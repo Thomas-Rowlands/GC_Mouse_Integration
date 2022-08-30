@@ -453,15 +453,14 @@ div#header_menulinks {
     width:100%;
 }
 div#footer_menulinks {
-    padding-top:12px;
-    border-bottom: 0.5em;
-
+	position:absolute;
+	bottom: 1em;
+	left: 42.5vw;
 }
 div#menulinks a {
-    color: #0066dd;
-    font-size:0.9em;
+	color: #0066dd;
+	font-size: 0.9em;
 }
-
 div#footer_w3c {
     float: left;
     padding: 0px;
