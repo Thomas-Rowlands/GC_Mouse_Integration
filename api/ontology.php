@@ -52,7 +52,6 @@
                 n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
                 n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
                 COALESCE(m.experiment_total, n.experiment_total) AS experiment_total 
-                LIMIT 1
                 ";
                 if ($o == "MESH")
                     $cmd .= "UNION";
@@ -197,14 +196,13 @@
         public function get_human_mapping_by_id($termID, $targetOnt): array
         {
             $result = $this->neo->execute("
-            MATCH (n {id: '".$termID."'})
-            WITH n
-            OPTIONAL MATCH (n)-[:HAS_SYNONYM]->(syns)
-            WITH n, COLLECT(syns) AS syns
-            MATCH p=(o)<-[r:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedSyn)<-[:HAS_SYNONYM*0..1]-(mappedTerm)
-            WHERE (mappedSyn.gwas_total > 0 or mappedTerm.gwas_total > 0)
-            AND (o in syns or o = n) AND mappedSyn.ontology = '".strtolower($targetOnt)."' AND mappedTerm.ontology = '".strtolower($targetOnt)."' AND mappedTerm:Term
-            RETURN DISTINCT COALESCE(mappedTerm.id, mappedSyn.id) AS mappedID, COALESCE(mappedTerm.FSN, mappedSyn.FSN) AS mappedLabel, COALESCE(mappedTerm.ontology, mappedSyn.ontology) AS mappedOnt, COALESCE(mappedTerm.gwas_total, mappedSyn.gwas_total) AS gwas", []);
+            MATCH (n:MP {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm)
+            USING INDEX n:MP(id)
+            WITH mappedTerm
+            OPTIONAL MATCH (mappedTerm:$targetOnt)<-[:HAS_SYNONYM]-(m)
+            WITH COALESCE(m, mappedTerm) AS mappedTerm
+            WHERE mappedTerm.gwas_total > 0
+            RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.gwas_total AS gwas", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
