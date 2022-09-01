@@ -573,6 +573,7 @@ class OntologyHierarchy extends React.Component {
             case 2:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  mousePhenotype={this.state.treeData.mouseID}
+                                                 humanOntology={this.state.humanOntology}
                                                  setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             default:
@@ -839,7 +840,7 @@ class OntologyHierarchy extends React.Component {
                                                           }
                                                       }}
                                                       onToggle={this.handleMouseToggle} treeData={mouseTree}
-                                                      sourceOntology="MP" mappingOntology="HPO"/>}
+                                                      sourceOntology="MP" mappingOntology={this.state.humanOntology}/>}
                                 </Paper>
                             </Grid>
                         </Grid>
