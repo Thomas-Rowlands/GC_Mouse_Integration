@@ -681,6 +681,7 @@ class OntologyHierarchy extends React.Component {
                                                 }}
                                                 onKeyDown={e => {
                                                     if (e.keyCode === 13) {
+                                                        e.stopPropagation();
                                                         this.humanSearchBtnClick();
                                                     }
                                                 }}
@@ -784,6 +785,7 @@ class OntologyHierarchy extends React.Component {
                                                     }}
                                                     onKeyDown={e => {
                                                         if (e.keyCode === 13) {
+                                                            e.stopPropagation();
                                                             this.mouseSearchBtnClick();
                                                         }
                                                     }}
