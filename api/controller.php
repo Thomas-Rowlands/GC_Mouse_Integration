@@ -1,5 +1,5 @@
 <?php
-//    ini_set('display_errors', '0');
+    ini_set('display_errors', '1');
     header('Content-Type: application/json');
     include_once "studies.php";
     include_once "tree.php";
@@ -101,10 +101,13 @@
 
             }
         } else if ($_GET['type'] == "genome") {
-            if (validate_ontology($_GET["ontology"]) && $_GET["phenotype"]) {
+            if ($_GET["humanTermID"] || $_GET["mouseTermID"]) {
                 $genome = new Genome();
                 $ont = new Ontology();
-                $result = ["phenotype" => $ont->get_phenotype_name($_GET["phenotype"], $_GET["ontology"]), "markers" => $genome->getPhenotypeMarkerBins($_GET["phenotype"], $_GET["ontology"]), "knockouts" => $genome->getMouseKnockoutBins($_GET["phenotype"], $_GET["ontology"])];
+                $result = ["humanPhenotype" => $ont->get_phenotype_name($_GET["humanTermID"], $_GET["humanOntology"]),
+                    "mousePhenotype" => $ont->get_phenotype_name($_GET["mouseTermID"], "MP"),
+                    "markers" => $genome->getPhenotypeMarkerBins($_GET["humanTermID"], $_GET["humanOntology"]),
+                    "knockouts" => $genome->getMouseKnockoutBins($_GET["mouseTermID"], "MP")];
                 if ($result)
                     echo json_encode($result);
                 else

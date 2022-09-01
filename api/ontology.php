@@ -216,7 +216,11 @@
         {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ")-[r:HAS_SYNONYM]->(S) WHERE N.id = {termID} AND (S.gwas_total > 0 or S.experiment_total > 0) RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
+            $ontology = strtoupper($ontology);
+            $result = $this->neo->execute("MATCH (N:$ontology)-[r:HAS_SYNONYM]->(S)
+            USING INDEX N:$ontology(id) 
+            WHERE N.id = {termID} AND (S.gwas_total > 0 or S.experiment_total > 0) 
+            RETURN DISTINCT ID(S) AS SynonymID, S.FSN AS Synonym;", ["termID"=>$termID]);
             $synonyms = [];
             foreach ($result as $row) {
                 $synonyms[] = $row->get("Synonym");
@@ -227,7 +231,11 @@
         public function get_phenotype_name($termID, $ontology) {
             if (!$ontology)
                 return null;
-            $result = $this->neo->execute("MATCH (N:" . strtoupper($ontology) . ") WHERE N.id = {termID} AND (N.gwas_total > 0 or N.experiment_total > 0) RETURN N.FSN AS phenotype", ["termID"=>$termID]);
+            $ontology = strtoupper($ontology);
+            $result = $this->neo->execute("MATCH (N:$ontology) 
+            USING INDEX N:$ontology(id)
+            WHERE N.id = {termID} AND (N.gwas_total > 0 or N.experiment_total > 0) 
+            RETURN N.FSN AS phenotype", ["termID"=>$termID]);
             $phenotype = null;
             foreach ($result as $row) {
                 $phenotype = $row->get("phenotype");
