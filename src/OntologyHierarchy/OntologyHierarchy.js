@@ -59,6 +59,7 @@ class OntologyHierarchy extends React.Component {
             genotypeTermID: null,
             genotypeOntology: null,
             breakdownType: 0, // 0 = both, 1 = human only, 2 = mouse only
+            karyotypeToggle: false,
         };
     }
 
@@ -406,8 +407,10 @@ class OntologyHierarchy extends React.Component {
 
     genotypeHandler = () => {
         this.setState({
-            genotypeTermID: this.state.breakdownType !== 2 ? this.state.treeData.humanID : this.state.treeData.mouseID,
-            genotypeOntology: this.state.breakdownType !== 2 ? this.state.humanOntology : "MP"
+            humanTermID: this.humanPhenotype,
+            mouseTermID: this.mousePhenotype,
+            humanOntology: this.humanOntology,
+            karyotypeToggle: true
         });
     }
 
@@ -628,10 +631,10 @@ class OntologyHierarchy extends React.Component {
 
         return (<SwitchTransition>
             <CSSTransition
-                key={this.state.genotypeTermID}
+                key={this.state.karyotypeToggle}
                 addEndListener={(node, done) => node.addEventListener("transitionend", done, false)}
                 classNames='fade'
-            >{!this.state.genotypeTermID ? (
+            >{!this.state.karyotypeToggle ? (
                 <div className="pageContainer">
                     <ErrorBoundary>
                         <Grid container spacing={2}>
@@ -746,7 +749,6 @@ class OntologyHierarchy extends React.Component {
                             <Grid item xs>
                                 {
                                     this.state.isDataPresent ? this.getPhenotypeBreakdownComponent() : null
-
                                 }
                             </Grid>
                             <Grid item xs>
@@ -847,11 +849,12 @@ class OntologyHierarchy extends React.Component {
                     </ErrorBoundary>
                 </div>) : <div>
                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
-                    genotypeTermID: null,
-                    genotypeOntology: null
+                    karyotypeToggle: false
                 })}>Back</Button>
-                <Genome genotypeTermID={this.state.genotypeTermID}
-                        genotypeOntology={this.state.genotypeOntology}/>
+                <Genome humanTermID={this.state.humanTermID}
+                        humanOntology={this.state.humanOntology}
+                        mouseOntology={"MP"}
+                        mouseTermID={this.state.mouseTerm}/>
             </div>}
             </CSSTransition>
         </SwitchTransition>);

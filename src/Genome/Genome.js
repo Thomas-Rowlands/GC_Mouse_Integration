@@ -18,8 +18,9 @@ class Genome extends React.Component {
         this.state = {
             loading: true,
             tabValue: 0,
-            termID: props.genotypeTermID ? props.genotypeTermID : qs.parse(this.props.location.search).termID,
-            ontology: props.genotypeOntology ? props.genotypeOntology : qs.parse(this.props.location.search).ontology,
+            humanTermID: props.humanTermID ? props.humanTermID : qs.parse(this.props.location.search).humanTermID,
+            mouseTermID: props.mouseTermID ? props.mouseTermID : qs.parse(this.props.location.search).mouseTermID,
+            humanOntology: props.humanOntology ? props.humanOntology : qs.parse(this.props.location.search).humanOntology,
             markerData: null,
             configData: api_server,
             annotationSelected: null,
@@ -27,27 +28,39 @@ class Genome extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.state.markerData && this.state.termID && this.state.ontology)
-            this.getKaryotypeData(this.state.termID, this.state.ontology);
+        if (!this.state.markerData && (this.state.humanTermID || this.state.mouseTermID) && this.state.humanOntology)
+            this.getKaryotypeData(this.state.humanTermID, this.state.humanOntology);
     }
 
     onAnnotationClick = (annot) => {
         this.setState({annotationSelected: annot, tabValue: 1});
     }
 
-    getKaryotypeData = (termID, ontology) => {
-        let url_string = this.state.configData.api_server + "controller.php?type=genome&phenotype=" + termID + "&ontology=" + ontology;
+    getKaryotypeTitle = () => {
+        let hasMapping = this.state.humanTermID && this.state.mouseTermID;
+        if (hasMapping) {
+            return this.state.humanOntology + ": " + this.state.humanPhenotype + " -> MP: " + this.state.mousePhenotype;
+        } else if (this.state.humanPhenotype) {
+            return this.state.humanOntology + ": " + this.state.humanPhenotype;
+        } else {
+            return this.state.mouseOntology + ": " + this.state.mousePhenotype;
+        }
+    }
+
+    getKaryotypeData = (humanTermID, mouseTermID, ontology) => {
+        let url_string = this.state.configData.api_server + "controller.php?type=genome&humanTermID=" +
+            humanTermID + "&mouseTermID=" + mouseTermID + "&ontology=" + ontology;
         axios.get(url_string)
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data) {
                         let result = {
                                 "metadata": {
-                                  "numTracks": 2,
-                                  "trackLabels": [
-                                      "Mouse",
-                                      "Human"
-                                  ]
+                                    "numTracks": 2,
+                                    "trackLabels": [
+                                        "Mouse",
+                                        "Human"
+                                    ]
                                 },
                                 "keys": [
                                     "name",
@@ -359,7 +372,8 @@ class Genome extends React.Component {
                         );
                         this.setState({
                             markerData: result,
-                            phenotype: response.data.phenotype,
+                            humanPhenotype: response.data.humanPhenotype,
+                            mousePhenotype: response.data.mousePhenotype,
                             marker_avg: marker_avg,
                             knockout_avg: knockout_avg,
                             loading: false
@@ -372,12 +386,11 @@ class Genome extends React.Component {
     }
 
     render() {
-        let {loading, tabValue, termID, ontology, markerData, marker_avg, knockout_avg, phenotype} = this.state;
-        return termID && ontology ?
+        let {loading, tabValue, markerData, marker_avg, knockout_avg} = this.state;
+        let {humanOntology, humanTermID, mouseTermID} = this.props;
+        return (humanTermID || mouseTermID) ?
             (
                 <div>
-                    <Typography className="center">{phenotype}</Typography>
-                    <br/>
                     <AppBar position="static" color="default">
                         <Tabs
                             value={tabValue}
@@ -394,9 +407,10 @@ class Genome extends React.Component {
                     </AppBar>
                     <TabPanel value={tabValue} index={0} className="subTabMenu">
                         {
-                            markerData ?
-                                <AppIdeogram markerData={markerData} marker_avg={marker_avg} knockout_avg={knockout_avg}
-                                             onAnnotationClick={this.onAnnotationClick} organism="human"/> :
+                            markerData ? <div><Typography className="center">{this.getKaryotypeTitle()}</Typography><AppIdeogram
+                                    markerData={markerData} marker_avg={marker_avg} knockout_avg={knockout_avg}
+                                    onAnnotationClick={this.onAnnotationClick} organism="human"/></div>
+                                :
                                 <LoadingSpinner loading={loading}/>
                         }
                     </TabPanel>
