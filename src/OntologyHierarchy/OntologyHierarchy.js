@@ -497,28 +497,19 @@ class OntologyHierarchy extends React.Component {
     }
 
     scrollTrees = () => {
-        if (this.state.mappedMousePhenotype && this.state.isMappingPresent) {
-            const obj = this;
-            window.setTimeout(function () {
-                let humanPhenotype = obj.state.mappedHumanPhenotype;
-                let mousePhenotype = obj.state.mappedMousePhenotype;
-                let mouseElement = document.getElementById($("#mouseTree li[data-term='" + mousePhenotype + "']")[0].id);
-                let humanElement = document.getElementById($("#humanTree li[data-term='" + humanPhenotype + "']")[0].id);
-                let humanTree = $("#humanTree");
-                let mouseTree = $("#mouseTree");
-                humanTree.scrollTop(0);
-                mouseTree.scrollTop(0);
-                humanTree.animate({
-                    scrollTop: $(humanElement).offset().top - (humanTree.position().top + (humanTree.position() / 2))
-                }, 1500);
-                mouseTree.animate({
-                    scrollTop: $(mouseElement).offset().top - (mouseTree.position().top)
-                }, 1500);
-                obj.setState({mappedMousePhenotype: null, mappedHumanPhenotype: null});
-            }, 500);
-
+        let humanPhenotype = this.state.mappedHumanPhenotype;
+        let mousePhenotype = this.state.mappedMousePhenotype;
+        if (mousePhenotype) {
+            let mouseElement = document.getElementById($("#mouseTree li[data-term='" + mousePhenotype + "']")[0].id);
+            let mouseTree = document.getElementById("mouseTree");
+            $(mouseTree).animate({scrollTop: mouseElement.offsetTop - mouseTree.offsetHeight}, 1500);
         }
-        // this.props.setLoading(false);
+        if (humanPhenotype) {
+            let humanElement = document.getElementById($("#humanTree li[data-term='" + humanPhenotype + "']")[0].id);
+            let humanTree = document.getElementById("humanTree");
+            $(humanTree).animate({scrollTop: humanElement.offsetTop - humanTree.offsetHeight}, 1500);
+        }
+        this.props.setLoading(false);
     }
 
     getHumanPhenotypeBreakdown = (e) => {
