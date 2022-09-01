@@ -50,7 +50,8 @@
         {
             $ont = new Ontology();
             $return_package = ["Mappings" => $ont->get_mp_mapping_by_id($humanID),
-                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID), "Homologous Genes" => []];
+                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID), "Gene Knockouts" => [],
+                "Homologous Genes" => []];
             // Get GWAS Records
             $return_package["Gene Knockouts"] = $return_package["Mappings"] ? $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]) : [];
             return $return_package;
@@ -125,7 +126,6 @@
                     $result[] = $record;
                 }
             }
-
             if ($result)
                 return $result;
             else
