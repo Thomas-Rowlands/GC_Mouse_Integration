@@ -453,9 +453,10 @@ div#header_menulinks {
     width:100%;
 }
 div#footer_menulinks {
-	position:absolute;
-	bottom: 1em;
-	left: 42.5vw;
+	position: absolute;
+	padding-top: 3em;
+	padding-bottom: 3em;
+	left: 39vw;
 }
 div#menulinks a {
 	color: #0066dd;

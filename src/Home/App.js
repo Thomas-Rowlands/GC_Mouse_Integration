@@ -293,6 +293,14 @@ class App extends React.Component {
                                                     <Component
                                                         setLoading={this.setLoading}/>
                                                 </ThemeProvider>
+                                                <div id="footer_menulinks">
+                                                    <a href="https://www.gwascentral.org/info/about">About</a> &nbsp;&nbsp;
+                                                    <a href="https://www.gwascentral.org/info/about/disclaimer">Disclaimer</a>&nbsp;&nbsp;
+                                                    <a href="https://www.gwascentral.org/info/about/citations">Cite</a>&nbsp;&nbsp;
+                                                    <a href="https://www.gwascentral.org/info/about/contact">Contact us</a>&nbsp;&nbsp;
+                                                    ©&nbsp;GWAS Central
+                                                    <br/>
+                                                </div>
                                             </div>
                                         </CSSTransition>
                                     )}
@@ -300,14 +308,6 @@ class App extends React.Component {
                             ))}
                         </HashRouter>
                     </div>
-                </div>
-                <div id="footer_menulinks">
-                    <a href="https://www.gwascentral.org/info/about">About</a> &nbsp;&nbsp;
-                    <a href="https://www.gwascentral.org/info/about/disclaimer">Disclaimer</a>&nbsp;&nbsp;
-                    <a href="https://www.gwascentral.org/info/about/citations">Cite</a>&nbsp;&nbsp;
-                    <a href="https://www.gwascentral.org/info/about/contact">Contact us</a>&nbsp;&nbsp;
-                    ©&nbsp;GWAS Central
-                    <br/>
                 </div>
             </div>
         );
