@@ -37,13 +37,12 @@ class Genome extends React.Component {
     }
 
     getKaryotypeTitle = () => {
-        let hasMapping = this.state.humanTermID && this.state.mouseTermID;
-        if (hasMapping) {
-            return this.state.humanOntology + ": " + this.state.humanPhenotype + " -> MP: " + this.state.mousePhenotype;
+        if (this.state.humanTermID !== undefined && this.state.mouseTermID !== undefined) {
+            return this.state.humanOntology + ": " + this.state.humanPhenotype + " <-> MP: " + this.state.mousePhenotype;
         } else if (this.state.humanPhenotype) {
             return this.state.humanOntology + ": " + this.state.humanPhenotype;
         } else {
-            return this.state.mouseOntology + ": " + this.state.mousePhenotype;
+            return "MP: " + this.state.mousePhenotype;
         }
     }
 

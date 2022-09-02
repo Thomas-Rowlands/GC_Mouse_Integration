@@ -854,7 +854,7 @@ class OntologyHierarchy extends React.Component {
                 <Genome humanTermID={this.state.humanTermID}
                         humanOntology={this.state.humanOntology}
                         mouseOntology={"MP"}
-                        mouseTermID={this.state.mouseTerm}/>
+                        mouseTermID={this.state.mouseTermID}/>
             </div>}
             </CSSTransition>
         </SwitchTransition>);
