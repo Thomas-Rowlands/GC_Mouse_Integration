@@ -280,6 +280,7 @@
             $result = ["isExactMatch" => False];
             $mouseOntTree = new OntologyTree("MP", "MP", null, true, $ontLabel);
             $humanOntTree = new OntologyTree($ontology, $ontLabel, null, true, "MP");
+
             $result["mouseTree"] = $mouseOntTree->getTree();
             $result["humanTree"] = $humanOntTree->getTree();
             $result["mouseID"] = $result["mouseTree"]->id;
@@ -355,8 +356,11 @@
             $mappingProperty = $ontLabel == "MP" ? "hasExact" . $mappingOnt . "Mapping" : "hasExactMPMapping";
             $inferredMappingProperty = $ontLabel == "MP" ? "hasInferred" . $mappingOnt . "Mapping" : "hasInferredMPMapping";
             $children = $this->neo->execute("MATCH (n:$ontLabel)<-[:ISA]-(m)
-            WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            WHERE n.id = {termID} AND (m.hasHumanData = TRUE or m.hasMouseData = TRUE)
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, 
+            m.$mappingProperty AS hasExactMapping, m.$inferredMappingProperty AS hasInferredMapping, 
+            m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, 
+            m.experiment_total AS experiment_total, m.hasHumanData AS hasHumanData, m.hasMouseData AS hasMouseData
             ORDER BY label ASC", ["termID"=>$termID]);
 
             $return_package = [];
@@ -367,9 +371,11 @@
                     $hasExactMapping = $child->get('hasExactMapping');
                 if ($child->hasValue("hasInferredMapping"))
                     $hasInferredMapping = $child->get('hasInferredMapping');
+                $hasHumanData = $child->value("hasHumanData");
+                $hasMouseData = $child->value("hasMouseData");
                 $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0;
                 $childNode = new TreeNode($child->get('id'), $child->get('label'),
-                    $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData);
+                    $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData, $hasHumanData, $hasMouseData);
                 $return_package[$child->get('id')] = $childNode;
             }
             return $return_package;

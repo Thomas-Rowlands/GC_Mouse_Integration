@@ -69,25 +69,38 @@ class OntologyTree extends React.Component {
 
     getNodeButton = (node) => {
         const {classes} = this.props;
-        if (node.hasExactMapping && node.hasData) {
+        if (node.hasExactMapping && (node.hasHumanData && node.hasMouseData)) {
             return <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(node.id)}
-                        color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={node.id}
-                ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
-                                                                                           width="20px"
-                                                                                           src={"/images/mouse.png"}/></Button>;
-        } else if (node.hasInferredMapping) {
-            return <Button className={classes.btn} size="small" onClick={(e) => node.hasData ? this.props.onBtnClick(node.id) : e.preventDefault()}
-                    color="primary" variant="outlined" id={node.id}
+                           color="primary" variant="outlined" style={{backgroundColor: "#e4e1fd"}} id={node.id}
+            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
+                                                                                       width="20px"
+                                                                                       src={"/images/mouse.png"}/></Button>;
+        }
+
+        if (node.hasInferredMapping && (node.hasHumanData || node.hasMouseData)) {
+            return <Button className={classes.btn} size="small"
+                           onClick={(e) => node.hasData ? this.props.onBtnClick(node.id) : e.preventDefault()}
+                           color="primary" variant="outlined" id={node.id}
             ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
                 alt="small icon of a mouse"
                 width="20px"
                 src={"/images/mouse.png"}/></Button>;
-        } else if (node.hasData) {
+        }
+
+        if (node.hasHumanData) {
             return <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(node.id)}
-                    color="primary" variant="outlined" id={node.id}
+                           color="primary" variant="outlined" id={node.id}
             ><img width="20px"
-                  alt={this.props.treeID === "humanTree" ? "small icon of a man" : "small icon of a mouse"}
-                  src={this.props.treeID === "humanTree" ? "/images/man.png" : "/images/mouse.png"}/></Button>;
+                  alt={"small icon of a man"}
+                  src={"/images/man.png"}/></Button>;
+        }
+
+        if (node.hasMouseData) {
+            return <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(node.id)}
+                           color="primary" variant="outlined" id={node.id}
+            ><img width="20px"
+                  alt={"small icon of a mouse"}
+                  src={"/images/mouse.png"}/></Button>;
         }
         return null;
     }

@@ -35,12 +35,18 @@
             } else {
                 $results = $this->getTermChildren("mesh");
             }
-            $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'), false, false, true, false);
+            $rootNode = new TreeNode($results[0]->get('parentID'), $results[0]->get('parentLabel'),
+                false, false, true, false,
+                false, false);
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             foreach ($results as $result) {
                 $hasData = $result->get("gwas_total") > 0 || $result->get("experiment_total") > 0;
-                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get($mappingProperty), $result->get($inferredMappingProperty), $result->get('hasChildrenWithData'), $hasData);
+                $hasHumanData = $result->value("hasHumanData");
+                $hasMouseData = $result->value("hasMouseData");
+                $childNode = new TreeNode($result->get('id'), $result->get('label'), $result->get($mappingProperty),
+                    $result->get($inferredMappingProperty), $result->get('hasChildrenWithData'), $hasData,
+                    $hasHumanData, $hasMouseData);
                 $rootNode->children[$result->get('id')] = $childNode;
             }
             $this->tree = $rootNode;
@@ -50,8 +56,11 @@
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
-            WHERE n.id = {termID} AND (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, m.$mappingProperty AS $mappingProperty, m.$inferredMappingProperty AS $inferredMappingProperty, m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, m.experiment_total AS experiment_total
+            WHERE n.id = {termID} AND (m.hasHumanData = TRUE or m.hasMouseData = TRUE)
+            RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, 
+            m.$mappingProperty AS $mappingProperty, m.$inferredMappingProperty AS $inferredMappingProperty, 
+            m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, 
+            m.experiment_total AS experiment_total, m.hasHumanData AS hasHumanData, m.hasMouseData AS hasMouseData
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
@@ -59,22 +68,26 @@
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
-            WHERE n.id = {termID} AND (sib.gwas_total > 0 or sib.experiment_total > 0)
-            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS $mappingProperty, sib.$inferredMappingProperty AS $inferredMappingProperty, sib.hasChildrenWithData AS hasChildrenWithData, sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total
+            WHERE n.id = {termID} AND (sib.hasHumanData = TRUE or sib.hasMouseData = TRUE)
+            RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS $mappingProperty, 
+            sib.$inferredMappingProperty AS $inferredMappingProperty, sib.hasChildrenWithData AS hasChildrenWithData, 
+            sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total, sib.hasHumanData AS hasHumanData,
+            sib.hasMouseData AS hasMouseData
             ORDER BY label ASC", ["termID"=>$termID]);
         }
 
         private function getTreeByID($id) {
             $root = $this->ontLabel == "MESH" ? "mesh" : "$this->termIDLabel:0000001";
             $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
-            WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.gwas_total > 0 or endNode.experiment_total > 0)
+            WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.hasHumanData = TRUE or endNode.hasMouseData = TRUE)
             RETURN p";
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
             $result = $this->neo->execute($cmd, ["root"=>$root, "termID"=>$id]);
             if ($result) {
                 $root = $result[0]->get("p")->start();
-                $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null, null, true, false); // Set the root node to begin tree building.
+                $this->tree = new TreeNode($root->value('id'), $root->value('FSN'), null,
+                    null, true, false, false, false); // Set the root node to begin tree building.
                 foreach ($result as $row) { // Iterate through paths returned (could be multiple to the same node)
                     $path = $row->get("p");
                     $nodes = $path->nodes();
@@ -85,8 +98,12 @@
                         if (!array_key_exists($nodes[$i]->value('id'), $parentTreeNode->children)) {
                             $hasExactMapping = $nodes[$i]->hasValue($mappingProperty) ? $nodes[$i]->get($mappingProperty) : false;
                             $hasInferredMapping = $nodes[$i]->hasValue($inferredMappingProperty) ? $nodes[$i]->get($inferredMappingProperty) : false;
+                            $hasHumanData = $nodes[$i]->value("hasHumanData");
+                            $hasMouseData = $nodes[$i]->value("hasMouseData");
                             $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
-                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'), $hasExactMapping, $hasInferredMapping, $nodes[$i]->hasValue('hasChildrenWithData'), $hasData);
+                            $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'),
+                                $hasExactMapping, $hasInferredMapping, $nodes[$i]->value('hasChildrenWithData'),
+                                $hasData, $hasHumanData, $hasMouseData);
                             $sibs = $this->getTermSiblings($childNode->id);
 
                             $parentTreeNode->children[$nodes[$i]->value('id')] = $childNode;
@@ -95,7 +112,11 @@
                                     $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
                                     $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
-                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping, $hasInferredMapping, $sib->get('hasChildrenWithData'), $hasData);
+                                    $hasHumanData = $sib->value("hasHumanData");
+                                    $hasMouseData = $sib->value("hasMouseData");
+                                    $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping,
+                                        $hasInferredMapping, $sib->get('hasChildrenWithData'), $hasData, $hasHumanData,
+                                        $hasMouseData);
                                     $parentTreeNode->children[$sib->get('id')] = $sibNode;
                                 }
                             }
@@ -116,14 +137,19 @@
         public $hasExactMapping = false;
         public $hasInferredMapping = false;
         public $hasData = false;
+        public $hasHumanData = false;
+        public $hasMousedata = false;
 
-        public function __construct($id, $label, $hasExactMapping, $hasInferredMapping, $hasChildren, $hasData) {
+        public function __construct($id, $label, $hasExactMapping, $hasInferredMapping, $hasChildren, $hasData,
+                                    $hasHumanData, $hasMouseData) {
             $this->id = $id;
             $this->label = $label;
             $this->hasExactMapping = $hasExactMapping;
             $this->hasInferredMapping = $hasInferredMapping;
             $this->hasChildren = $hasChildren;
             $this->hasData = $hasData;
+            $this->hasHumanData = $hasHumanData;
+            $this->hasMousedata = $hasMouseData;
         }
 
 

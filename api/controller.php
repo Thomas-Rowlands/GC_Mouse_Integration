@@ -63,7 +63,6 @@
         if (parameters_present(array("getRoot", "ontology", "mappingOnt"))) {
             if (validate_ontology($_GET["ontology"]) && validate_ontology($_GET["mappingOnt"])) {
                 $ont = new Ontology();
-                $result = null;
                 $result = $ont->get_root_ontology_tree(strtoupper($_GET["ontology"]));
                 if ($result)
                     echo json_encode($result);
@@ -76,7 +75,6 @@
         } else if (parameters_present(array("getRoots", "ontology"))) {
             if (validate_ontology($_GET["ontology"])) {
                 $ont = new Ontology();
-                $result = null;
                 $result = $ont->get_root_ontology_trees($_GET["ontology"]);
                 if ($result)
                     echo json_encode($result);
@@ -89,7 +87,6 @@
         } else if (parameters_present(array("search", "term", "humanOntology", "mouseOntology", "searchOntology"))) {
             if (validate_ontology($_GET["humanOntology"]) && validate_ontology($_GET["mouseOntology"]) && validate_ontology($_GET["searchOntology"])) {
                 $ont = new Ontology();
-                $result = null;
                 $result = $ont->get_ontology_trees($_GET["term"], strtoupper($_GET["humanOntology"]), strtoupper($_GET["mouseOntology"]), strtoupper($_GET["searchOntology"]), isset($_GET["exact"]));
                 if ($result)
                     echo json_encode($result);
@@ -102,7 +99,6 @@
         } else if (parameters_present(array("childSearch", "term", "ontology", "mappingOntology"))) {
             if (validate_ontology($_GET["mappingOntology"]) && validate_ontology($_GET["ontology"])) {
                 $ont = new Ontology();
-                $result = null;
                 $result = $ont->getTermChildren($_GET["term"], $_GET["ontology"], $_GET["mappingOntology"]);
                 if ($result)
                     echo json_encode($result);
