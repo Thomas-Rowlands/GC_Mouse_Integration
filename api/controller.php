@@ -98,16 +98,22 @@
                 } else {
                     echo "invalid ontology specified";
                 }
-
             }
         } else if ($_GET['type'] == "genome") {
-            if ($_GET["humanTermID"] || $_GET["mouseTermID"]) {
+            if (isset($_GET["humanTermID"]) || isset($_GET["mouseTermID"])) {
                 $genome = new Genome();
                 $ont = new Ontology();
-                $result = ["humanPhenotype" => $ont->get_phenotype_name($_GET["humanTermID"], $_GET["humanOntology"]),
-                    "mousePhenotype" => $ont->get_phenotype_name($_GET["mouseTermID"], "MP"),
-                    "markers" => $genome->getPhenotypeMarkerBins($_GET["humanTermID"], $_GET["humanOntology"]),
-                    "knockouts" => $genome->getMouseKnockoutBins($_GET["mouseTermID"], "MP")];
+
+                $humanOnt = $_GET["ontology"] ?? null;
+                $humanTerm = $_GET["humanTermID"] ?? null;
+                $mouseTerm = $_GET["mouseTermID"] ?? null;
+
+                $result = ["humanPhenotype" => $ont->get_phenotype_name($humanTerm, $humanOnt),
+                    "mousePhenotype" => $ont->get_phenotype_name($mouseTerm, "MP"),
+                    "markers" => !$humanTerm && $mouseTerm ? $genome->getInferredPhenotypeMarkerBins($mouseTerm, $humanOnt)
+                        : $genome->getPhenotypeMarkerBins($humanTerm, $humanOnt),
+                    "knockouts" => !$mouseTerm && $humanTerm ?  $genome->getInferredMouseKnockoutBins($humanTerm, $humanOnt, "MP")
+                        : $genome->getMouseKnockoutBins($mouseTerm, "MP")];
                 if ($result)
                     echo json_encode($result);
                 else

@@ -229,7 +229,7 @@
         }
 
         public function get_phenotype_name($termID, $ontology) {
-            if (!$ontology)
+            if (!$ontology || !$termID)
                 return null;
             $ontology = strtoupper($ontology);
             $result = $this->neo->execute("MATCH (N:$ontology) 
@@ -409,6 +409,22 @@
             $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
             $matches[$i]["mappedOnt"] = $mapping["mappedOnt"];
             return $matches;
+        }
+
+        public function get_inferred_mappings($termID, $sourceOnt, $searchOnt): array
+        {
+            $sourceOnt = strtoupper($sourceOnt);
+            $searchOnt = strtoupper($searchOnt);
+            $results = $this->neo->execute("MATCH (n:$sourceOnt{id: '$termID'})-[:SPECIES_MAPPING {relation: 'INFERRED'}]-(m:$searchOnt)
+            USING INDEX n:$sourceOnt(id)
+            WHERE (m.gwas_total > 0 or m.experiment_total > 0)
+            RETURN m.id AS termID", []);
+
+            $return_package = [];
+            foreach ($results as $result) {
+                $return_package[] = $result->get("termID");
+            }
+            return $return_package;
         }
 
     }

@@ -30,6 +30,8 @@
 
         public function getPhenotypeMarkerBins($termID, $searchOnt): array
         {
+            if (!$termID || !$searchOnt)
+                return [];
             if (strtoupper($searchOnt) !== "MESH") {
                 $study = new StudySearch();
                 $termID = $study->get_mesh_id_from_db($termID);
@@ -72,13 +74,78 @@
                     $result["average"] = $total / count($result["bins"]);
 
 
-            
             return $result;
+        }
 
+        public function getInferredPhenotypeMarkerBins($termID, $searchOnt): array
+        {
+            if (!$termID || !$searchOnt)
+                return [];
+
+            if (strtoupper($searchOnt) !== "MESH") {
+                $study = new StudySearch();
+                $termID = $study->get_mesh_id_from_db($termID);
+                if (!$termID)
+                    return ["highest"=>null, "average"=>null, "bins"=>[]];
+            }
+
+            $mappedTerms = $this->ont->get_inferred_mappings($termID, "MP", $searchOnt);
+            $mappedDescendants = [];
+            foreach ($mappedTerms as $term) {
+                $mappedDescendants[] = $term;
+            }
+            foreach($mappedTerms as $term) {
+                $descendants = $this->ont->get_term_descendants($term, $searchOnt);
+                foreach($descendants as $descendant)
+                    $mappedDescendants[] = $descendant;
+            }
+
+
+            $result = ["highest"=>0, "average"=>0, "bins"=>[]];
+
+            if (!$mappedDescendants)
+                return $result;
+
+            $term_string = "";
+            foreach ($mappedDescendants as $term) {
+                $term_string .= "'" . str_replace(" ", "", $term) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            $total = 0;
+
+            foreach (Genome::$chromosomes as $chromosome) {
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, SUM(value) AS value, highest_significance
+                FROM human_markers_chr".$chromosome." AS hm
+                WHERE hm.mesh_id in (" . $term_string . ")
+                GROUP BY hm.bin, hm.highest_significance
+                ORDER BY hm.bin, hm.highest_significance ASC
+                ";
+                $markers_result = $this->con->execute($cmd, "gc_bin");
+                if ($markers_result) {
+                    $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                    foreach ($markers as $marker) {
+                        $result["bins"][] = $marker;
+                        $total += $marker["value"];
+                        if ($marker["value"] > $result["highest"])
+                            $result["highest"] = $marker["value"];
+                    }
+
+                }
+            }
+
+            if ($result["bins"])
+                if (count($result["bins"]) > 0)
+                    $result["average"] = $total / count($result["bins"]);
+
+
+            return $result;
         }
 
         public function getMouseKnockoutBins($termID, $searchOnt): array
         {
+            if (!$termID || !$searchOnt)
+                return [];
+
             if (strtoupper($searchOnt) != "MP") {
                 $termID = $this->ont->get_mp_mapping_by_id($termID);
                 if (!$termID)
@@ -121,6 +188,62 @@
                     $result["average"] = $total / $used_bin_count;
 
             
+            return $result;
+        }
+
+        public function getInferredMouseKnockoutBins($termID, $sourceOnt, $searchOnt): array
+        {
+            if (!$termID || !$searchOnt)
+                return [];
+
+            $mappedTerms = $this->ont->get_inferred_mappings($termID, $sourceOnt, $searchOnt);
+            $mappedDescendants = [];
+            foreach ($mappedTerms as $term) {
+                $mappedDescendants[] = $term;
+            }
+            foreach($mappedTerms as $term) {
+                $descendants = $this->ont->get_term_descendants($term, $searchOnt);
+                foreach($descendants as $descendant)
+                    $mappedDescendants[] = $descendant;
+            }
+
+            $result = ["highest"=>0, "average"=>0, "bins"=>[]];
+
+            if (!$mappedDescendants)
+                return $result;
+
+            $term_string = "";
+            foreach ($mappedDescendants as $term) {
+                $term_string .= "'" . str_replace(" ", "", $term) . "',";
+            }
+            $term_string = rtrim($term_string, ",");
+            $total = 0;
+            $used_bin_count = 0;
+            foreach (Genome::$chromosomes as $chromosome) {
+                $cmd = "SELECT '".$chromosome."' AS chr, bin, SUM(value) AS value, highest_significance
+                FROM mouse_knockouts_chr".$chromosome." AS mk
+                WHERE mk.mp_id in (" . $term_string . ")
+                GROUP BY mk.bin, mk.highest_significance
+                ";
+                $markers_result = $this->con->execute($cmd, "gc_bin");
+                if ($markers_result) {
+                    $markers = mysqli_fetch_all($markers_result, MYSQLI_ASSOC);
+                    foreach ($markers as $marker) {
+                        $result["bins"][] = $marker;
+                        $total += $marker["value"];
+                        if ($marker["value"] > 0)
+                            $used_bin_count += 1;
+                        if ($marker["value"] > $result["highest"])
+                            $result["highest"] = $marker["value"];
+                    }
+
+                }
+            }
+            if ($result["bins"])
+                if ($used_bin_count)
+                    $result["average"] = $total / $used_bin_count;
+
+
             return $result;
         }
 

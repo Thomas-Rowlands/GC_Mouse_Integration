@@ -28,8 +28,8 @@ class Genome extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.state.markerData && (this.state.humanTermID || this.state.mouseTermID) && this.state.humanOntology)
-            this.getKaryotypeData(this.state.humanTermID, this.state.humanOntology);
+        if (!this.state.markerData && (this.props.humanTermID || this.props.mouseTermID) && this.props.humanOntology)
+            this.getKaryotypeData(this.props.humanTermID, this.props.mouseTermID, this.props.humanOntology);
     }
 
     onAnnotationClick = (annot) => {
@@ -48,6 +48,9 @@ class Genome extends React.Component {
     }
 
     getKaryotypeData = (humanTermID, mouseTermID, ontology) => {
+        humanTermID = humanTermID ? humanTermID : "";
+        mouseTermID = mouseTermID ? mouseTermID : "";
+        ontology = ontology ? ontology : "";
         let url_string = this.state.configData.api_server + "controller.php?type=genome&humanTermID=" +
             humanTermID + "&mouseTermID=" + mouseTermID + "&ontology=" + ontology;
         axios.get(url_string)

@@ -407,9 +407,9 @@ class OntologyHierarchy extends React.Component {
 
     genotypeHandler = () => {
         this.setState({
-            humanTermID: this.humanPhenotype,
-            mouseTermID: this.mousePhenotype,
-            humanOntology: this.humanOntology,
+            humanTermID: this.state.treeData.humanID,
+            mouseTermID: this.state.treeData.mouseID,
+            humanOntology: this.state.humanOntology,
             karyotypeToggle: true
         });
     }
@@ -633,8 +633,8 @@ class OntologyHierarchy extends React.Component {
             <CSSTransition
                 key={this.state.karyotypeToggle}
                 addEndListener={(node, done) => node.addEventListener("transitionend", done, false)}
-                classNames='fade'
-            >{!this.state.karyotypeToggle ? (
+                classNames='fade'>
+                {!this.state.karyotypeToggle ? (
                 <div className="pageContainer">
                     <ErrorBoundary>
                         <Grid container spacing={2}>
@@ -848,9 +848,9 @@ class OntologyHierarchy extends React.Component {
                         </Grid>
                     </ErrorBoundary>
                 </div>) : <div>
-                <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
-                    karyotypeToggle: false
-                })}>Back</Button>
+                <Button size="large" color="primary" variant="contained" onClick={(e) => {
+                    this.setState({ karyotypeToggle: false});
+                }}>Back</Button>
                 <Genome humanTermID={this.state.humanTermID}
                         humanOntology={this.state.humanOntology}
                         mouseOntology={"MP"}
