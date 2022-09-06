@@ -138,7 +138,7 @@
         public $hasInferredMapping = false;
         public $hasData = false;
         public $hasHumanData = false;
-        public $hasMousedata = false;
+        public $hasMouseData = false;
 
         public function __construct($id, $label, $hasExactMapping, $hasInferredMapping, $hasChildren, $hasData,
                                     $hasHumanData, $hasMouseData) {
@@ -149,7 +149,7 @@
             $this->hasChildren = $hasChildren;
             $this->hasData = $hasData;
             $this->hasHumanData = $hasHumanData;
-            $this->hasMousedata = $hasMouseData;
+            $this->hasMouseData = $hasMouseData;
         }
 
 
