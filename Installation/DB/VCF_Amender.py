@@ -7,7 +7,37 @@ db_connection = mysql.connector.connect(host="localhost", database="GC_browser",
 db = db_connection.cursor()
 
 
-def get_variant_list(marker_list):
+class IMPCGene:
+    def __init__(self):
+        name = ""
+        description = ""
+        position = ""
+        length = ""
+        type = ""
+        links = []
+        phenotypes = []
+
+
+class GCVariant:
+    def __init__(self, record):
+        record = self.get_gc_data(record)
+
+    @staticmethod
+    def get_gc_data(record):
+        cmd = F"""
+        
+        """
+
+
+
+class VCFLink:
+    def __init__(self):
+        name = ""
+        url = ""
+
+
+def get_variant_list():
+    marker_list = []
     chroms = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
               "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y"]
     for chrom in chroms:
@@ -39,14 +69,13 @@ def get_gene_list(gene_list):
 
     return gene_list
 
-
 def filter_ensemble_variants():
     vcf_in = vcf.Reader(filename='../api/JBrowseData/homo_sapiens_phenotype_associated.vcf')
     vcf_out = vcf.Writer(open('../api/JBrowseData/GC_only_variants.vcf', 'w'), vcf_in)
-    marker_list = []
-    marker_list = get_variant_list(marker_list)
+    marker_list = get_variant_list()
     for rec in vcf_in:
         if rec.ID in marker_list:
+            new_variant = GCVariant(rec)
             try:
                 vcf_out.write_record(rec)
             except:
@@ -75,4 +104,4 @@ def filter_ensemble_genes():
 
 
 filter_ensemble_variants()
-filter_ensemble_genes()
+# filter_ensemble_genes()
