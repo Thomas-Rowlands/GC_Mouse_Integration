@@ -82,10 +82,11 @@
             USING INDEX n:" . $ont . "(lowerFSN)
             WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
             OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
-            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
-            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
-            n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
-            n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
+            RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, 
+            COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, 
+            COALESCE(m.hasExactMESHMapping, n.hasExactMESHMapping) AS hasExactMESHMapping, 
+            COALESCE(m.hasInferredHPOMapping, n.hasExactHPOMapping) AS hasExactHPOMapping, 
+            COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
             COALESCE(m.experiment_total, n.experiment_total) AS experiment_total LIMIT 1;
             ", ["search"=>$search, "searchContains"=>" " . $search]);
             return $this->get_term_search_results($result, $search);
@@ -96,7 +97,10 @@
             $result = $this->neo->execute("
             MATCH (syn)<-[:HAS_SYNONYM*0..1]-(ontTerm)
             WHERE ontTerm.id = {search}
-            RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, ontTerm.experiment_total AS experiment_total;
+            RETURN DISTINCT ontTerm.id AS id, ontTerm.ontology AS ontology, ontTerm.FSN AS FSN, 
+            ontTerm.hasExactMPMapping AS hasExactMPMapping, ontTerm.hasExactMESHMapping AS hasExactMESHMapping, 
+            ontTerm.hasExactHPOMapping AS hasExactHPOMapping, ontTerm.gwas_total AS gwas_total, 
+            ontTerm.experiment_total AS experiment_total;
             ", ["search"=>$search]);
             return $this->get_term_search_results($result, $search);
         }
@@ -178,11 +182,11 @@
         public function get_mp_mapping_by_id($termID): array
         {
             $result = $this->neo->execute("
-            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm)
+            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm:MP)
             WITH mappedTerm
             OPTIONAL MATCH (mappedTerm)<-[:HAS_SYNONYM]-(m)
             WITH COALESCE(m, mappedTerm) AS mappedTerm
-            WHERE mappedTerm:MP AND mappedTerm.experiment_total > 0
+            WHERE mappedTerm:MP AND mappedTerm.hasMouseData
             RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
             $mappings = [];
             if ($result)
@@ -196,17 +200,17 @@
         public function get_human_mapping_by_id($termID, $targetOnt): array
         {
             $result = $this->neo->execute("
-            MATCH (n:MP {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm)
+            MATCH (n:MP {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm:$targetOnt)
             USING INDEX n:MP(id)
             WITH mappedTerm
             OPTIONAL MATCH (mappedTerm:$targetOnt)<-[:HAS_SYNONYM]-(m)
             WITH COALESCE(m, mappedTerm) AS mappedTerm
-            WHERE mappedTerm.gwas_total > 0
+            WHERE mappedTerm.hasHumanData
             RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.gwas_total AS gwas", []);
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedOnt"=>$row->get("mappedOnt"),"mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt), "gwas"=>$row->get("gwas")];
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt), "gwas"=>$row->get("gwas")];
                     $mappings[] = $record;
                 }
             return $mappings;
@@ -413,7 +417,6 @@
             $matches[$i]["mappedID"] = $mapping["mappedID"];
             $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
             $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
-            $matches[$i]["mappedOnt"] = $mapping["mappedOnt"];
             return $matches;
         }
 
@@ -425,7 +428,6 @@
             USING INDEX n:$sourceOnt(id)
             WHERE (m.gwas_total > 0 or m.experiment_total > 0)
             RETURN m.id AS termID", []);
-
             $return_package = [];
             foreach ($results as $result) {
                 $return_package[] = $result->get("termID");
