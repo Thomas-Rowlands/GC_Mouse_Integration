@@ -41,19 +41,51 @@
         {
             $ont = new Ontology();
             // Get mouse knockouts
-            return ["Mappings" => $ont->get_human_mapping_by_id($mouseID, $targetOnt),
+            $return_package = ["Mappings" => $ont->get_human_mapping_by_id($mouseID, $targetOnt),
                 "GWAS Studies" => [], "Gene Knockouts" => $this->get_mouse_knockouts($mouseID),
                 "Homologous Genes" => []];
+
+            $inferred_terms = $ont->get_inferred_mappings($mouseID, "MP", $targetOnt);
+
+            if ($inferred_terms) {
+                foreach ($inferred_terms as $term) {
+                    $inferred_gwas = $this->get_mapped_gwas_studies($targetOnt, $term);
+                    foreach ($inferred_gwas as $gwas)
+                        $return_package["GWAS Studies"][] = $gwas;
+                }
+            }
+            // Get knockouts
+            if ($return_package["Mappings"]) {
+                $inferred_gwas = $this->get_mapped_gwas_studies($targetOnt, $return_package["Mappings"][0]["mappedID"]);
+                foreach ($inferred_gwas as $gwas)
+                    $return_package["GWAS Studies"][] = $gwas;
+            }
+            return $return_package;
         }
 
         public function get_human_term_breakdown($humanID, $ontology): array
         {
             $ont = new Ontology();
             $return_package = ["Mappings" => $ont->get_mp_mapping_by_id($humanID),
-                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID), "Gene Knockouts" => [],
-                "Homologous Genes" => []];
-            // Get GWAS Records
-            $return_package["Gene Knockouts"] = $return_package["Mappings"] ? $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]) : [];
+                "GWAS Studies" => $this->get_mapped_gwas_studies($ontology, $humanID),
+                "Homologous Genes" => [],
+                "Gene Knockouts" => []];
+
+            $inferred_terms = $ont->get_inferred_mappings($humanID, $ontology, "MP");
+
+            if ($inferred_terms) {
+                foreach ($inferred_terms as $term) {
+                    $inferred_knockouts = $this->get_mouse_knockouts($term);
+                    foreach ($inferred_knockouts as $knockout)
+                        $return_package["Gene Knockouts"][] = $knockout;
+                }
+            }
+            // Get knockouts
+            if ($return_package["Mappings"]) {
+                $inferred_knockouts = $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]);
+                foreach ($inferred_knockouts as $knockout)
+                    $return_package["Gene Knockouts"][] = $knockout;
+            }
             return $return_package;
         }
 
