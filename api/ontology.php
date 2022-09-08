@@ -63,12 +63,12 @@
         public function term_search_limited($search, $ont): array
         {
             $ont = strtoupper($ont);
+            $dataFlag = $ont == "MP" ? "hasMouseData" : "hasHumanData";
             $result = $this->neo->execute("
             MATCH (n:" . $ont . ")
             USING INDEX n:" . $ont . "(lowerFSN)
-            WHERE n.lowerFSN = {search}
+            WHERE n.lowerFSN = {search} AND n.$dataFlag = TRUE
             OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
-            WHERE (m.hasData or n.hasData)
             RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
             COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
             n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
@@ -80,7 +80,7 @@
             
             MATCH (n:" . $ont . ")
             USING INDEX n:" . $ont . "(lowerFSN)
-            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
+            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.$dataFlag = TRUE
             OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
             RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, 
             COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, 
@@ -162,6 +162,7 @@
             }
             if (!$matches)
                 return [];
+
 
             for ($i = 0; $i < sizeof($matches); $i++) {
                 $mapping = null;
@@ -337,7 +338,6 @@
                 }
                 if (!$humanID && !$mouseID)
                     return null;
-
 
                 $result["mouseID"] = $mouseID;
                 $result["mouseLabel"] = $mouseLabel;
