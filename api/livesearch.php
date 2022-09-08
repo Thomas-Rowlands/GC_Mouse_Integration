@@ -11,9 +11,9 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     if ($ont != "mp")
         $cmd = "MATCH (n:MESH)
                 USING INDEX n:MESH(lowerFSN)
-                WHERE n.lowerFSN = {entry}
+                WHERE n.lowerFSN = {entry} AND n.hasHumanData = TRUE
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
-                WHERE (m.hasData or n.hasData)
+                
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
                 n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
                 LIMIT 1
@@ -22,9 +22,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
                 
                 MATCH (n:HPO)
                 USING INDEX n:HPO(lowerFSN)
-                WHERE n.lowerFSN = {entry}
+                WHERE n.lowerFSN = {entry} AND n.hasHumanData = TRUE
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
-                WHERE (m.hasData or n.hasData)
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
                 n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
                 LIMIT 1
@@ -33,11 +32,11 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
                 
                 MATCH (n:MESH)
                 USING INDEX n:MESH(lowerFSN)
-                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasData
+                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasHumanData = TRUE
                 WITH n
                 MATCH (o:HPO)
                 USING INDEX o:HPO(lowerFSN)
-                WHERE o.lowerFSN STARTS WITH {entry} AND o.hasData
+                WHERE o.lowerFSN STARTS WITH {entry} AND o.hasHumanData = TRUE
                 WITH COLLECT(n) + COLLECT(o) AS x
                 UNWIND x AS n
                 
@@ -52,9 +51,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     else
         $cmd = "MATCH (n:MP)
                 USING INDEX n:MP(lowerFSN)
-                WHERE n.lowerFSN = {entry}
+                WHERE n.lowerFSN = {entry} AND n.hasMouseData = TRUE
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
-                WHERE (m.hasData or n.hasData)
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
                 n.originalType) AS type, COALESCE(m.ontology, n.ontology) AS ontology,  n.FSN AS Term, n.id AS TermID
                 LIMIT 1
@@ -63,7 +61,7 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
                 
                 MATCH (n:MP)
                 USING INDEX n:MP(lowerFSN)
-                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasData
+                WHERE n.lowerFSN STARTS WITH {entry} AND n.hasMouseData = TRUE
                 WITH n
                 
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
