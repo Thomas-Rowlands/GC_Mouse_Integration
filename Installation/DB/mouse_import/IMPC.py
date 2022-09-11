@@ -1,8 +1,10 @@
+import contextlib
 import csv
 
 import config
 import mysql.connector
 import DB
+import json
 
 
 def begin_import():
@@ -115,6 +117,23 @@ def split_multi_value_cols(data, divider):
         if val != lengths[0]:
             return False
     return temp
+
+
+def update_mp_terms():
+    with open(config.mp_terms_file, "r", encoding="utf-8-sig") as fin:
+        terms = json.load(fin)
+        con = mysql.connector.connect(user=config.username, password=config.password, host=config.host,
+                                      database=config.mouse_db)
+        cursor = con.cursor()
+        for term in terms:
+            query = F"INSERT IGNORE INTO mp_phenotypes (term_name, mp_term_id, is_synonym) VALUES (%s, %s, 0)"
+            try:
+                cursor.execute(query, [term["n.FSN"], term["n.id"]])
+            except mysql.connector.Error as err:
+                print(err)
+                # print(cursor.statement)
+        con.commit()
+        con.close()
 
 
 def get_human_phenotype_data():

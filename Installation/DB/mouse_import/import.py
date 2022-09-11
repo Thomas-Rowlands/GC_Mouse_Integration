@@ -33,11 +33,6 @@ def import_to_mysql(orthology_data):
         con.close()
         sys.exit()
 
-def generate_binned_markers():
-    con = DB.Connection(config.host, config.mouse_db, config.username, config.password)
-    cursor = con.cursor
-    try:
-
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -57,7 +52,8 @@ if __name__ == '__main__':
     # else:
     #     load_ensemble_orthology("mart_export.txt")
     #
-    # IMPC.begin_import()
+    # IMPC.update_mp_terms()
+    IMPC.begin_import()
     IMPC.update_marker_keys()
     print("done!")
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

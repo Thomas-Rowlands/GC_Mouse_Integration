@@ -107,7 +107,7 @@ class CacheBuilder:
   INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
   INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
   INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
-  WHERE pa.PhenotypeIdentifier in ({''.join(test)})  AND si.NegLogPValue > 0; """.replace(",)", ")")
+  WHERE s.IsHidden = 'no' AND pa.PhenotypeIdentifier in ({''.join(test)})  AND si.NegLogPValue > 0; """.replace(",)", ")")
         results = self.db.execute(cmd, multi=True)
         for result in results:
             if result.with_rows:
@@ -192,7 +192,7 @@ class CacheBuilder:
           INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
           INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
           INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
-          WHERE pa.PhenotypeIdentifier = "{termID}" AND si.NegLogPValue >= 0
+          WHERE pa.PhenotypeIdentifier = "{termID}" AND si.NegLogPValue >= 0 AND s.IsHidden = 'no'
           GROUP BY s.Identifier;
         """
         self.db.execute(cmd)
@@ -258,7 +258,7 @@ class CacheBuilder:
               INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
               INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
               INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
-              WHERE s.Identifier = '{studyID}'
+              WHERE s.Identifier = '{studyID}' AND s.IsHidden = 'no'
               ORDER BY NegLogPValue DESC;;
         """
         results = self.db.execute(cmd, multi=True)
@@ -316,25 +316,16 @@ class CacheBuilder:
             print("Connected, resuming processing...")
 
     def clear_study_cache(self):
-        cmd = """
-        MATCH (n:Study)
-        MATCH (m:Result)
-        MATCH (o:Experiment)
-        DETACH DELETE n
-        DETACH DELETE m
-        DETACH DELETE o
-        """
         try:
-            self.neo.run(cmd)
+            self.neo.run("MATCH (n:Study) DETACH DELETE n")
+            self.neo.run("MATCH (n:Result) DETACH DELETE n")
+            self.neo.run("MATCH (n:Experiment) DETACH DELETE n")
         except WireError:
-            print("Connection was closed prematurely, reconnecting...")
-            self.neo = Graph(scheme="bolt", host="localhost", password="12345", port="7687")
-            self.neo.run(cmd)
-            print("Connected, resuming processing...")
+            print("Connection was closed prematurely")
 
 
 def set_study_counts(cache_builder):
-    cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
+    # cache_builder.clear_node_counts()  # Uncomment this line to reset all nodes to 0. Not really needed in most cases!
     print("Processing HPO terms...")
     hpo_terms = cache_builder.get_ontology_terms("HPO")
     for term in hpo_terms:
@@ -385,6 +376,8 @@ def build_study_cache():
 def main():
     cache_builder = CacheBuilder()
     print("Connections established...")
+    cache_builder.clear_node_counts()
+    cache_builder.clear_study_cache()
     set_study_counts(cache_builder)
     build_study_cache()
     print("Cache generated.")

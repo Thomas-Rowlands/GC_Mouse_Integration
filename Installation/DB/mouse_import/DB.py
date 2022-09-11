@@ -37,7 +37,9 @@ def insert(table, data, column_mapping, primary_key, cursor, con, unique_cols=No
                 if err.errno == errorcode.ER_DUP_ENTRY:
                     print(err)
                     continue
-            print(cursor.statement)
+                else:
+                    print(err)
+            # print(cursor.statement)
         con.commit()
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -108,7 +110,7 @@ def insert_experiment(data, cursor, con):
                 mp_term = data['mp_term_name'][i].lower()
             if len(data['top_level_mp_term_name']):
                 top_mp_term = data['top_level_mp_term_name'][i].lower()
-
+            debug_check = 1
             result = cursor.callproc("insert_experiment", args=(
                 male_count, female_count, marker, zygosity, p_val, pipeline, procedure, parameter, pheno_center, 0))
             # con.commit()
@@ -118,10 +120,12 @@ def insert_experiment(data, cursor, con):
                     F"DUPLICATE EXPERIMENT: {male_count}-{female_count}-{marker}-{zygosity}-{p_val}-{pipeline}-{parameter}-{pheno_center}-{data['mp_term_name'][i]}")
                 continue
             if mp_term:
+                debug_check = 2
                 cursor.callproc("insert_experiment_phenotype", (last_inserted, mp_term))
+            debug_check = 3
             cursor.callproc("insert_experiment_parameter", (last_inserted, parameter_key))
+            debug_check = 4
             cursor.callproc("insert_experiment_procedure", (last_inserted, procedure_key))
-            # con.commit()
             if top_mp_term:
                 split_top_phenos = data['top_level_mp_term_name'][i].lower().split(",")
                 for pheno in split_top_phenos:
@@ -133,7 +137,10 @@ def insert_experiment(data, cursor, con):
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             sys.exit("Database does not exist")
         else:
-            print(err)
+            if err.msg == "Column 'mouse_marker_id' cannot be null":
+                print(F"Record failed: marker '{marker}' does not exist...")
+            else:
+                print(err.msg)
             # sys.exit(cursor.statement)  # Ignore warning, it IS actually in scope.
     except IndexError as err:
         print("Index error: Reached the end of clean data. Only rows with missing values remaining.")
