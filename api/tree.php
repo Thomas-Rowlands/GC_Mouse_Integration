@@ -100,7 +100,7 @@
                             $hasInferredMapping = $nodes[$i]->hasValue($inferredMappingProperty) ? $nodes[$i]->get($inferredMappingProperty) : false;
                             $hasHumanData = $nodes[$i]->value("hasHumanData");
                             $hasMouseData = $nodes[$i]->value("hasMouseData");
-                            $hasData = $nodes[$i]->value("gwas_total") > 0 || $nodes[$i]->value("experiment_total") > 0;
+                            $hasData = $hasHumanData || $hasMouseData;
                             $childNode = new TreeNode($nodes[$i]->value('id'), $nodes[$i]->value('FSN'),
                                 $hasExactMapping, $hasInferredMapping, $nodes[$i]->value('hasChildrenWithData'),
                                 $hasData, $hasHumanData, $hasMouseData);
@@ -111,9 +111,9 @@
                                 if (!array_key_exists($sib->get('id'), $parentTreeNode->children)) {
                                     $hasExactMapping = $sib->hasValue($mappingProperty) ? $sib->get($mappingProperty) : false;
                                     $hasInferredMapping = $sib->hasValue($inferredMappingProperty) ? $sib->get($inferredMappingProperty) : false;
-                                    $hasData = $sib->value("gwas_total") > 0 || $sib->value("experiment_total") > 0;
                                     $hasHumanData = $sib->value("hasHumanData");
                                     $hasMouseData = $sib->value("hasMouseData");
+                                    $hasData = $hasHumanData || $hasMouseData;
                                     $sibNode = new TreeNode($sib->get('id'), $sib->get('label'), $hasExactMapping,
                                         $hasInferredMapping, $sib->get('hasChildrenWithData'), $hasData, $hasHumanData,
                                         $hasMouseData);
