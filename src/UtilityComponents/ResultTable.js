@@ -122,9 +122,20 @@ class ResultTable extends React.Component {
             return null;
     }
 
+    formatOntologyText = (ont) => {
+        if (ont === "mesh")
+            return "MeSH";
+        if (ont === "hpo")
+            return "HPO";
+        if (ont === "mp")
+            return "MP";
+        return ont;
+    }
+
     getSearchTableCell = (row, key) => {
         let clickFunc = this.getCellClickHandler(key);
         let hoverText = this.getCellHoverContent(row, key);
+        row[key] = this.formatOntologyText(row[key]);
         if (hoverText)
             return (
                 <Tooltip title={hoverText} arrow>
