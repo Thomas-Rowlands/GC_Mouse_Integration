@@ -212,7 +212,7 @@ class ResultTable extends React.Component {
                                                                                          data-human-ont={row["Human Ontology"]}
                                                                                          data-human-term={row["ID"]}
                                                                                          data-mouse-term={row["MP ID"]}
-                                                                                         onClick={() => this.props.genotypeBtnClicked ? this.props.genotypeBtnClicked(row["ID"], row["Human Ontology"] ? row["Human Ontology"] : "MP") : null}><Equalizer/></IconButton></TableCell>
+                                                                                         onClick={() => this.props.genotypeBtnClicked ? this.props.genotypeBtnClicked(row["MP ID"], row["ID"], row["Human Ontology"] ? row["Human Ontology"] : "MP") : null}><Equalizer/></IconButton></TableCell>
                                                 </TableRow>)
                                         else
                                             return (

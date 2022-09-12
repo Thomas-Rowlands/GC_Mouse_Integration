@@ -109,8 +109,11 @@ class PhenotypeSearch extends React.Component {
         this.setState({mouseTerm: mouseTerm, humanTerm: humanTerm, humanOntology: humanOnt, searchOpen: false});
     }
 
-    genotypeBtnClicked = (term, ontology) => {
-        this.setState({genotypeTermID: term, genotypeOntology: ontology});
+    genotypeBtnClicked = (mouseTerm, humanTerm, ontology) => {
+        if (ontology !== "MP")
+            this.setState({humanTermID: humanTerm, humanOntology: ontology, mouseTermID: mouseTerm});
+        else
+            this.setState({mouseTermID: mouseTerm, humanOntology: ontology});
     }
 
     onBreakdownFinish = (e) => {
@@ -263,7 +266,7 @@ class PhenotypeSearch extends React.Component {
                     classNames='fade'
                 >
                     {
-                        !this.state.genotypeTermID ? <div className="PhenotypeSearch">
+                        !this.state.humanTermID && !this.state.mouseTermID ? <div className="PhenotypeSearch">
                                 <LoadingSpinner loading={loading}/>
                                 <div className="searchResultsContainer">
                                     {/* Orthology Selection */}
@@ -454,11 +457,13 @@ class PhenotypeSearch extends React.Component {
                             </div> :
                             <div>
                                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
-                                    genotypeTermID: null,
-                                    genotypeOntology: null
+                                    humanTermID: null,
+                                    humanOntology: null,
+                                    mouseTermID: null
                                 })}>Back</Button><br/>
-                                <Genome genotypeTermID={this.state.genotypeTermID}
-                                        genotypeOntology={this.state.genotypeOntology}
+                                <Genome humanTermID={this.state.humanTermID}
+                                        humanOntology={this.state.humanOntology}
+                                        mouseTermID={this.state.mouseTermID}
                                         setLoading={this.props.setLoading}/>
                             </div>
                     }
