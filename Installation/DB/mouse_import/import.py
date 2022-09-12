@@ -36,24 +36,25 @@ def import_to_mysql(orthology_data):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(description='Import data into GC_mouse')
-    # parser.add_argument('-snp', action="store_true", help='Link human snps to genes')
-    # parser.add_argument('-i', action="store_true", help='Match genes from a specified folder containing GRCh58 marker json files.')
-    # parser.add_argument('-start', help="Starting index of file to use e.g. 5 to start at markers5.json")
-    # parser.add_argument('-end', help="Last file to process e.g. 10 to finish after processing markers10.json")
-    # args = parser.parse_args()
-    # if args.snp:
-    #     import marker_mapping
-    #     mapper = marker_mapping.MarkerMapper(30000)
-    #     mapper.start()
-    # elif args.i:
-    #     import BulkProcessor
-    #     BulkProcessor.process_files(int(args.start), int(args.end) + 1)
-    # else:
-    #     load_ensemble_orthology("mart_export.txt")
-    #
-    # IMPC.update_mp_terms()
-    IMPC.begin_import()
-    IMPC.update_marker_keys()
+    parser = argparse.ArgumentParser(description='Import data into GC_mouse')
+    parser.add_argument('-snp', action="store_true", help='Link human snps to genes')
+    parser.add_argument('-i', action="store_true", help='Match genes from a specified folder containing GRCh58 marker json files.')
+    parser.add_argument('-start', help="Starting index of file to use e.g. 5 to start at markers5.json")
+    parser.add_argument('-end', help="Last file to process e.g. 10 to finish after processing markers10.json")
+    parser.add_argument('-o', action="store_true", help="Update MP ontology terms from a JSON file.")
+    args = parser.parse_args()
+    if args.snp:
+        import marker_mapping
+        mapper = marker_mapping.MarkerMapper(30000)
+        mapper.start()
+    elif args.i:
+        import BulkProcessor
+        BulkProcessor.process_files(int(args.start), int(args.end) + 1)
+    else:
+        load_ensemble_orthology("mart_export.txt")
+
+    IMPC.update_mp_terms()
+    # IMPC.begin_import()
+    # IMPC.update_marker_keys()
     print("done!")
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
