@@ -402,8 +402,8 @@ class Genome extends React.Component {
                             variant="fullWidth"
                             aria-label="full width tabs example"
                         >
-                            <Tab label="Region"/>
-                            <Tab label="Genome"/>
+                            <Tab label="Genome View"/>
+                            <Tab label="Region View"/>
 
                         </Tabs>
                     </AppBar>
