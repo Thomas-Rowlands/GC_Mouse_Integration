@@ -412,7 +412,6 @@ class PhenotypeResultBreakdown extends React.Component {
                             <Button variant="contained" color="primary"
                                     onClick={this.props.backBtnClick}>Back</Button> : null}
                         <div className="phenotype-breakdown-container">
-
                             <AppBar position="static" color="default">
                                 <Tabs
                                     value={tabValue}
@@ -513,10 +512,10 @@ class PhenotypeResultBreakdown extends React.Component {
                                     breakdownData && !Array.isArray(breakdownData["Mappings"]) ? (<div>
                                             <Grid container>
                                                 <Grid item xs>
-                                                    <h4 className="center">Homo Sapiens</h4>
+                                                    <h4 className="center">Human</h4>
                                                 </Grid>
                                                 <Grid item xs>
-                                                    <h4 className="center">Mus Musculus</h4>
+                                                    <h4 className="center">Mouse</h4>
                                                 </Grid>
                                             </Grid>
                                             <Grid container>
