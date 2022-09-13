@@ -92,9 +92,18 @@
         public function get_mapped_gwas_studies($ontology, $termID): array
         {
             $ont = new Ontology();
-            if (strtoupper($ontology) != "MESH")
-                $termID = $this->get_mesh_id_from_db($termID);
-            $descendants = $ont->get_term_descendants($termID, "MESH");
+            if (strtoupper($ontology) == "MESH") {
+                $descendants = $ont->get_term_descendants($termID, "MESH");
+            } else {
+                $descendants = $ont->get_term_descendants($termID, "HPO");
+                $hpo_descendants = [];
+                foreach ($descendants as $desc) {
+                    $hpo_descendants[] = $this->get_mesh_id_from_db($desc);
+                }
+                $descendants = $hpo_descendants;
+            }
+
+
             $descendants[] = $termID;
             $term_string = "";
             foreach ($descendants as $descendant) {
