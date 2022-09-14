@@ -24,14 +24,13 @@
         public function get_phenotype_homology_breakdown($mouseID, $humanID, $humanOnt): array
         {
             $humanOnt = strtoupper($humanOnt);
-
             $return_package = ["Mappings" => Mapper::getMappings($mouseID, $humanID, $humanOnt, $this->neo),
                 "GWAS Studies" => [], "Gene Knockouts" => [], "Homologous Genes" => []];
             // Get GWAS Studies
             if ($return_package["Mappings"]) {
-                $return_package["GWAS Studies"] = $return_package["Mappings"]["gwas"] > 0 ?
+                $return_package["GWAS Studies"] = $return_package["Mappings"]["hasHumanData"] ?
                     $this->get_mapped_gwas_studies($humanOnt, $return_package["Mappings"]["humanID"]) : [];
-                $return_package["Gene Knockouts"] = $return_package["Mappings"]["experiments"] > 0 ?
+                $return_package["Gene Knockouts"] = $return_package["Mappings"]["hasMouseData"] ?
                     $this->get_mouse_knockouts($return_package["Mappings"]["mouseID"]) : [];
             }
             return $return_package;
@@ -72,7 +71,6 @@
                 "Gene Knockouts" => []];
 
             $inferred_terms = $ont->get_inferred_mappings($humanID, $ontology, "MP");
-
             if ($inferred_terms) {
                 foreach ($inferred_terms as $term) {
                     $inferred_knockouts = $this->get_mouse_knockouts($term);
@@ -102,7 +100,6 @@
                 }
                 $descendants = $hpo_descendants;
             }
-
 
             $descendants[] = $termID;
             $term_string = "";
@@ -199,7 +196,6 @@
             $results = [];
             $mouseIDs = [];
             $humanIDs = [];
-
             foreach ($mapped_terms as $mapping) {
                 $skip_duplicate = false; //filter out duplicates which do not have a mapped ID
                 // Check if at least 1 GWAS or Knockout is present for this phenotype

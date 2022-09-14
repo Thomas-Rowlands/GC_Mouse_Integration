@@ -211,7 +211,9 @@
             $mappings = [];
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt), "gwas"=>$row->get("gwas")];
+                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel"),
+                        "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $targetOnt),
+                        "gwas"=>$row->get("gwas"), "mappedOnt"=>$targetOnt];
                     $mappings[] = $record;
                 }
             return $mappings;
@@ -417,6 +419,7 @@
             $matches[$i]["mappedID"] = $mapping["mappedID"];
             $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
             $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
+            $matches[$i]["mappedOnt"] = $mapping["mappedOnt"];
             return $matches;
         }
 
@@ -424,10 +427,11 @@
         {
             $sourceOnt = strtoupper($sourceOnt);
             $searchOnt = strtoupper($searchOnt);
-            $results = $this->neo->execute("MATCH (n:$sourceOnt{id: '$termID'})-[:SPECIES_MAPPING {relation: 'INFERRED'}]-(m:$searchOnt)
+            $dataFlag = $searchOnt == "MP" ? "m.hasMouseData" : "m.hasHumanData";
+            $results = $this->neo->execute("MATCH (n:$sourceOnt{id: '$termID'})<-[:ISA*1..]-()-[:SPECIES_MAPPING {relation: 'EXACT'}]-(m:$searchOnt)
             USING INDEX n:$sourceOnt(id)
-            WHERE (m.gwas_total > 0 or m.experiment_total > 0)
-            RETURN m.id AS termID", []);
+            WHERE $dataFlag = TRUE
+            RETURN DISTINCT m.id AS termID", []);
             $return_package = [];
             foreach ($results as $result) {
                 $return_package[] = $result->get("termID");
