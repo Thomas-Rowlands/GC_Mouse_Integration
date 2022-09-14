@@ -128,14 +128,16 @@ class OntologyHierarchy extends React.Component {
     }
 
     formatOntology = (ont) => {
-        ont = ont.toLowerCase();
-        if (ont !== "mp") {
-            if (ont === "mesh")
-                return "MeSH";
-            else
-                return "HPO";
-        }
-        return ont.toUpperCase();
+        if (!(typeof ont === 'string') && !(ont instanceof String))
+            return ont;
+        let lowerOnt = ont.toLowerCase();
+        if (lowerOnt === "mesh")
+            return "MeSH";
+        if (lowerOnt === "hpo")
+            return "HPO";
+        if (lowerOnt === "mp")
+            return "MP";
+        return ont;
     }
 
     getAllPaths = (obj, key, prev = '') => {

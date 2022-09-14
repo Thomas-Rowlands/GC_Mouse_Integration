@@ -37,12 +37,15 @@ class Genome extends React.Component {
     }
 
     formatOntology = (ont) => {
-        if (ont !== "MP") {
-            if (ont === "MESH")
-                return "MeSH";
-            else
-                return "HPO";
-        }
+        if (!(typeof ont === 'string') && !(ont instanceof String))
+            return ont;
+        let lowerOnt = ont.toLowerCase();
+        if (lowerOnt === "mesh")
+            return "MeSH";
+        if (lowerOnt === "hpo")
+            return "HPO";
+        if (lowerOnt === "mp")
+            return "MP";
         return ont;
     }
 
