@@ -255,6 +255,17 @@ class PhenotypeSearch extends React.Component {
         `;
     }
 
+    formatOntology = (ont) => {
+        ont = ont.toLowerCase();
+        if (ont !== "mp") {
+            if (ont === "mesh")
+                return "MeSH";
+            else
+                return "HPO";
+        }
+        return ont.toUpperCase();
+    }
+
     render() {
         const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
@@ -372,7 +383,7 @@ class PhenotypeSearch extends React.Component {
                                                         float: "right",
                                                         fontWeight: "bold"
                                                     }}>
-                                                        {option.ontology.toUpperCase()}
+                                                        {this.formatOntology(option.ontology)}
                                                     </div>
                                                 </div>}/>
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}

@@ -127,6 +127,17 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
+    formatOntology = (ont) => {
+        ont = ont.toLowerCase();
+        if (ont !== "mp") {
+            if (ont === "mesh")
+                return "MeSH";
+            else
+                return "HPO";
+        }
+        return ont.toUpperCase();
+    }
+
     getAllPaths = (obj, key, prev = '') => {
         const result = [];
 
@@ -558,6 +569,8 @@ class OntologyHierarchy extends React.Component {
         this.getRootTrees(e.target.value);
     }
 
+
+
     getPhenotypeBreakdownComponent = () => {
         switch (this.state.breakdownType) {
             case 0:
@@ -706,7 +719,7 @@ class OntologyHierarchy extends React.Component {
                                                     float: "right",
                                                     fontWeight: "bold"
                                                 }}>
-                                                    {option.ontology.toUpperCase()}
+                                                    {this.formatOntology(option.ontology)}
                                                 </div>
                                             </div>}
                                     />
@@ -809,7 +822,7 @@ class OntologyHierarchy extends React.Component {
                                                         float: "right",
                                                         fontWeight: "bold"
                                                     }}>
-                                                        {option.ontology.toUpperCase()}
+                                                        {this.formatOntology(option.ontology)}
                                                     </div>
                                                 </div>}
                                         />

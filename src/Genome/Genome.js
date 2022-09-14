@@ -36,11 +36,21 @@ class Genome extends React.Component {
         this.setState({annotationSelected: annot, tabValue: 1});
     }
 
+    formatOntology = (ont) => {
+        if (ont !== "MP") {
+            if (ont === "MESH")
+                return "MeSH";
+            else
+                return "HPO";
+        }
+        return ont;
+    }
+
     getKaryotypeTitle = () => {
         if (this.state.humanTermID !== undefined && this.state.mouseTermID !== undefined) {
-            return this.state.humanOntology + ": " + this.state.humanPhenotype + " <-> MP: " + this.state.mousePhenotype;
+            return this.formatOntology(this.state.humanOntology) + ": " + this.state.humanPhenotype + " <-> MP: " + this.state.mousePhenotype;
         } else if (this.state.humanPhenotype) {
-            return this.state.humanOntology + ": " + this.state.humanPhenotype;
+            return this.formatOntology(this.state.humanOntology) + ": " + this.state.humanPhenotype;
         } else {
             return "MP: " + this.state.mousePhenotype;
         }
