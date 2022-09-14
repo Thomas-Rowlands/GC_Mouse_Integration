@@ -71,6 +71,7 @@
                 "Gene Knockouts" => []];
 
             $inferred_terms = $ont->get_inferred_mappings($humanID, $ontology, "MP");
+
             if ($inferred_terms) {
                 foreach ($inferred_terms as $term) {
                     $inferred_knockouts = $this->get_mouse_knockouts($term);
@@ -92,16 +93,23 @@
             $ont = new Ontology();
             if (strtoupper($ontology) == "MESH") {
                 $descendants = $ont->get_term_descendants($termID, "MESH");
+                $descendants[] = $termID;
             } else {
                 $descendants = $ont->get_term_descendants($termID, "HPO");
+                $descendants[] = $termID;
                 $hpo_descendants = [];
                 foreach ($descendants as $desc) {
                     $hpo_descendants[] = $this->get_mesh_id_from_db($desc);
                 }
-                $descendants = $hpo_descendants;
-            }
+                $descendants = [];
+                foreach ($hpo_descendants as $desc) {
+                    $mesh_descendants = $ont->get_term_descendants($desc, "MESH");
+                    foreach ($mesh_descendants as $mDesc) {
+                        $descendants[] = $mDesc;
+                    }
+                }
 
-            $descendants[] = $termID;
+            }
             $term_string = "";
             foreach ($descendants as $descendant) {
                 $term_string .= "'" . str_replace(" ", "", $descendant) . "',";

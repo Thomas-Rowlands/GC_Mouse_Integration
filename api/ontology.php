@@ -272,7 +272,7 @@
         {
             $ontology = strtoupper($ontology);
             $result = $this->neo->execute("MATCH (n:$ontology)<-[:ISA*1..]-(m)
-            WHERE n.id = {termID} AND m.isObsolete = 'false' AND (m.gwas_total > 0 or m.experiment_total > 0)
+            WHERE n.id = {termID} AND m.isObsolete = 'false' AND (m.hasHumanData = TRUE or m.hasMouseData = TRUE)
             RETURN DISTINCT m.id AS descendant", ["termID"=>$termID]);
             $descendants = [];
             foreach ($result as $row) {
