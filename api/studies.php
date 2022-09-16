@@ -71,19 +71,20 @@
                 "Gene Knockouts" => []];
 
             $inferred_terms = $ont->get_inferred_mappings($humanID, $ontology, "MP");
-
             if ($inferred_terms) {
                 foreach ($inferred_terms as $term) {
                     $inferred_knockouts = $this->get_mouse_knockouts($term);
                     foreach ($inferred_knockouts as $knockout)
-                        $return_package["Gene Knockouts"][] = $knockout;
+                        if (!in_array($knockout, $return_package["Gene Knockouts"]))
+                            $return_package["Gene Knockouts"][] = $knockout;
                 }
             }
             // Get knockouts
             if ($return_package["Mappings"]) {
                 $inferred_knockouts = $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]);
                 foreach ($inferred_knockouts as $knockout)
-                    $return_package["Gene Knockouts"][] = $knockout;
+                    if (!in_array($knockout, $return_package["Gene Knockouts"]))
+                        $return_package["Gene Knockouts"][] = $knockout;
             }
             return $return_package;
         }
@@ -185,17 +186,17 @@
             if ($exact) {
                 if ($species == "mouse") {
                     //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH", true);
+                    $mapped_terms = $ont->search_mouse_term($user_input, null, true);
                 } else {
-                    //$mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+//                    $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true);
                     $mapped_terms = $ont->search_human_term($user_input, "MESH", true);
                 }
             } else {
                 if ($species == "mouse") {
-                    //$mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
-                    $mapped_terms = $ont->search_mouse_term($user_input, "MESH");
+//                    $mapped_hpo_terms = $ont->search_mouse_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+                    $mapped_terms = $ont->search_mouse_term($user_input, null);
                 } else {
-                    //$mapped_hpo_terms = $ont->search_human_term($user_input, "HPO", true, $human_pval, $mouse_pval);
+//                    $mapped_hpo_terms = $ont->search_human_term($user_input, "HPO");
                     $mapped_terms = $ont->search_human_term($user_input, "MESH");
                 }
             }

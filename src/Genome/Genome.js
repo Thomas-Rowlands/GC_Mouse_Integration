@@ -1,7 +1,7 @@
 import React from "react";
 import AppIdeogram from "./Components/AppIdeogram";
 import LoadingSpinner from "../UtilityComponents/LoadingSpinner/LoadingSpinner";
-import {AppBar, Tab, Tabs} from "@material-ui/core";
+import {AppBar, Button, Tab, Tabs} from "@material-ui/core";
 import TabPanel from "../UtilityComponents/TabPanel";
 import axios from "axios";
 import * as qs from 'query-string';
@@ -9,6 +9,7 @@ import {withRouter} from "react-router";
 import {api_server} from "../UtilityComponents/ConfigData";
 import GenomeBrowser from "./Components/GenomeBrowser";
 import Typography from "@material-ui/core/Typography";
+import {Link} from "react-router-dom";
 
 
 class Genome extends React.Component {
@@ -422,7 +423,8 @@ class Genome extends React.Component {
                     </AppBar>
                     <TabPanel value={tabValue} index={0} className="subTabMenu">
                         {
-                            markerData ? <div><Typography className="center">{this.getKaryotypeTitle()}</Typography><AppIdeogram
+                            markerData ?
+                                <div><Typography className="center">{this.getKaryotypeTitle()}</Typography><AppIdeogram
                                     markerData={markerData} marker_avg={marker_avg} knockout_avg={knockout_avg}
                                     onAnnotationClick={this.onAnnotationClick} organism="human"/></div>
                                 :
@@ -438,7 +440,7 @@ class Genome extends React.Component {
                         }
                     </TabPanel>
                 </div>
-            ) : <GenomeBrowser/>;
+            ) : <div><Link to="/"><Button size="large" color="primary" variant="contained">Back</Button></Link><GenomeBrowser/></div>;
     }
 }
 

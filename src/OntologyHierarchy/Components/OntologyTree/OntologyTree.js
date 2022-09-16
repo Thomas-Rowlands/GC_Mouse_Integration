@@ -77,10 +77,20 @@ class OntologyTree extends React.Component {
                                                                                        src={"/images/mouse.png"}/></Button>;
         }
 
-        if (node.hasInferredMapping && (node.hasHumanData || node.hasMouseData)) {
+        if (node.hasInferredMapping && (node.hasHumanData && node.hasMouseData)) {
             return <Button className={classes.btn} size="small"
                            onClick={(e) => node.hasHumanData || node.hasMouseData ? this.props.onBtnClick(node.id) : e.preventDefault()}
                            color="primary" variant="outlined" id={node.id}
+            ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
+                alt="small icon of a mouse"
+                width="20px"
+                src={"/images/mouse.png"}/></Button>;
+        }
+
+        if (node.hasHumanData && node.hasMouseData) {
+            return <Button className={classes.btn} size="small"
+               onClick={(e) => node.hasHumanData || node.hasMouseData ? this.props.onBtnClick(node.id) : e.preventDefault()}
+               color="primary" variant="outlined" id={node.id}
             ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img
                 alt="small icon of a mouse"
                 width="20px"

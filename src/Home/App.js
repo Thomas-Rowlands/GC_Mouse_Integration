@@ -44,15 +44,15 @@ class App extends React.Component {
                                 <div>
                                     <div>
                                         <div style={{width: "100%"}}>
-                                            <img onClick={() => window.href = 'https://www.gwascentral.org/index'}
-                                                 src="https://www.gwascentral.org/images/gwas-central-logo.png"
+                                            <a href="https://www.gwascentral.org/index">
+                                            <img src="https://www.gwascentral.org/images/gwas-central-logo.png"
                                                  alt="logo"
                                                  style={{
                                                      verticalAlign: "bottom",
                                                      position: "absolute",
                                                      top: "20px",
                                                      left: "70px"
-                                                 }}/>
+                                                 }}/></a>
                                             <div id="header_menulinks">
                                                 <div style={{
                                                     float: "left",

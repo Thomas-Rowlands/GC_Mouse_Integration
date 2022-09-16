@@ -30,8 +30,7 @@ class Home extends React.Component {
                     <Link to="/PhenotypeSearch">
                         <MainMenuItem url="/PhenotypeSearch" image="images/bootstrap-icons-1.3.0/search.svg"
                                       alt="image of magnifying glass."
-                                      heading="Phenotype Search" body="Text search by phenotype for matching human GWAS & mouse gene knockout comparative results,
-                        showing homology data."/>
+                                      heading="Phenotype Search" body="Find GWAS and mouse genes by searching with ontology terms"/>
                     </Link>
 
                 </Grid>
@@ -40,7 +39,7 @@ class Home extends React.Component {
                         <MainMenuItem url="/OntologyHierarchy" image="images/bootstrap-icons-1.3.0/bezier2.svg"
                                       alt="image of a bezier curve between two points."
                                       heading="Phenotype Ontology Hierarchy"
-                                      body="Ontology mapping visualisation with orthologue data."/>
+                                      body="Browse ontology hierarchies to find GWAS and mouse genes."/>
                     </Link>
                 </Grid>
 
@@ -48,8 +47,8 @@ class Home extends React.Component {
                     <Link to="/Genome">
                         <MainMenuItem url="/Genome" image="images/bootstrap-icons-1.3.0/dna-strand.svg"
                                       alt="image of a DNA double helix."
-                                      heading="Genome Browser/Gene Symbol Search"
-                                      body="Interactive genome browser for human/mouse orthologue data."/>
+                                      heading="Genomic Region View"
+                                      body="Explore the genome for GWAS variants and human orthologues of mouse genes"/>
                     </Link>
                 </Grid>
             </Grid>
