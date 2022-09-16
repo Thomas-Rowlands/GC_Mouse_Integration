@@ -100,13 +100,13 @@ class CacheBuilder:
             return 0
         test = ["'" + term + "'," for term in terms]
         cmd = F"""SELECT COUNT(DISTINCT(s.Identifier)) AS Total
-	FROM gc_study.study AS s
+	FROM GC_study.Study AS s
   INNER JOIN GC_study.Experiment AS e ON e.StudyID = s.StudyID
   INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
   INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
   INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
-  INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
-  INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
+  INNER JOIN GC_study.Resultset AS rs ON rs.ExperimentID = e.ExperimentID
+  INNER JOIN GC_study.Significance AS si ON si.ResultsetID = rs.ResultsetID
   WHERE s.IsHidden = 'no' AND pa.PhenotypeIdentifier in ({''.join(test)})  AND si.NegLogPValue > 0; """.replace(",)", ")")
         results = self.db.execute(cmd, multi=True)
         for result in results:
@@ -134,18 +134,27 @@ class CacheBuilder:
     def get_term_experiment_count(self, terms):
         if terms == []:
             return 0
-        test = ["'" + term + "'," for term in terms]
-        cmd = F"""SELECT COUNT(DISTINCT(e.experiments_id)) AS Total
-			FROM experiments AS e
-			INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
-			INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
-			INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
-			INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
-			INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
-			INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
-			INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
-	        WHERE (mp.mp_term_id in ({''.join(test)}) OR mptl.mp_term_id in ({''.join(test)}))
-			    AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0""".replace(",)", ")")
+        terms = ["'" + term + "'" for term in terms]
+        terms = ",".join(terms)
+
+        cmd = F"""
+            SELECT COUNT(DISTINCT mg.gene_symbol, mm.marker_accession_id, e.male_count, 
+            e.female_count, ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3), 
+            pr.name, pa.name, expa.parameter_stable_key, expr.procedure_stable_key) AS count
+            FROM experiments AS e
+            INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
+            INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
+            INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
+            INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
+            INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
+            INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
+            INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
+            INNER JOIN experiment_parameter AS expa ON expa.experiment_id = e.experiments_id
+            INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
+            INNER JOIN experiment_procedure AS expr ON expr.experiment_id = e.experiments_id
+            WHERE (mp.mp_term_id in ({terms}) OR mptl.mp_term_id in ({terms}))
+                AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0
+        """
         results = self.db.execute(cmd, multi=True)
         for result in results:
             if result.with_rows:
@@ -154,7 +163,7 @@ class CacheBuilder:
         if count:
             return count[0][0]
         else:
-            return None
+            return 0
 
     def set_neo_experiment_count(self, term, experiment_count):
         cmd = F""" MATCH (n)
@@ -190,10 +199,10 @@ class CacheBuilder:
           INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.PhenotypeMethodID = e.PhenotypeMethodID
           INNER JOIN GC_study.PPPA AS ppp ON ppp.PhenotypePropertyID = pm.PhenotypePropertyID
           INNER JOIN GC_study.PhenotypeAnnotation AS pa ON pa.PhenotypeAnnotationID = ppp.PhenotypeAnnotationID
-          INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
-          INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
+          INNER JOIN GC_study.Resultset AS rs ON rs.ExperimentID = e.ExperimentID
+          INNER JOIN GC_study.Significance AS si ON si.ResultsetID = rs.ResultsetID
           WHERE pa.PhenotypeIdentifier = "{termID}" AND si.NegLogPValue >= 0 AND s.IsHidden = 'no'
-          GROUP BY s.Identifier;
+          GROUP BY s.Identifier, s.Name;
         """
         self.db.execute(cmd)
         result = []
@@ -259,7 +268,7 @@ class CacheBuilder:
               INNER JOIN GC_study.resultset AS rs ON rs.ExperimentID = e.ExperimentID
               INNER JOIN GC_study.significance AS si ON si.ResultsetID = rs.ResultsetID
               WHERE s.Identifier = '{studyID}' AND s.IsHidden = 'no'
-              ORDER BY NegLogPValue DESC;;
+              ORDER BY NegLogPValue DESC;
         """
         results = self.db.execute(cmd, multi=True)
         p_vals = []
@@ -329,10 +338,19 @@ def set_study_counts(cache_builder):
     print("Processing HPO terms...")
     hpo_terms = cache_builder.get_ontology_terms("HPO")
     for term in hpo_terms:
-        mesh_term = cache_builder.get_mapped_mesh_term(term)
-        children = [x for x in cache_builder.get_descendant_terms(mesh_term, "MESH") if x is not None]
-        count = cache_builder.get_term_GWAS_count(children)
+        hpo_descendants = [x for x in cache_builder.get_descendant_terms(term, "HPO") if x is not None]
+        hpo_descendants.append(term)
+        mesh_terms = []
+        for descendant in hpo_descendants:
+            new_mesh_term = cache_builder.get_mapped_mesh_term(descendant)
+            if new_mesh_term:
+                mesh_terms.append(new_mesh_term)
+        mesh_term_descendants = []
+        for mesh_term in mesh_terms:
+            mesh_term_descendants += [x for x in cache_builder.get_descendant_terms(mesh_term, "MESH") if x is not None and x not in mesh_term_descendants]
+        count = cache_builder.get_term_GWAS_count(mesh_term_descendants)
         cache_builder.set_neo_gwas_count(term, count)
+    del mesh_term, mesh_term_descendants, hpo_terms, hpo_descendants
     print("Processing MeSH terms...")
     mesh_terms = cache_builder.get_ontology_terms("MESH")
     for term in mesh_terms:
@@ -355,6 +373,15 @@ def build_study_cache():
     :return:
     """
     cache_builder = CacheBuilder()
+    # GET HPO ID's
+    hpo_terms = cache_builder.get_all_ontology_terms("HPO")
+    for term in hpo_terms:
+        mesh_mapped = cache_builder.get_mapped_mesh_term(term)
+        significant_study_pvals = cache_builder.get_significant_study_pval(term)
+        if significant_study_pvals:
+            for study in significant_study_pvals:
+                cache_builder.add_gwas_study(study[0], study[1])
+                cache_builder.add_study_p_value(study[2], term, study[0])
     # Get MeSH ID's
     mesh_terms = cache_builder.get_all_ontology_terms("MESH")
     # Get studies linked to every phenotype currently listed in Neo4J
@@ -376,13 +403,14 @@ def build_study_cache():
 def main():
     cache_builder = CacheBuilder()
     print("Connections established...")
-    cache_builder.clear_node_counts()
-    cache_builder.clear_study_cache()
+    # cache_builder.clear_node_counts()
+    # cache_builder.clear_study_cache()
     set_study_counts(cache_builder)
-    build_study_cache()
+    # build_study_cache()
     print("Cache generated.")
-    cache_builder.close_connection()
+    # cache_builder.close_connection()
     # test = cache_builder.get_term_GWAS_count(["D005227", "D013229", "D005231", "D015777", "D001095", "D016718", "D015118", "D005229", "D009829", "D019301", "D015525", "D017962", "D004281", "D015118", "D044242", "D005228", "D008041", "D001095", "D016718", "D008042", "D017962", "D017965", "D043371", "D008041", "D017965", "D010169", "D019308", "D005232", "D000085", "D002087", "D058610", "D006885", "D020155"])
+    # test = cache_builder.get_term_experiment_count()
     # print(test)
 
 
