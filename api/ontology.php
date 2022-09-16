@@ -30,9 +30,8 @@ class Ontology
             $cmd .= "
                 MATCH (n:$o)
                 USING INDEX n:$o(lowerFSN)
-                WHERE n.lowerFSN = {search}
+                WHERE n.lowerFSN = {search} AND (n.hasMouseData = TRUE OR n.hasHumanData = TRUE)
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
-                WHERE (m.hasData or n.hasData)
                 WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
                 synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
@@ -47,9 +46,8 @@ class Ontology
             $cmd .= "
                 MATCH (n:$o)
                 USING INDEX n:$o(lowerFSN)
-                WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
+                WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND (n.hasMouseData = TRUE OR n.hasHumanData = TRUE)
                 OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
-                WHERE (m.hasData or n.hasData)
                 WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
                 synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
@@ -68,13 +66,16 @@ class Ontology
     {
         $ont = strtoupper($ont);
         $dataFlag = $ont == "MP" ? "hasMouseData" : "hasHumanData";
+
         $result = $this->neo->execute("
-            MATCH (n:" . $ont . ")
-            USING INDEX n:" . $ont . "(lowerFSN)
-            WHERE n.lowerFSN = {search} AND n.$dataFlag = TRUE
+            MATCH (n:$ont)
+            USING INDEX n:$ont(lowerFSN)
+            WHERE n.lowerFSN = {search}
             OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
+            WHERE n.$dataFlag = TRUE OR m.$dataFlag = TRUE
+            WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
             RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
-            COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+            synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
             n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
             n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
             COALESCE(m.experiment_total, n.experiment_total) AS experiment_total
@@ -82,12 +83,14 @@ class Ontology
             
             UNION
             
-            MATCH (n:" . $ont . ")
-            USING INDEX n:" . $ont . "(lowerFSN)
-            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.$dataFlag = TRUE
+            MATCH (n:$ont)
+            USING INDEX n:$ont(lowerFSN)
+            WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains})
             OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
+            WHERE n.$dataFlag = TRUE OR m.$dataFlag = TRUE
+            WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
             RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, 
-            COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, 
+            COALESCE(m.FSN, n.FSN) AS FSN, synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, 
             COALESCE(m.hasExactMESHMapping, n.hasExactMESHMapping) AS hasExactMESHMapping, 
             COALESCE(m.hasInferredHPOMapping, n.hasExactHPOMapping) AS hasExactHPOMapping, 
             COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
