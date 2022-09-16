@@ -33,8 +33,9 @@ class Ontology
                 WHERE n.lowerFSN = {search}
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
                 WHERE (m.hasData or n.hasData)
+                WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
-                COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+                synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
                 n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
                 n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
                 COALESCE(m.experiment_total, n.experiment_total) AS experiment_total 
@@ -49,8 +50,9 @@ class Ontology
                 WHERE (n.lowerFSN STARTS WITH {search} OR n.lowerFSN CONTAINS {searchContains}) AND n.hasData
                 OPTIONAL MATCH (n)<-[:HAS_SYNONYM]-(m)
                 WHERE (m.hasData or n.hasData)
+                WITH n, m, COLLECT(DISTINCT n.FSN) AS synonyms
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.ontology, n.ontology) AS ontology, COALESCE(m.FSN, n.FSN) AS FSN, 
-                COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
+                synonyms, COALESCE(m.hasExactMPMapping, n.hasExactMPMapping) AS hasExactMPMapping, COALESCE(m.hasExactMESHMapping, 
                 n.hasExactMESHMapping) AS hasExactMESHMapping, COALESCE(m.hasInferredHPOMapping, 
                 n.hasExactHPOMapping) AS hasExactHPOMapping, COALESCE(m.gwas_total, n.gwas_total) AS gwas_total, 
                 COALESCE(m.experiment_total, n.experiment_total) AS experiment_total 
@@ -409,7 +411,7 @@ class Ontology
             $termID = $row->get("id");
             $termOnt = $row->get("ontology");
             $label = $row->get("FSN");
-            $parsed = ["id" => $termID, "synonyms" => $this->get_term_synonyms($termID, $termOnt), "label" => $label, "experiments" => $row->get("experiment_total"), "ont" => $termOnt, "gwas" => $row->get("gwas_total"), "hasExactMESHMapping" => $row->get("hasExactMESHMapping"), "hasExactHPOMapping" => $row->get("hasExactHPOMapping"), "hasExactMPMapping" => $row->get("hasExactMPMapping")];
+            $parsed = ["id" => $termID, "synonyms" => $row->get("synonyms"), "label" => $label, "experiments" => $row->get("experiment_total"), "ont" => $termOnt, "gwas" => $row->get("gwas_total"), "hasExactMESHMapping" => $row->get("hasExactMESHMapping"), "hasExactHPOMapping" => $row->get("hasExactHPOMapping"), "hasExactMPMapping" => $row->get("hasExactMPMapping")];
             if (strtolower($label) == strtolower($search))
                 array_unshift($matches, $parsed);
             else
