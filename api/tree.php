@@ -55,8 +55,9 @@
         private function getTermChildren($termID) {
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
-            return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m)
-            WHERE n.id = {termID} AND (m.hasHumanData = TRUE or m.hasMouseData = TRUE)
+            return $this->neo->execute("MATCH (n:$this->ontLabel {hasData: TRUE})<-[:ISA]-(m)
+            USING INDEX n:$this->ontLabel(hasData)
+            WHERE n.id = {termID}
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, 
             m.$mappingProperty AS $mappingProperty, m.$inferredMappingProperty AS $inferredMappingProperty, 
             m.hasChildrenWithData AS hasChildrenWithData, m.gwas_total AS gwas_total, 
@@ -67,8 +68,9 @@
         private function getTermSiblings($termID) {
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
-            return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib)
-            WHERE n.id = {termID} AND (sib.hasHumanData = TRUE or sib.hasMouseData = TRUE)
+            return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib {hasData: TRUE})
+            USING INDEX sib:$this->ontLabel(hasData)
+            WHERE n.id = {termID}
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS $mappingProperty, 
             sib.$inferredMappingProperty AS $inferredMappingProperty, sib.hasChildrenWithData AS hasChildrenWithData, 
             sib.gwas_total AS gwas_total, sib.experiment_total AS experiment_total, sib.hasHumanData AS hasHumanData,
@@ -78,7 +80,8 @@
 
         private function getTreeByID($id) {
             $root = $this->ontLabel == "MESH" ? "mesh" : "$this->termIDLabel:0000001";
-            $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel)
+            $cmd = "MATCH p=(startNode:$this->ontLabel)<-[:ISA*1..]-(endNode:$this->ontLabel {hasData: TRUE})
+            USING INDEX endNode:$this->ontLabel(hasData)
             WHERE startNode.id = {root} AND endNode.id = {termID} AND (endNode.hasHumanData = TRUE or endNode.hasMouseData = TRUE)
             RETURN p";
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
