@@ -55,8 +55,8 @@
         private function getTermChildren($termID) {
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
-            return $this->neo->execute("MATCH (n:$this->ontLabel {hasData: TRUE})<-[:ISA]-(m)
-            USING INDEX n:$this->ontLabel(hasData)
+            return $this->neo->execute("MATCH (n:$this->ontLabel)<-[:ISA]-(m:$this->ontLabel {hasData: TRUE})
+            USING INDEX m:$this->ontLabel(hasData)
             WHERE n.id = {termID}
             RETURN n.id AS parentID, n.FSN AS parentLabel, m.id AS id, m.FSN AS label, 
             m.$mappingProperty AS $mappingProperty, m.$inferredMappingProperty AS $inferredMappingProperty, 
@@ -68,7 +68,7 @@
         private function getTermSiblings($termID) {
             $mappingProperty = "hasExact" . $this->mappingOntLabel . "Mapping";
             $inferredMappingProperty = "hasInferred" . $this->mappingOntLabel . "Mapping";
-            return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib {hasData: TRUE})
+            return $this->neo->execute("MATCH (n:$this->ontLabel)-[:hasSibling]->(sib:$this->ontLabel {hasData: TRUE})
             USING INDEX sib:$this->ontLabel(hasData)
             WHERE n.id = {termID}
             RETURN sib.id AS id, sib.FSN AS label, sib.$mappingProperty AS $mappingProperty, 
