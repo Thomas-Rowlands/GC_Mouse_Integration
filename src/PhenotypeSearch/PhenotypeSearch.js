@@ -242,7 +242,7 @@ class PhenotypeSearch extends React.Component {
     }
 
     genotypeHandler = () => {
-        this.setState({genotypeTermID: this.state.humanTerm, genotypeOntology: this.state.humanOntology});
+        this.setState({humanTermID: this.state.humanTerm, mouseTermID: this.state.mouseTerm});
     }
 
     getSearchInfoContent = () => {
@@ -471,7 +471,6 @@ class PhenotypeSearch extends React.Component {
                             <div>
                                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
                                     humanTermID: null,
-                                    humanOntology: null,
                                     mouseTermID: null
                                 })}>Back</Button><br/>
                                 <Genome humanTermID={this.state.humanTermID}

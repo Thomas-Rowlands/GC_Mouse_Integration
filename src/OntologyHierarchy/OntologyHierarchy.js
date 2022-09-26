@@ -266,6 +266,7 @@ class OntologyHierarchy extends React.Component {
                         let selectedMouseNodes = this.state.selectedMouseNodes;
                         let expandedHumanNodes = this.state.expandedHumanNodes;
                         let selectedHumanNodes = this.state.selectedHumanNodes;
+
 // populate human tree if result returned.
                         if (response.data.humanID) {
                             expandedHumanNodes = [];
@@ -338,6 +339,10 @@ class OntologyHierarchy extends React.Component {
                             selectedHumanNodes: selectedHumanNodes,
                             mappedMousePhenotype: tree["mouseID"],
                             mappedHumanPhenotype: tree["humanID"],
+                            humanTermID: response.data.humanID,
+                            mouseTermID: response.data.mouseID,
+                            humanTermLabel: response.data.humanLabel,
+                            mouseTermLabel: response.data.mouseLabel,
                             humanSearchFailed: false,
                             mouseSearchFailed: false,
                             breakdownType: breakdownType,
@@ -420,9 +425,6 @@ class OntologyHierarchy extends React.Component {
 
     genotypeHandler = () => {
         this.setState({
-            humanTermID: this.state.treeData.humanID,
-            mouseTermID: this.state.treeData.mouseID,
-            humanOntology: this.state.humanOntology,
             karyotypeToggle: true
         });
     }
@@ -534,7 +536,8 @@ class OntologyHierarchy extends React.Component {
         treeData.mouseID = null;
         this.setState({
             treeData: treeData,
-            mouseID: null,
+            humanTermID: e,
+            mouseTermID: null,
             isDataPresent: true,
             isMappingPresent: false,
             breakdownType: 1
@@ -547,7 +550,8 @@ class OntologyHierarchy extends React.Component {
         treeData.mouseID = e;
         this.setState({
             treeData: treeData,
-            mouseID: null,
+            mouseTermID: e,
+            humanTermID: null,
             isDataPresent: true,
             isMappingPresent: false,
             breakdownType: 2
@@ -577,27 +581,27 @@ class OntologyHierarchy extends React.Component {
         switch (this.state.breakdownType) {
             case 0:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
-                                                 mousePhenotype={this.state.treeData.mouseID}
-                                                 humanPhenotype={this.state.treeData.humanID}
+                                                 mousePhenotype={this.state.mouseTermID}
+                                                 humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
                                                  setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             case 1:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
-                                                 humanPhenotype={this.state.treeData.humanID}
+                                                 humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
                                                  setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             case 2:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
-                                                 mousePhenotype={this.state.treeData.mouseID}
+                                                 mousePhenotype={this.state.mouseTermID}
                                                  humanOntology={this.state.humanOntology}
                                                  setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
             default:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
-                                                 mousePhenotype={this.state.treeData.mouseID}
-                                                 humanPhenotype={this.state.treeData.humanID}
+                                                 mousePhenotype={this.state.mouseTermID}
+                                                 humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
                                                  setLoading={this.props.setLoading}
                                                  onBreakdownFinish={this.onBreakdownFinish}/>;
