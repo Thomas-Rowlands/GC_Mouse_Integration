@@ -160,7 +160,7 @@ class PhenotypeSearch extends React.Component {
             search_input = this.state.searchInput;
         }
 
-        if (search_input.length < 3) {
+        if (search_input.length < 3 && this.state.exactTermList.length === 0) {
             this.setState({displayError: true});
             return;
         }
@@ -456,7 +456,6 @@ class PhenotypeSearch extends React.Component {
                                                 humanPhenotype={this.state.humanTerm}
                                                 humanOntology={this.state.humanOntology}
                                                 breakdownData={this.state.breakdownData}
-                                                onBreakdownFinish={this.onBreakdownFinish}
                                                 setLoading={this.props.setLoading}
                                                 genotypeHandler={this.genotypeHandler}/>
                                         </div>
