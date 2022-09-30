@@ -584,27 +584,23 @@ class OntologyHierarchy extends React.Component {
                                                  mousePhenotype={this.state.mouseTermID}
                                                  humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
-                                                 setLoading={this.props.setLoading}
-                                                 onBreakdownFinish={this.onBreakdownFinish}/>;
+                                                 setLoading={this.props.setLoading}/>;
             case 1:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
-                                                 setLoading={this.props.setLoading}
-                                                 onBreakdownFinish={this.onBreakdownFinish}/>;
+                                                 setLoading={this.props.setLoading}/>;
             case 2:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  mousePhenotype={this.state.mouseTermID}
                                                  humanOntology={this.state.humanOntology}
-                                                 setLoading={this.props.setLoading}
-                                                 onBreakdownFinish={this.onBreakdownFinish}/>;
+                                                 setLoading={this.props.setLoading}/>;
             default:
                 return <PhenotypeResultBreakdown genotypeHandler={this.genotypeHandler}
                                                  mousePhenotype={this.state.mouseTermID}
                                                  humanPhenotype={this.state.humanTermID}
                                                  humanOntology={this.state.humanOntology}
-                                                 setLoading={this.props.setLoading}
-                                                 onBreakdownFinish={this.onBreakdownFinish}/>;
+                                                 setLoading={this.props.setLoading}/>;
         }
     }
 
