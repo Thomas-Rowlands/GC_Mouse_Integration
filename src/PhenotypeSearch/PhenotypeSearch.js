@@ -268,6 +268,10 @@ class PhenotypeSearch extends React.Component {
         return ont;
     }
 
+    loadingHandler = (status) => {
+        this.setState({dialogLoading: status});
+    }
+
     render() {
         const {tableData, liveLoading, loading, searchOpen, liveSearchResults} = this.state;
         const {classes} = this.props;
@@ -449,6 +453,7 @@ class PhenotypeSearch extends React.Component {
                                     aria-labelledby="max-width-dialog-title"
                                     TransitionComponent={Grow}
                                 >
+                                <LoadingSpinner isRelative={true} loading={this.state.dialogLoading}/>
                                     <DialogContent>
                                         <div className="table-container">
                                             <PhenotypeResultBreakdown
@@ -456,7 +461,7 @@ class PhenotypeSearch extends React.Component {
                                                 humanPhenotype={this.state.humanTerm}
                                                 humanOntology={this.state.humanOntology}
                                                 breakdownData={this.state.breakdownData}
-                                                setLoading={this.props.setLoading}
+                                                setLoading={this.loadingHandler}
                                                 genotypeHandler={this.genotypeHandler}/>
                                         </div>
                                     </DialogContent>
