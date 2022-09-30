@@ -29,7 +29,7 @@ class Genome extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.state.markerData && (this.props.humanTermID || this.props.mouseTermID) && this.props.humanOntology)
+        if (!this.state.markerData && (this.props.humanTermID || this.props.mouseTermID))
             this.getKaryotypeData(this.props.humanTermID, this.props.mouseTermID, this.props.humanOntology);
     }
 
@@ -259,133 +259,138 @@ class Genome extends React.Component {
                                 ]
                             }
                         ;
-                        let marker_avg = Math.floor(response.data.markers.average);
-                        let knockout_avg = Math.floor(response.data.knockouts.average);
+                        let marker_avg = 0;
+                        let knockout_avg = 0;
+                        if (response.data.markers.bins) {
+                            marker_avg = Math.floor(response.data.markers.average);
+                            response.data.markers.bins.forEach(marker =>
+                                result.annots.forEach(
+                                    subset => {
+                                        if (subset.chr === marker.chr) {
+                                            let chrom_ranges = {
+                                                1: 249250621,
+                                                2: 243199373,
+                                                3: 198022430,
+                                                4: 191154276,
+                                                5: 180915260,
+                                                6: 171115067,
+                                                7: 159138663,
+                                                8: 146364022,
+                                                9: 141213431,
+                                                10: 135534747,
+                                                11: 135006516,
+                                                12: 133851895,
+                                                13: 115169878,
+                                                14: 107349540,
+                                                15: 102531392,
+                                                16: 90354753,
+                                                17: 81195210,
+                                                18: 78077248,
+                                                19: 59128983,
+                                                20: 63025520,
+                                                21: 48129895,
+                                                22: 51304566,
+                                                "X": 155270560,
+                                                "Y": 59373566
+                                            };
+                                            let val = parseInt(marker.highest_significance);
+                                            val = val > 10 ? 10 : val;
+                                            let count = parseInt(marker.value);
+                                            let start = ((parseInt(marker.bin) * 3000000) - 3000000) + 1;
+                                            let length = (start + 3000000) - 1 > chrom_ranges[marker.chr] ? chrom_ranges[marker.chr] - start : 3000000;
+                                            let colour = "";
+                                            if (count < marker_avg)
+                                                colour = '#0000b8';
+                                            else if (count === marker_avg)
+                                                colour = '#31bb22';
+                                            else if (count > marker_avg)
+                                                colour = '#F33';
 
-                        response.data.markers.bins.forEach(marker =>
-                            result.annots.forEach(
-                                subset => {
-                                    if (subset.chr === marker.chr) {
-                                        let chrom_ranges = {
-                                            1: 249250621,
-                                            2: 243199373,
-                                            3: 198022430,
-                                            4: 191154276,
-                                            5: 180915260,
-                                            6: 171115067,
-                                            7: 159138663,
-                                            8: 146364022,
-                                            9: 141213431,
-                                            10: 135534747,
-                                            11: 135006516,
-                                            12: 133851895,
-                                            13: 115169878,
-                                            14: 107349540,
-                                            15: 102531392,
-                                            16: 90354753,
-                                            17: 81195210,
-                                            18: 78077248,
-                                            19: 59128983,
-                                            20: 63025520,
-                                            21: 48129895,
-                                            22: 51304566,
-                                            "X": 155270560,
-                                            "Y": 59373566
-                                        };
-                                        let val = parseInt(marker.highest_significance);
-                                        val = val > 10 ? 10 : val;
-                                        let count = parseInt(marker.value);
-                                        let start = ((parseInt(marker.bin) * 3000000) - 3000000) + 1;
-                                        let length = (start + 3000000) - 1 > chrom_ranges[marker.chr] ? chrom_ranges[marker.chr] - start : 3000000;
-                                        let colour = "";
-                                        if (count < marker_avg)
-                                            colour = '#0000b8';
-                                        else if (count === marker_avg)
-                                            colour = '#31bb22';
-                                        else if (count > marker_avg)
-                                            colour = '#F33';
-
-                                        // Ensure markers with higher significance values are counted.
-                                        subset.annots.forEach((elem) => {
-                                            if (elem[1] === start) {
-                                                if (elem[5] >= val) {
-                                                    count += elem[7];
-                                                } else if (elem[5] < val) {
-                                                    elem[7] += count;
-                                                    elem[0] = elem[7].toString() + " markers";
+                                            // Ensure markers with higher significance values are counted.
+                                            subset.annots.forEach((elem) => {
+                                                if (elem[1] === start) {
+                                                    if (elem[5] >= val) {
+                                                        count += elem[7];
+                                                    } else if (elem[5] < val) {
+                                                        elem[7] += count;
+                                                        elem[0] = elem[7].toString() + " markers";
+                                                    }
                                                 }
-                                            }
-                                        });
-                                        subset.annots.push([
-                                            count.toString() + (count > 1 ? " markers" : " marker"),
-                                            start,
-                                            length,
-                                            0,
-                                            colour,
-                                            val,
-                                            10,
-                                            count
-                                        ]);
+                                            });
+                                            subset.annots.push([
+                                                count.toString() + (count > 1 ? " markers" : " marker"),
+                                                start,
+                                                length,
+                                                0,
+                                                colour,
+                                                val,
+                                                10,
+                                                count
+                                            ]);
+                                        }
                                     }
-                                }
-                            )
-                        );
-                        response.data.knockouts.bins.forEach(knockout =>
-                            result.annots.forEach(
-                                subset => {
-                                    if (subset.chr === knockout.chr) {
-                                        let chrom_ranges = {
-                                            1: 249250621,
-                                            2: 243199373,
-                                            3: 198022430,
-                                            4: 191154276,
-                                            5: 180915260,
-                                            6: 171115067,
-                                            7: 159138663,
-                                            8: 146364022,
-                                            9: 141213431,
-                                            10: 135534747,
-                                            11: 135006516,
-                                            12: 133851895,
-                                            13: 115169878,
-                                            14: 107349540,
-                                            15: 102531392,
-                                            16: 90354753,
-                                            17: 81195210,
-                                            18: 78077248,
-                                            19: 59128983,
-                                            20: 63025520,
-                                            21: 48129895,
-                                            22: 51304566,
-                                            "X": 155270560,
-                                            "Y": 59373566
-                                        };
-                                        let val = parseInt(knockout.highest_significance);
-                                        val = val > 10 ? 10 : val;
-                                        let count = parseInt(knockout.value);
-                                        let start = ((parseInt(knockout.bin) * 3000000) - 3000000) + 1;
-                                        let length = (start + 3000000) - 1 > chrom_ranges[knockout.chr] ? chrom_ranges[knockout.chr] - start : 3000000;
-                                        let colour = "";
-                                        if (count < knockout_avg)
-                                            colour = '#0000b8';
-                                        else if (count === knockout_avg)
-                                            colour = '#31bb22';
-                                        else if (count > knockout_avg)
-                                            colour = '#F33';
-                                        subset.annots.push([
-                                            count.toString() + (count > 1 ? " knockouts" : " knockout"),
-                                            start,
-                                            length,
-                                            1,
-                                            colour,
-                                            10,
-                                            val,
-                                            count
-                                        ]);
+                                )
+                            );
+                        }
+                        if (response.data.knockouts.bins) {
+                            knockout_avg = Math.floor(response.data.knockouts.average);
+                            response.data.knockouts.bins.forEach(knockout =>
+                                result.annots.forEach(
+                                    subset => {
+                                        if (subset.chr === knockout.chr) {
+                                            let chrom_ranges = {
+                                                1: 249250621,
+                                                2: 243199373,
+                                                3: 198022430,
+                                                4: 191154276,
+                                                5: 180915260,
+                                                6: 171115067,
+                                                7: 159138663,
+                                                8: 146364022,
+                                                9: 141213431,
+                                                10: 135534747,
+                                                11: 135006516,
+                                                12: 133851895,
+                                                13: 115169878,
+                                                14: 107349540,
+                                                15: 102531392,
+                                                16: 90354753,
+                                                17: 81195210,
+                                                18: 78077248,
+                                                19: 59128983,
+                                                20: 63025520,
+                                                21: 48129895,
+                                                22: 51304566,
+                                                "X": 155270560,
+                                                "Y": 59373566
+                                            };
+                                            let val = parseInt(knockout.highest_significance);
+                                            val = val > 10 ? 10 : val;
+                                            let count = parseInt(knockout.value);
+                                            let start = ((parseInt(knockout.bin) * 3000000) - 3000000) + 1;
+                                            let length = (start + 3000000) - 1 > chrom_ranges[knockout.chr] ? chrom_ranges[knockout.chr] - start : 3000000;
+                                            let colour = "";
+                                            if (count < knockout_avg)
+                                                colour = '#0000b8';
+                                            else if (count === knockout_avg)
+                                                colour = '#31bb22';
+                                            else if (count > knockout_avg)
+                                                colour = '#F33';
+                                            subset.annots.push([
+                                                count.toString() + (count > 1 ? " knockouts" : " knockout"),
+                                                start,
+                                                length,
+                                                1,
+                                                colour,
+                                                10,
+                                                val,
+                                                count
+                                            ]);
+                                        }
                                     }
-                                }
-                            )
-                        );
+                                )
+                            );
+                        }
                         this.setState({
                             markerData: result,
                             humanPhenotype: response.data.humanPhenotype,
@@ -440,7 +445,8 @@ class Genome extends React.Component {
                         }
                     </TabPanel>
                 </div>
-            ) : <div><Link to="/"><Button size="large" color="primary" variant="contained">Back</Button></Link><GenomeBrowser/></div>;
+            ) : <div><Link to="/"><Button size="large" color="primary"
+                                          variant="contained">Back</Button></Link><GenomeBrowser/></div>;
     }
 }
 
