@@ -237,13 +237,11 @@ class PhenotypeResultBreakdown extends React.Component {
                 }
                 if (this.props.setLoading)
                     this.props.setLoading(false);
-                this.props.onBreakdownFinish();
             })
             .catch((error) => {
                 console.log("An error occurred retrieving phenotype data.");
                 this.setState({breakdownData: null, loading:false, mappingGraphData: null});
                 this.props.setLoading(false);
-                this.props.onBreakdownFinish();
             });
     }
 
@@ -398,7 +396,7 @@ class PhenotypeResultBreakdown extends React.Component {
     render() {
         const {breakdownData,loading, tabValue, dataTabValue, mappingGraphData, hasData} = this.state;
         const {classes} = this.props;
-        if (loading && !this.props.setLoading)
+        if (loading)
             return (
                 <div className="breakdown-loading-container">
                     <LoadingSpinner loading={loading}/>
