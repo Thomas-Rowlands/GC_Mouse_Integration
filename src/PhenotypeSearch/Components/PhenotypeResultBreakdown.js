@@ -398,9 +398,7 @@ class PhenotypeResultBreakdown extends React.Component {
         const {classes} = this.props;
         if (loading)
             return (
-                <div className="breakdown-loading-container">
-                    <LoadingSpinner loading={loading}/>
-                </div>
+                <div></div>
             );
         if (hasData)
             return (

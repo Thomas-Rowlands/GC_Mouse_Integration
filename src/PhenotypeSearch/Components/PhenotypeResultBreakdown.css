@@ -53,13 +53,17 @@
     height: 1.5em;
 }
 
+.phenotype-breakdown-container {
+        min-height: 50vh;
+}
+
 .MuiTabs-centered {
     width: min-content;
 }
 
-.breakdown-loading-container {
-    min-height: 50vh;
-}
+/*.breakdown-loading-container {*/
+/*    min-height: 50vh;*/
+/*}*/
 
 svg {
     vertical-align: middle;
