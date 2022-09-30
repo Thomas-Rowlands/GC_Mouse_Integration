@@ -5,6 +5,7 @@ import {
     JBrowseLinearGenomeView
 } from '@jbrowse/react-linear-genome-view';
 import {api_server} from "../../UtilityComponents/ConfigData";
+import './GenomeBrowser.css';
 
 function forceLoadTracks() {
 
@@ -233,6 +234,7 @@ class GenomeBrowser extends React.Component {
                         "maxDisplayedBpPerPx": 3000
                     }
                 ],
+
                 // "textSearching": {
                 //     "textSearchAdapter": {
                 //         "type": "TrixTextSearchAdapter",
@@ -254,6 +256,36 @@ class GenomeBrowser extends React.Component {
                 //         ]
                 //     }
                 // }
+            },
+            {
+                "type": "VariantTrack",
+                "trackId": "GC_only_variants_testing.vcf",
+                "name": "GWAS Central Variants (Testing)",
+                "category": [
+                    "Annotation"
+                ],
+                "assemblyNames": [
+                    "GRCh37"
+                ],
+                "adapter": {
+                    "type": "VcfTabixAdapter",
+                    "vcfGzLocation": {
+                        "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants_testing.vcf.gz"
+                    },
+                    "index": {
+                        "indexType": "TBI",
+                        "location": {
+                            "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants_testing.vcf.gz.tbi"
+                        }
+                    }
+                },
+                "displays": [
+                    {
+                        "type": "LinearVariantDisplay",
+                        "displayId": "GC_only_variants_testing.vcf-LinearVariantDisplay",
+                        "maxDisplayedBpPerPx": 3000
+                    }
+                ],
             }
         ];
     }
@@ -293,6 +325,7 @@ class GenomeBrowser extends React.Component {
                         displays: [
                             {
                                 type: 'LinearReferenceSequenceDisplay',
+                                height: 80,
                                 configuration:
                                     'assembly_track-LinearReferenceSequenceDisplay',
                             },
@@ -313,12 +346,12 @@ class GenomeBrowser extends React.Component {
                     },
                     {
                         type: "VariantTrack",
-                        configuration: "GC_only_variants.vcf.gz",
+                        configuration: "GC_only_variants_testing.vcf",
                         displays: [
                             {
                                 type: "LinearVariantDisplay",
                                 height: 200,
-                                configuration: "GC_only_variants.vcf.gz-LinearVariantDisplay",
+                                configuration: "GC_only_variants_testing.vcf-LinearVariantDisplay",
                                 maxDisplayedBpPerPx: 300000
                             }
                         ],

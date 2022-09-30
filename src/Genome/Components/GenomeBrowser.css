@@ -1,0 +1,20 @@
+.jbrowse-feature-btn {
+    border-color: #82b9ea;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    padding: 0.15em 0.25em;
+    background-color: #037dbf;
+    font-size: 0.9375rem;
+    color: #ffffff;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.jbrowse-feature-btn:hover {
+    background-color: rgb(2, 87, 133);
+    text-decoration: none;
+}
+
+.jbrowse-feature-btn:visited {
+    color: white;
+}
