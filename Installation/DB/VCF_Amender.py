@@ -1,3 +1,6 @@
+import subprocess
+import urllib.parse
+
 import vcf  # PyVCF3
 import mysql.connector
 from gffutils.iterators import DataIterator
@@ -5,9 +8,10 @@ from vcf.model import _Record
 from py2neo import Graph
 
 db_connection = mysql.connector.connect(host="localhost", database="GC_browser", user="root",
-                                        password="GTX7807803GB!")
+                                        password="Maggie7803GB!")
 db = db_connection.cursor()
 neo_db = Graph("bolt://localhost:7687", auth=("neo4j", "12345"))
+
 
 class IMPCGene:
     def __init__(self):
@@ -23,38 +27,58 @@ class IMPCGene:
 class GCVariant(_Record):
     def __init__(self, CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, sample_indexes):
         super().__init__(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, sample_indexes)
-        self.phenotypes = []
+        self.LINKS = None
+        self.remove_unwanted_attributes()
+        self.INFO["GWAS Central"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
+        self.INFO["dbSNP"] = F"<a class='jbrowse-feature-btn' href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
+        self.INFO["Associated Phenotypes"] = None
         self.get_variant_phenotypes()
+
+    def remove_unwanted_attributes(self):
+        self.FILTER, self.FORMAT, self.INFO = None, None, {}
 
     def get_variant_phenotypes(self):
         cmd = F"""
             SELECT DISTINCT pa.PhenotypeIdentifier
-            FROM GC_marker.marker AS m
-            INNER JOIN GC_study.usedmarkerset AS ums ON ums.MarkerIdentifier = m.Identifier
-            INNER JOIN GC_study.experiment AS e ON e.ExperimentID = ums.ExperimentID
+            FROM GC_marker.Marker AS m
+            INNER JOIN GC_study.Usedmarkerset AS ums ON ums.MarkerIdentifier = m.Identifier
+            INNER JOIN GC_study.Experiment AS e ON e.ExperimentID = ums.ExperimentID
             INNER JOIN GC_study.PhenotypeMethod AS pm ON pm.StudyID = e.StudyID
-            INNER JOIN GC_study.pppa AS pppa ON pppa.PhenotypePropertyID = pm.PhenotypePropertyID
+            INNER JOIN GC_study.PPPA AS pppa ON pppa.PhenotypePropertyID = pm.PhenotypePropertyID
             INNER JOIN GC_study.PhenotypeAnnotation As pa ON pa.PhenotypeAnnotationID = pppa.PhenotypeAnnotationID
-            WHERE m.Accession = "{self.ID}";
+            WHERE m.Accession = "{self.ID}" AND pa.AnnotationOrigin in ('mesh', 'hpo');
         """
         results = db.execute(cmd, multi=True)
         for result in results:
             if result.with_rows:
-                self.phenotypes = self.get_phenotype_names([x for [(x)] in result.fetchall()])
+                phenotypes = self.get_phenotype_names([x for [(x)] in result.fetchall()])
+                phenotypes_string = ""
+                for phenotype in phenotypes:
+                    phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={urllib.parse.quote(phenotype)}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
+                self.INFO["Associated Phenotypes"] = phenotypes_string[:-2]
 
     @staticmethod
     def get_phenotype_names(descriptors):
         phenotype_names = []
         for descriptor in descriptors:
-            result = neo_db.run(F"MATCH (n:MESH) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
+            if "HP:" in descriptor:
+                result = neo_db.run(F"MATCH (n:HPO) USING INDEX n:HPO(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
+            else:
+                result = neo_db.run(F"MATCH (n:MESH) USING INDEX n:MESH(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
             phenotype_names.append(result.data("name")[0]["name"])
         return phenotype_names
 
 
 class VCFLink:
     def __init__(self):
-        name = ""
-        url = ""
+        self.name = "pleb"
+        self.url = "pleb_with_a_url"
+
+    def get_formatted_data(self):
+        return_string = ""
+        for key in self.__dict__:
+            return_string += F"{key}={self.__dict__[key]};"
+        return return_string
 
 
 def get_variant_list():
@@ -126,5 +150,26 @@ def filter_ensemble_genes():
                         fout.write(str(feature) + "\n")
 
 
-filter_ensemble_variants()
+def update_gc_data():
+    vcf_in = vcf.Reader(filename='../../api/JBrowseData/GC_only_variants.vcf')
+    vcf_out = vcf.Writer(open('../../api/JBrowseData/GC_only_variants_testing.vcf', 'w'), vcf_in)
+    i = 0
+    for rec in vcf_in:
+        i += 1
+        if i == 5:
+            break
+        new_variant = GCVariant(rec.CHROM, rec.POS, rec.ID, rec.REF, rec.ALT, rec.QUAL, rec.FILTER, rec.INFO,
+                                rec.FORMAT, None)
+        try:
+            vcf_out.write_record(new_variant)
+        except Exception as e:
+            print(e)
+    vcf_out.close()
+    subprocess.run("bgzip -c ../../api/JBrowseData/GC_only_variants_testing.vcf > "
+                   "../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+    subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+
+
+# filter_ensemble_variants()
 # filter_ensemble_genes()
+update_gc_data()
