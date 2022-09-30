@@ -6,8 +6,9 @@ class LoadingSpinner extends React.Component {
     render() {
         if (this.props.loading)
             return (
-                <div className="loading-container">
-                    <div className="loading">
+                <div style={{position: this.props.isRelative ? "relative" : "absolute"}} className="loading-container">
+                    <div style={{marginTop: this.props.isRelative ? "5%" : "10%",
+                    marginBottom: this.props.isRelative ? "5%" : "none"}} className="loading">
                         <div className="loader">
                             <div></div>
                             <div></div>
