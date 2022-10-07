@@ -229,12 +229,14 @@ class Ontology
             $targetOnt = [$targetOnt];
         foreach ($targetOnt as $ont) {
             $result = $this->neo->execute("
-            MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
-            WITH m.rootLength AS length
+            OPTIONAL MATCH (n:MP {id: '$termID'})-[:SPECIES_MAPPING {relation: 'EXACT'}]->(directTerm:$ont)
+            WITH directTerm
+            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+            WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
-            MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:$targetOnt)
-            WITH o
+            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:$ont)
+            WITH COALESCE(directTerm, o) AS o, directTerm
 
             OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
             WITH COALESCE(o, mainTerm) AS mainTerm
@@ -242,9 +244,9 @@ class Ontology
             WITH COALESCE(mainTerm, o) AS mainTerm, o, COLLECT(DISTINCT o.FSN) AS mappedSyns
             WITH mainTerm, FILTER(x IN COLLECT(DISTINCT o.FSN) WHERE x <> mainTerm.FSN) AS mappedSyns
             
-            OPTIONAL MATCH (mouseSyn)-[:HAS_SYNONYM]->(mouseTerm:$ont {id: '$termID'})
+            OPTIONAL MATCH (mouseSyn)-[:HAS_SYNONYM]->(mouseTerm:MP {id: '$termID'})
             WITH COALESCE(mouseTerm, mouseSyn) AS mouseSyns, mainTerm, mappedSyns
-            OPTIONAL MATCH (mouseSyn)<-[:HAS_SYNONYM]-(mouseTerm:$ont {id: '$termID'})
+            OPTIONAL MATCH (mouseSyn)<-[:HAS_SYNONYM]-(mouseTerm:MP {id: '$termID'})
             WITH COALESCE(mouseSyn, mouseTerm) AS mouseSyns, mouseTerm, mainTerm, mappedSyns
             WITH mouseTerm, FILTER(x IN COLLECT(DISTINCT mouseSyns.FSN) WHERE x <> mouseTerm.FSN) AS mouseSyns, mainTerm, mappedSyns
             
