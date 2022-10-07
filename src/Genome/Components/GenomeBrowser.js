@@ -256,36 +256,6 @@ class GenomeBrowser extends React.Component {
                 //         ]
                 //     }
                 // }
-            },
-            {
-                "type": "VariantTrack",
-                "trackId": "GC_only_variants_testing.vcf",
-                "name": "GWAS Central Variants (Testing)",
-                "category": [
-                    "Annotation"
-                ],
-                "assemblyNames": [
-                    "GRCh37"
-                ],
-                "adapter": {
-                    "type": "VcfTabixAdapter",
-                    "vcfGzLocation": {
-                        "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants_testing.vcf.gz"
-                    },
-                    "index": {
-                        "indexType": "TBI",
-                        "location": {
-                            "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants_testing.vcf.gz.tbi"
-                        }
-                    }
-                },
-                "displays": [
-                    {
-                        "type": "LinearVariantDisplay",
-                        "displayId": "GC_only_variants_testing.vcf-LinearVariantDisplay",
-                        "maxDisplayedBpPerPx": 3000
-                    }
-                ],
             }
         ];
     }
@@ -346,12 +316,12 @@ class GenomeBrowser extends React.Component {
                     },
                     {
                         type: "VariantTrack",
-                        configuration: "GC_only_variants_testing.vcf",
+                        configuration: "GC_only_variants.vcf.gz",
                         displays: [
                             {
                                 type: "LinearVariantDisplay",
                                 height: 200,
-                                configuration: "GC_only_variants_testing.vcf-LinearVariantDisplay",
+                                configuration: "GC_only_variants.vcf.gz-LinearVariantDisplay",
                                 maxDisplayedBpPerPx: 300000
                             }
                         ],
