@@ -189,17 +189,32 @@ class Ontology
 
     public function get_mp_mapping_by_id($termID): array
     {
+        $ont = str_contains($termID, "HP:") ? "HPO" : "MESH";
         $result = $this->neo->execute("
-            MATCH (n {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm:MP)
-            WITH mappedTerm
-            OPTIONAL MATCH (mappedTerm)<-[:HAS_SYNONYM]-(m)
-            WITH COALESCE(m, mappedTerm) AS mappedTerm
-            WHERE mappedTerm:MP AND mappedTerm.hasMouseData = TRUE
-            RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.experiment_total AS experiments", []);
+        MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+        WITH m.rootLength AS length
+        ORDER BY length ASC
+        LIMIT 1
+        MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:MP)
+        WITH o
+        
+        OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
+        WITH COALESCE(o, mainTerm) AS mainTerm
+        OPTIONAL MATCH (o)<-[:HAS_SYNONYM]-(mainTerm)
+        WITH COALESCE(mainTerm, o) AS mainTerm, o, COLLECT(DISTINCT o.FSN) AS mappedSyns
+        WITH mainTerm, FILTER(x IN COLLECT(DISTINCT o.FSN) WHERE x <> mainTerm.FSN) AS mappedSyns
+        
+        OPTIONAL MATCH (humanSyn)-[:HAS_SYNONYM]->(humanTerm:$ont {id: '$termID'})
+        WITH COALESCE(humanTerm, humanSyn) AS humanSyns, mainTerm, mappedSyns
+        OPTIONAL MATCH (humanSyn)<-[:HAS_SYNONYM]-(humanTerm:$ont {id: '$termID'})
+        WITH COALESCE(humanSyn, humanTerm) AS humanSyns, humanTerm, mainTerm, mappedSyns
+        WITH humanTerm, FILTER(x IN COLLECT(DISTINCT humanSyns.FSN) WHERE x <> humanTerm.FSN) AS humanSyns, mainTerm, mappedSyns
+        
+        RETURN DISTINCT humanSyns, mainTerm.id AS mappedID, mainTerm.FSN AS mappedLabel, mainTerm.experiment_total AS experiments, mappedSyns", []);
         $mappings = [];
         if ($result)
             foreach ($result as $row) {
-                $record = ["mappedID" => $row->get("mappedID"), "mappedOnt" => "MP", "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), "MP"), "experiments" => $row->get("experiments")];
+                $record = ["mappedID" => $row->get("mappedID"), "synonyms"=>$row->get("humanSyns"), "mappedOnt" => "MP", "mappedLabel" => $row->get("mappedLabel"), "mappedSynonyms" => $row->get("mappedSyns"), "experiments" => $row->get("experiments")];
                 $mappings[] = $record;
             }
         return $mappings;
@@ -214,19 +229,34 @@ class Ontology
             $targetOnt = [$targetOnt];
         foreach ($targetOnt as $ont) {
             $result = $this->neo->execute("
-                MATCH (n:MP {id: '" . $termID . "'})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(mappedTerm:$ont)
-                USING INDEX n:MP(id)
-                WITH mappedTerm
-                OPTIONAL MATCH (mappedTerm:$ont)<-[:HAS_SYNONYM]-(m)
-                WITH COALESCE(m, mappedTerm) AS mappedTerm
-                WHERE mappedTerm.hasHumanData = TRUE
-                RETURN DISTINCT mappedTerm.id AS mappedID, mappedTerm.FSN AS mappedLabel, mappedTerm.ontology AS mappedOnt, 
-                mappedTerm.gwas_total AS gwas", []);
+            MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+            WITH m.rootLength AS length
+            ORDER BY length ASC
+            LIMIT 1
+            MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:$targetOnt)
+            WITH o
+
+            OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
+            WITH COALESCE(o, mainTerm) AS mainTerm
+            OPTIONAL MATCH (o)<-[:HAS_SYNONYM]-(mainTerm)
+            WITH COALESCE(mainTerm, o) AS mainTerm, o, COLLECT(DISTINCT o.FSN) AS mappedSyns
+            WITH mainTerm, FILTER(x IN COLLECT(DISTINCT o.FSN) WHERE x <> mainTerm.FSN) AS mappedSyns
+            
+            OPTIONAL MATCH (mouseSyn)-[:HAS_SYNONYM]->(mouseTerm:$ont {id: '$termID'})
+            WITH COALESCE(mouseTerm, mouseSyn) AS mouseSyns, mainTerm, mappedSyns
+            OPTIONAL MATCH (mouseSyn)<-[:HAS_SYNONYM]-(mouseTerm:$ont {id: '$termID'})
+            WITH COALESCE(mouseSyn, mouseTerm) AS mouseSyns, mouseTerm, mainTerm, mappedSyns
+            WITH mouseTerm, FILTER(x IN COLLECT(DISTINCT mouseSyns.FSN) WHERE x <> mouseTerm.FSN) AS mouseSyns, mainTerm, mappedSyns
+            
+            RETURN DISTINCT mouseSyns, mainTerm.id AS mappedID, mainTerm.FSN AS mappedLabel, mainTerm.ontology AS mappedOnt, 
+            mainTerm.gwas_total AS gwas, mappedSyns", []);
             if ($result)
                 foreach ($result as $row) {
-                    $record = ["mappedID" => $row->get("mappedID"), "mappedLabel" => $row->get("mappedLabel"),
-                        "mappedSynonyms" => $this->get_term_synonyms($row->get("mappedID"), $row->get("mappedOnt")),
-                        "gwas" => $row->get("gwas"), "mappedOnt" => $row->get("mappedOnt")];
+                    $record = [
+                        "mappedID" => $row->get("mappedID"), "synonyms"=> $row->get("mouseSyns"), "mappedLabel" => $row->get("mappedLabel"),
+                        "mappedSynonyms" => $row->get("mappedSyns"), $row->get("mappedOnt"),
+                        "gwas" => $row->get("gwas"), "mappedOnt" => $row->get("mappedOnt")
+                    ];
                     $mappings[] = $record;
                 }
         }
@@ -395,8 +425,16 @@ class Ontology
             $hasHumanData = $child->value("hasHumanData");
             $hasMouseData = $child->value("hasMouseData");
             $hasData = $child->get("gwas_total") > 0 || $child->get("experiment_total") > 0;
-            $childNode = new TreeNode($child->get('id'), $child->get('label'),
-                $hasExactMapping, $hasInferredMapping, $child->get('hasChildrenWithData'), $hasData, $hasHumanData, $hasMouseData);
+            $childNode = new TreeNode(
+                $child->get('id'),
+                $child->get('label'),
+                $hasExactMapping,
+                $hasInferredMapping,
+                $child->get('hasChildrenWithData'),
+                $hasData,
+                $hasHumanData,
+                $hasMouseData
+            );
             $return_package[$child->get('id')] = $childNode;
         }
         return $return_package;
@@ -431,6 +469,7 @@ class Ontology
      */
     private function get_mapping_result($mapping, array $matches, int $i): array
     {
+        $matches[$i]["synonyms"] = $mapping["synonyms"];
         $matches[$i]["mappedID"] = $mapping["mappedID"];
         $matches[$i]["mappedLabel"] = $mapping["mappedLabel"];
         $matches[$i]["mappedSynonyms"] = $mapping["mappedSynonyms"];
@@ -467,5 +506,4 @@ class Ontology
 
         return $return_package;
     }
-
 }
