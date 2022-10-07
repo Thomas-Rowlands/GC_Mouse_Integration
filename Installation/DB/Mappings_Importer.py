@@ -40,9 +40,9 @@ def update_database(input_mappings: list):
             ((x.mesh_id, x.mesh_label), {"relation": "EXACT", "type": x.mapping_source}, (x.mp_id, x.mp_label)) for x in
             input_mappings if x.mesh_id]
         g = Graph(scheme="bolt", host="localhost", password="12345")
-        create_relationships(g.auto(), hp_mapping_data, "SPECIES_MAPPING", start_node_key=("HPO", "id", "FSN"),
+        merge_relationships(g.auto(), hp_mapping_data, "SPECIES_MAPPING", start_node_key=("HPO", "id", "FSN"),
                              end_node_key=("MP", "id", "FSN"))
-        create_relationships(g.auto(), mesh_mapping_data, "SPECIES_MAPPING", start_node_key=("MESH", "id", "FSN"),
+        merge_relationships(g.auto(), mesh_mapping_data, "SPECIES_MAPPING", start_node_key=("MESH", "id", "FSN"),
                              end_node_key=("MP", "id", "FSN"))
     except ConnectionRefusedError as cre:
         print(cre)
@@ -92,6 +92,20 @@ def reset_relationships():
         print(e)
 
 
+def create_inverted_relationship_directions():
+    """
+    Create reverse direction, exact SPECIES_MAPPING relationships between ontology nodes.
+    """
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        g.run("""MATCH (n)-[r:SPECIES_MAPPING {relation: "EXACT"}]->(o)
+        MERGE (o)-[:SPECIES_MAPPING {type: r.type, relation: "EXACT"}]->(n)""")
+    except ConnectionRefusedError as cre:
+        print(cre)
+    except Exception as e:
+        print(e)
+
+
 def create_inferred_relationships():
     """
     Create inferred SPECIES_MAPPING relationships between ontology nodes.
@@ -99,7 +113,7 @@ def create_inferred_relationships():
     try:
         g = Graph(scheme="bolt", host="localhost", password="12345")
         g.run("""MATCH (n)<-[:ISA*1..]-(m)-[r:SPECIES_MAPPING]->(o)
-        CREATE (n)-[:SPECIES_MAPPING {type: r.type, relation: "INFERRED"}]->(o)""")
+        MERGE (n)-[:SPECIES_MAPPING {type: r.type, relation: "INFERRED"}]->(o)""")
     except ConnectionRefusedError as cre:
         print(cre)
     except Exception as e:
@@ -148,6 +162,7 @@ def reset_term_properties():
     except Exception as e:
         print(e)
 
+
 def create_inferred_result_relationships():
     try:
         g = Graph(scheme="bolt", host="localhost", password="12345")
@@ -156,13 +171,15 @@ def create_inferred_result_relationships():
         mp_terms = [x['n.id'] for x in g.query("MATCH (n:MP) WHERE n.id <> 'MP:0000001' RETURN DISTINCT n.id").data()]
         for term in mp_terms:
             print(str(term))
-            child_terms = g.query(F"MATCH (n:MP {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:MP(id) RETURN DISTINCT m.id AS id")
+            child_terms = g.query(
+                F"MATCH (n:MP {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:MP(id) RETURN DISTINCT m.id AS id")
             child_terms = [x['id'] for x in child_terms.data()]
             if not child_terms:
                 continue
             gwas_results = []
             for child in child_terms:
-                result = g.query(F"MATCH (r)<-[:hasExperimentResult]-(n:MP {{id: '{child}'}}) USING INDEX n:MP(id) RETURN DISTINCT ID(r) AS result_id")
+                result = g.query(
+                    F"MATCH (r)<-[:hasExperimentResult]-(n:MP {{id: '{child}'}}) USING INDEX n:MP(id) RETURN DISTINCT ID(r) AS result_id")
                 gwas_results += [x['result_id'] for x in result.data()]
             combined_list = []
             if gwas_results:
@@ -176,13 +193,15 @@ def create_inferred_result_relationships():
         hpo_terms = [x['n.id'] for x in g.query("MATCH (n:HPO) WHERE n.id <> 'HP:0000001' RETURN DISTINCT n.id").data()]
         for term in hpo_terms:
             print(str(term))
-            child_terms = g.query(F"MATCH (n:HPO {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:HPO(id) RETURN DISTINCT m.id AS id")
+            child_terms = g.query(
+                F"MATCH (n:HPO {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:HPO(id) RETURN DISTINCT m.id AS id")
             child_terms = [x['id'] for x in child_terms.data()]
             if not child_terms:
                 continue
             gwas_results = []
             for child in child_terms:
-                result = g.query(F"MATCH (r)<-[:hasGWASResult]-(n:HPO {{id: '{child}'}}) USING INDEX n:HPO(id) RETURN DISTINCT ID(r) AS result_id")
+                result = g.query(
+                    F"MATCH (r)<-[:hasGWASResult]-(n:HPO {{id: '{child}'}}) USING INDEX n:HPO(id) RETURN DISTINCT ID(r) AS result_id")
                 gwas_results += [x['result_id'] for x in result.data()]
             combined_list = []
             if gwas_results:
@@ -214,11 +233,13 @@ def create_inferred_result_relationships():
     except Exception as e:
         print(e)
 
-# new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
-# if new_mappings:
-#     reset_relationships()
-#     reset_term_properties()
-#     update_database(new_mappings)
-#     create_inferred_relationships()
-#     create_term_properties()
-create_inferred_result_relationships()
+
+new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
+if new_mappings:
+    reset_relationships()
+    reset_term_properties()
+    update_database(new_mappings)
+    create_inverted_relationship_directions()
+    create_inferred_relationships()
+    create_term_properties()
+# create_inferred_result_relationships()
