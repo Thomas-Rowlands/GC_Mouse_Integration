@@ -11,7 +11,6 @@ import {IconButton, TablePagination, TableSortLabel, Tooltip} from "@material-ui
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import {Equalizer} from "@material-ui/icons";
-import {string} from "prop-types";
 
 class ResultTable extends React.Component {
 
@@ -141,7 +140,6 @@ class ResultTable extends React.Component {
         let clickFunc = this.getCellClickHandler(key);
         let hoverText = this.getCellHoverContent(row, key);
         row[key] = this.formatOntologyText(row[key]);
-        console.log(row[key]);
         if (hoverText)
             return (
                 <Tooltip title={hoverText} arrow>
