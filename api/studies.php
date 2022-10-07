@@ -43,16 +43,6 @@
             $return_package = ["Mappings" => $ont->get_human_mapping_by_id($mouseID, $targetOnt),
                 "GWAS Studies" => [], "Gene Knockouts" => $this->get_mouse_knockouts($mouseID),
                 "Homologous Genes" => []];
-
-            $inferred_terms = $ont->get_inferred_mappings($mouseID, "MP", $targetOnt);
-
-            if ($inferred_terms) {
-                foreach ($inferred_terms as $term) {
-                    $inferred_gwas = $this->get_mapped_gwas_studies($targetOnt, $term);
-                    foreach ($inferred_gwas as $gwas)
-                        $return_package["GWAS Studies"][] = $gwas;
-                }
-            }
             // Get knockouts
             if ($return_package["Mappings"]) {
                 $inferred_gwas = $this->get_mapped_gwas_studies($targetOnt, $return_package["Mappings"][0]["mappedID"]);
@@ -70,15 +60,6 @@
                 "Homologous Genes" => [],
                 "Gene Knockouts" => []];
 
-            $inferred_terms = $ont->get_inferred_mappings($humanID, $ontology, "MP");
-            if ($inferred_terms) {
-                foreach ($inferred_terms as $term) {
-                    $inferred_knockouts = $this->get_mouse_knockouts($term);
-                    foreach ($inferred_knockouts as $knockout)
-                        if (!in_array($knockout, $return_package["Gene Knockouts"]))
-                            $return_package["Gene Knockouts"][] = $knockout;
-                }
-            }
             // Get knockouts
             if ($return_package["Mappings"]) {
                 $inferred_knockouts = $this->get_mouse_knockouts($return_package["Mappings"][0]["mappedID"]);
@@ -92,32 +73,8 @@
         public function get_mapped_gwas_studies($ontology, $termID): array
         {
             $ont = new Ontology();
-            if (strtoupper($ontology) == "MESH") {
-                $descendants = $ont->get_term_descendants($termID, "MESH");
-                $descendants[] = $termID;
-            } else {
-                $descendants = $ont->get_term_descendants($termID, "HPO");
-                $descendants[] = $termID;
-                $hpo_descendants = [];
-                foreach ($descendants as $desc) {
-                    $hpo_descendants[] = $this->get_mesh_id_from_db($desc);
-                }
-                $descendants = [];
-                foreach ($hpo_descendants as $desc) {
-                    $mesh_descendants = $ont->get_term_descendants($desc, "MESH");
-                    foreach ($mesh_descendants as $mDesc) {
-                        $descendants[] = $mDesc;
-                    }
-                }
-
-            }
-            $term_string = "";
-            foreach ($descendants as $descendant) {
-                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
-            }
-            $term_string = rtrim($term_string, ",");
-            $result = $this->neo->execute("MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n:MESH)
-            WHERE n.id in [" . $term_string . "]
+            $result = $this->neo->execute("MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n:$ontology {id: '$termID'})
+            USING INDEX n:$ontology(id)
             RETURN DISTINCT s.id AS id, s.Name AS name, MAX(g.value) AS p_value", []);
             $studies = [];
             if ($result)
@@ -142,40 +99,27 @@
 
         public function get_mouse_knockouts($termID): array
         {
-            $ont = new Ontology();
-            $descendants = $ont->get_term_descendants($termID, "MP");
-            $descendants[] = $termID;
-            $result = [];
-            $term_string = "";
-            foreach ($descendants as $descendant) {
-                $term_string .= "'" . str_replace(" ", "", $descendant) . "',";
-            }
-            $term_string = rtrim($term_string, ",");
-            $cmd = "SELECT DISTINCT mg.gene_symbol AS \"Gene\", mm.marker_accession_id AS \"Gene Key\", e.male_count AS \"Males\", e.female_count AS \"Females\", ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) AS \"-log P-value\", pr.name AS \"Procedure\", pa.name AS \"Parameter\",
-            expa.parameter_stable_key AS \"Parameter Key\", expr.procedure_stable_key AS \"Procedure Key\"
-            FROM experiments AS e
-            INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
-            INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
-            INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
-            INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
-            INNER JOIN mouse_markers AS mm ON mm.mouse_gene_id = e.mouse_marker_id
-            INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
-            INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
-            INNER JOIN experiment_parameter AS expa ON expa.experiment_id = e.experiments_id
-            INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
-            INNER JOIN experiment_procedure AS expr ON expr.experiment_id = e.experiments_id
-            WHERE (mp.mp_term_id in ($term_string) OR mptl.mp_term_id in ($term_string))
-                AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0";
-            $knockout = $this->con->execute($cmd, "gc_mouse");
-            if ($knockout) {
-                $knockout_records = mysqli_fetch_all($knockout, MYSQLI_ASSOC);
-                foreach ($knockout_records as $record) {
-                    $result[] = $record;
+            $result = $this->neo->execute("MATCH (term:MP {id: \"$termID\"})-[:hasExperimentResult]->(r)<-[:containsExperimentResult]-(e)
+                USING INDEX term:MP(id)
+                WITH r, e
+                MATCH (e)-[:studiesTheGene]->(g)
+                WITH r, e, g
+                MATCH (e)-[:usesProcedure]->(p)
+                WITH r, e, g, p
+                MATCH (e)-[:assessesParameter]->(pa)
+                WITH r, e, g, p, pa
+                RETURN g.name AS Gene, g.mgi AS `Gene Key`, e.maleCount AS Males, 
+                e.femaleCount AS Females, r.value AS `-log P-value`, p.name AS Procedure, pa.name AS Parameter", []);
+            $return_package = [];
+            if ($result) {
+                foreach ($result as $record) {
+                    $return_package[] = ["Gene"=>$record->get("Gene"), "Gene Key"=>$record->get("Gene Key"),
+                        "Males"=>$record->get("Males"), "Females"=>$record->get("Females"),
+                        "-log P-value"=>$record->get("-log P-value"), "Procedure"=>$record->get("Procedure"),
+                        "Parameter"=>$record->get("Parameter")];
                 }
-            }
-            if ($result)
-                return $result;
-            else
+                return $return_package;
+            } else
                 return [];
         }
 
