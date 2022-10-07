@@ -8,11 +8,24 @@ from vcf.model import _Record
 from py2neo import Graph
 
 from BCBio import GFF
+from Bio import SeqIO
 
 db_connection = mysql.connector.connect(host="localhost", database="GC_browser", user="root",
-                                        password="")
+                                        password="Maggie7803GB!")
 db = db_connection.cursor()
 neo_db = Graph("bolt://localhost:7687", auth=("neo4j", "12345"))
+
+
+class AssemblyFastaEditor:
+    desired_contigs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17",
+                       "18", "19", "20", "21", "22", "x", "y", "m"]
+
+    def remove_unwanted_contigs(self):
+        with open("../../api/JBrowseData/hg19.fa", "r") as fin, open("../../api/JBrowseData/hg19_fixed.fa", "w") as fout:
+            records = SeqIO.parse(fin, "fasta")
+            for record in records:
+                if record.id.lower() in self.desired_contigs:
+                    SeqIO.write(record, fout, "fasta")
 
 
 class IMPCGenes:
@@ -26,7 +39,8 @@ class IMPCGenes:
                     if gene_assocs:
                         feature.qualifiers["IMPC"] = gene_assocs["mouse_gene"]
                         feature.qualifiers["GWAS Central"] = gene_assocs["human_gene"]
-                        feature.qualifiers["Ensembl"] = F"<a class='jbrowse-feature-btn' href=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])};r=1:1173880-1197936\" target='_blank'>{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</a></br>"
+                        feature.qualifiers[
+                            "Ensembl"] = F"<a class='jbrowse-feature-btn' href=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])};r=1:1173880-1197936\" target='_blank'>{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</a></br>"
                         feature.qualifiers["Associated Phenotypes"] = gene_assocs["phenotypes"]
                 GFF.write([new_rec], fout)
 
@@ -57,14 +71,19 @@ mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
         for result in results:
             records = result.fetchall()
             for record in records:
-                return_dict["mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/search?term={urllib.parse.quote(record[1])}&type=gene\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
-                return_dict["human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
-                return_dict["phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
-                return_dict["phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
+                return_dict[
+                    "mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/search?term={urllib.parse.quote(record[1])}&type=gene\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
+                return_dict[
+                    "human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
+                return_dict[
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
+                return_dict[
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
         if return_dict["phenotypes"]:
             return return_dict
         else:
             return None
+
 
 class GCVariant(_Record):
     def __init__(self, CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, sample_indexes):
@@ -223,7 +242,9 @@ def update_impc_data():
     #                "../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
     # subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
 
+
 # filter_ensemble_variants()
 # filter_ensemble_genes()
 # update_gc_data()
-update_impc_data()
+# update_impc_data()
+AssemblyFastaEditor().remove_unwanted_contigs()
