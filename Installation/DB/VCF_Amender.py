@@ -7,30 +7,74 @@ from gffutils.iterators import DataIterator
 from vcf.model import _Record
 from py2neo import Graph
 
+from BCBio import GFF
+
 db_connection = mysql.connector.connect(host="localhost", database="GC_browser", user="root",
-                                        password="Maggie7803GB!")
+                                        password="")
 db = db_connection.cursor()
 neo_db = Graph("bolt://localhost:7687", auth=("neo4j", "12345"))
 
 
-class IMPCGene:
-    def __init__(self):
-        name = ""
-        description = ""
-        position = ""
-        length = ""
-        type = ""
-        links = []
-        phenotypes = []
+class IMPCGenes:
+    def update_genes(self):
+        with open("../../api/JBrowseData/IMPC_Genes.gff3", "r") as fin, \
+                open("../../api/JBrowseData/IMPC_Genes_testing.gff3", "w") as fout:
+            for rec in GFF.parse(fin):
+                new_rec = rec
+                for feature in new_rec.features:
+                    gene_assocs = self.get_gene_associations(feature.qualifiers["Name"][0])
+                    if gene_assocs:
+                        feature.qualifiers["IMPC"] = gene_assocs["mouse_gene"]
+                        feature.qualifiers["GWAS Central"] = gene_assocs["human_gene"]
+                        feature.qualifiers["Ensembl"] = F"<a class='jbrowse-feature-btn' href=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])};r=1:1173880-1197936\" target='_blank'>{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</a></br>"
+                        feature.qualifiers["Associated Phenotypes"] = gene_assocs["phenotypes"]
+                GFF.write([new_rec], fout)
 
+    @staticmethod
+    def get_gene_associations(gene):
+        db_connection.database = "gc_mouse"
+        cmd = F"""
+SELECT DISTINCT hg.gene_symbol AS "Gene", mg.gene_symbol AS "Mouse Gene", 
+mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
+			mptl.term_name AS `top_level_term_name`, mp.term_name AS `term_name`
+            FROM experiments AS e
+            INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
+            INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
+            INNER JOIN mp_phenotypes AS mptl ON mptl.mp_phenotype_id = etp.phenotype_id
+            INNER JOIN mp_phenotypes AS mp ON mp.mp_phenotype_id = ep.phenotype_id
+            INNER JOIN mouse_markers AS mm ON mm.mouse_marker_id = e.mouse_marker_id
+            INNER JOIN mouse_genes AS mg ON mg.id = mm.mouse_gene_id
+            INNER JOIN homologs AS h ON h.mouse_gene_id = mg.id
+            INNER JOIN human_genes AS hg ON hg.id = h.human_gene_id
+            INNER JOIN parameters AS pa ON pa.parameters_id = e.parameter_id
+            INNER JOIN experiment_parameter AS expa ON expa.experiment_id = e.experiments_id
+            INNER JOIN procedures AS pr ON pr.procedures_id = e.procedure_id
+            INNER JOIN experiment_procedure AS expr ON expr.experiment_id = e.experiments_id
+            WHERE hg.gene_symbol = "{gene}" AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0;
+        """
+        results = db.execute(cmd, multi=True)
+        return_dict = {"phenotypes": "", "mouse_gene": "", "human_gene": ""}
+        for result in results:
+            records = result.fetchall()
+            for record in records:
+                return_dict["mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/search?term={urllib.parse.quote(record[1])}&type=gene\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
+                return_dict["human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
+                return_dict["phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
+                return_dict["phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
+        if return_dict["phenotypes"]:
+            return return_dict
+        else:
+            return None
 
 class GCVariant(_Record):
     def __init__(self, CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, sample_indexes):
         super().__init__(CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, sample_indexes)
         self.LINKS = None
         self.remove_unwanted_attributes()
-        self.INFO["GWAS Central"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
-        self.INFO["dbSNP"] = F"<a class='jbrowse-feature-btn' href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
+        self.INFO[
+            "GWAS Central"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
+        self.INFO[
+            "dbSNP"] = F"<a class='jbrowse-feature-btn' href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
         self.INFO["Associated Phenotypes"] = None
         self.get_variant_phenotypes()
 
@@ -53,19 +97,26 @@ class GCVariant(_Record):
             if result.with_rows:
                 phenotypes = self.get_phenotype_names([x for [(x)] in result.fetchall()])
                 phenotypes_string = ""
-                for phenotype in phenotypes:
-                    phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={urllib.parse.quote(phenotype)}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
-                self.INFO["Associated Phenotypes"] = phenotypes_string[:-2]
+                if phenotypes:
+                    for phenotype in phenotypes:
+                        phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={urllib.parse.quote(phenotype)}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
+                    self.INFO["Associated Phenotypes"] = phenotypes_string[:-2]
 
     @staticmethod
     def get_phenotype_names(descriptors):
         phenotype_names = []
         for descriptor in descriptors:
             if "HP:" in descriptor:
-                result = neo_db.run(F"MATCH (n:HPO) USING INDEX n:HPO(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
+                result = neo_db.run(
+                    F"MATCH (n:HPO) USING INDEX n:HPO(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
             else:
-                result = neo_db.run(F"MATCH (n:MESH) USING INDEX n:MESH(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
-            phenotype_names.append(result.data("name")[0]["name"])
+                result = neo_db.run(
+                    F"MATCH (n:MESH) USING INDEX n:MESH(id) WHERE n.id = '{descriptor}' RETURN n.FSN AS name LIMIT 1")
+            if result:
+                try:
+                    phenotype_names.append(result.data("name")[0]["name"])
+                except IndexError:
+                    print(F"{descriptor} is not in the Neo4J DB")
         return phenotype_names
 
 
@@ -153,11 +204,7 @@ def filter_ensemble_genes():
 def update_gc_data():
     vcf_in = vcf.Reader(filename='../../api/JBrowseData/GC_only_variants.vcf')
     vcf_out = vcf.Writer(open('../../api/JBrowseData/GC_only_variants_testing.vcf', 'w'), vcf_in)
-    i = 0
     for rec in vcf_in:
-        i += 1
-        if i == 5:
-            break
         new_variant = GCVariant(rec.CHROM, rec.POS, rec.ID, rec.REF, rec.ALT, rec.QUAL, rec.FILTER, rec.INFO,
                                 rec.FORMAT, None)
         try:
@@ -170,6 +217,13 @@ def update_gc_data():
     subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
 
 
+def update_impc_data():
+    IMPCGenes().update_genes()
+    # subprocess.run("bgzip -c ../../api/JBrowseData/GC_only_variants_testing.vcf > "
+    #                "../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+    # subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+
 # filter_ensemble_variants()
 # filter_ensemble_genes()
-update_gc_data()
+# update_gc_data()
+update_impc_data()
