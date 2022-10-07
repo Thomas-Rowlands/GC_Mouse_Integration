@@ -1,5 +1,5 @@
 from py2neo import Graph
-from py2neo.bulk import create_relationships
+from py2neo.bulk import create_relationships, merge_relationships
 
 
 class Mapping:
@@ -148,11 +148,77 @@ def reset_term_properties():
     except Exception as e:
         print(e)
 
+def create_inferred_result_relationships():
+    try:
+        g = Graph(scheme="bolt", host="localhost", password="12345")
+        # MP Ontology
+        print("Adding inferred MP Experiment relationships")
+        mp_terms = [x['n.id'] for x in g.query("MATCH (n:MP) WHERE n.id <> 'MP:0000001' RETURN DISTINCT n.id").data()]
+        for term in mp_terms:
+            print(str(term))
+            child_terms = g.query(F"MATCH (n:MP {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:MP(id) RETURN DISTINCT m.id AS id")
+            child_terms = [x['id'] for x in child_terms.data()]
+            if not child_terms:
+                continue
+            gwas_results = []
+            for child in child_terms:
+                result = g.query(F"MATCH (r)<-[:hasExperimentResult]-(n:MP {{id: '{child}'}}) USING INDEX n:MP(id) RETURN DISTINCT ID(r) AS result_id")
+                gwas_results += [x['result_id'] for x in result.data()]
+            combined_list = []
+            if gwas_results:
+                gwas_results = list(set(gwas_results))
+                combined_list = [(term, {}, x) for x in gwas_results]
+                merge_relationships(g.auto(), combined_list, "hasExperimentResult", start_node_key=("MP", "id"))
+            del child_terms, combined_list
+        del mp_terms
+        # HPO Ontology
+        print("Adding inferred HPO GWAS relationships")
+        hpo_terms = [x['n.id'] for x in g.query("MATCH (n:HPO) WHERE n.id <> 'HP:0000001' RETURN DISTINCT n.id").data()]
+        for term in hpo_terms:
+            print(str(term))
+            child_terms = g.query(F"MATCH (n:HPO {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:HPO(id) RETURN DISTINCT m.id AS id")
+            child_terms = [x['id'] for x in child_terms.data()]
+            if not child_terms:
+                continue
+            gwas_results = []
+            for child in child_terms:
+                result = g.query(F"MATCH (r)<-[:hasGWASResult]-(n:HPO {{id: '{child}'}}) USING INDEX n:HPO(id) RETURN DISTINCT ID(r) AS result_id")
+                gwas_results += [x['result_id'] for x in result.data()]
+            combined_list = []
+            if gwas_results:
+                gwas_results = list(set(gwas_results))
+                combined_list = [(term, {}, x) for x in gwas_results]
+                merge_relationships(g.auto(), combined_list, "hasGWASResult", start_node_key=("HPO", "id"))
+            del child_terms, combined_list
+        del hpo_terms
+        # MESH Ontology
+        # print("Adding inferred MESH GWAS relationships")
+        # mesh_terms = [x['n.id'] for x in g.query("MATCH (n:MESH) WHERE n.id <> 'mesh' RETURN DISTINCT n.id").data()]
+        # for term in mesh_terms:
+        #     print(str(term))
+        #     child_terms = g.query(F"MATCH (n:MESH {{id: '{term}'}})<-[:ISA*1..]-(m) USING INDEX n:MESH(id) RETURN DISTINCT m.id AS id")
+        #     child_terms = [x['id'] for x in child_terms.data()]
+        #     if not child_terms:
+        #         continue
+        #     gwas_results = []
+        #     for child in child_terms:
+        #         result = g.query(F"MATCH (r)<-[:hasGWASResult]-(n:MESH {{id: '{child}'}}) USING INDEX n:MESH(id) RETURN DISTINCT ID(r) AS result_id")
+        #         gwas_results += [x['result_id'] for x in result.data()]
+        #     combined_list = []
+        #     if gwas_results:
+        #         gwas_results = list(set(gwas_results))
+        #         combined_list = [(term, {}, x) for x in gwas_results]
+        #         merge_relationships(g.auto(), combined_list, "hasGWASResult", start_node_key=("MESH", "id"))
+        #     del child_terms, combined_list
+        # del mesh_terms
+    except Exception as e:
+        print(e)
 
-new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
-if new_mappings:
-    reset_relationships()
-    reset_term_properties()
-    update_database(new_mappings)
-    create_inferred_relationships()
-    create_term_properties()
+# new_mappings = read_mappings_file("Ontology Mappings_v4.tsv")
+# if new_mappings:
+#     reset_relationships()
+#     reset_term_properties()
+#     update_database(new_mappings)
+#     create_inferred_relationships()
+#     create_term_properties()
+create_inferred_result_relationships()
