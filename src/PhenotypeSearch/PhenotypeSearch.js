@@ -152,6 +152,36 @@ class PhenotypeSearch extends React.Component {
         }
     }
 
+    getExamples = () => {
+        let example_term_list = ["HP:0009124", "D000273", "HP:0004349", "HP:0011001", "D013131", "HP:0003468",
+            "D012272", "D008903", "HP:0004379", "D000469"];
+        let url_string = this.state.configData.api_server + "controller.php?type=study&search=" +
+            encodeURIComponent(example_term_list) + "&page=" + 0 + "&human_pval=0&mouse_pval=0&species=human&exact";
+        axios.get(url_string)
+            .then((response) => {
+                if (response.status === 200) {
+                    if (response.data) {
+                        var result_total = response.data[1];
+                        if (result_total > 0) {
+                            this.setState({tableData: response.data[0], loading: false, searchOpen: true});
+                        } else {
+                            this.setState({
+                                tableData: "Unable to retrieve example records.",
+                                loading: false,
+                                searchOpen: true
+                            });
+                        }
+                    } else {
+                        this.setState({loading: false, searchOpen: true, tableData: null});
+                    }
+                }
+            })
+            .catch((error) => {
+                this.setState({loading: false, searchOpen: true, tableData: null});
+                console.log("An error occurred searching for phenotype results.");
+            });
+    }
+
     search = () => {
         let search_input = null;
         if (this.state.isSearchExact) {
@@ -328,11 +358,11 @@ class PhenotypeSearch extends React.Component {
                                                     InputProps={{
                                                         ...params.InputProps,
                                                         onKeyDown: (e) => {
-                                                          if (e.key === "Enter") {
-                                                              this.search();
-                                                              document.getElementById("phenotypeSearchInput").blur();
-                                                              e.stopPropagation();
-                                                          }
+                                                            if (e.key === "Enter") {
+                                                                this.search();
+                                                                document.getElementById("phenotypeSearchInput").blur();
+                                                                e.stopPropagation();
+                                                            }
                                                         },
                                                         endAdornment: (
                                                             <React.Fragment>
@@ -401,6 +431,7 @@ class PhenotypeSearch extends React.Component {
                                             <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>}
                                                               id="mouse-radio"/>
                                         </RadioGroup>
+
                                         <FormControl className={classes.formControl} onChange={this.humanPValChanged}>
                                             <InputLabel shrink>Human P-value</InputLabel>
                                             <Select value={this.state.humanPval} className={classes.selectEmpty}
@@ -438,7 +469,10 @@ class PhenotypeSearch extends React.Component {
                                         </FormControl>
                                         <div className="input-group-inline">
                                             <Button size="large" color="primary" variant="contained" id="search_btn"
-                                                    onClick={this.searchClick}>Search</Button>
+                                                    onClick={this.searchClick}>Search</Button>&nbsp;
+                                            <Button size="large" color="primary"
+                                                    variant="outlined" id="examples_btn"
+                                                    onClick={this.getExamples}>Examples</Button>
                                         </div>
                                     </div>
                                     <div className="table-container">
@@ -453,7 +487,7 @@ class PhenotypeSearch extends React.Component {
                                     aria-labelledby="max-width-dialog-title"
                                     TransitionComponent={Grow}
                                 >
-                                <LoadingSpinner isRelative={true} loading={this.state.dialogLoading}/>
+                                    <LoadingSpinner isRelative={true} loading={this.state.dialogLoading}/>
                                     <DialogContent>
                                         <div className="table-container">
                                             <PhenotypeResultBreakdown
