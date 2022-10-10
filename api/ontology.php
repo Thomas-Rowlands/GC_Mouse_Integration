@@ -191,26 +191,29 @@ class Ontology
     {
         $ont = str_contains($termID, "HP:") ? "HPO" : "MESH";
         $result = $this->neo->execute("
-        MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
-        WITH m.rootLength AS length
-        ORDER BY length ASC
-        LIMIT 1
-        MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:MP)
-        WITH o
-        
-        OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
-        WITH COALESCE(o, mainTerm) AS mainTerm
-        OPTIONAL MATCH (o)<-[:HAS_SYNONYM]-(mainTerm)
-        WITH COALESCE(mainTerm, o) AS mainTerm, o, COLLECT(DISTINCT o.FSN) AS mappedSyns
-        WITH mainTerm, FILTER(x IN COLLECT(DISTINCT o.FSN) WHERE x <> mainTerm.FSN) AS mappedSyns
-        
-        OPTIONAL MATCH (humanSyn)-[:HAS_SYNONYM]->(humanTerm:$ont {id: '$termID'})
-        WITH COALESCE(humanTerm, humanSyn) AS humanSyns, mainTerm, mappedSyns
-        OPTIONAL MATCH (humanSyn)<-[:HAS_SYNONYM]-(humanTerm:$ont {id: '$termID'})
-        WITH COALESCE(humanSyn, humanTerm) AS humanSyns, humanTerm, mainTerm, mappedSyns
-        WITH humanTerm, FILTER(x IN COLLECT(DISTINCT humanSyns.FSN) WHERE x <> humanTerm.FSN) AS humanSyns, mainTerm, mappedSyns
-        
-        RETURN DISTINCT humanSyns, mainTerm.id AS mappedID, mainTerm.FSN AS mappedLabel, mainTerm.experiment_total AS experiments, mappedSyns", []);
+            OPTIONAL MATCH (n:$ont {id: '$termID'})-[:SPECIES_MAPPING {relation: 'EXACT'}]->(directTerm:MP)
+            WITH directTerm
+            OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+            WITH m.rootLength AS length, directTerm
+            ORDER BY length ASC
+            LIMIT 1
+            OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:MP)
+            WITH COALESCE(directTerm, o) AS o, directTerm
+
+            OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
+            WITH COALESCE(o, mainTerm) AS mainTerm
+            OPTIONAL MATCH (o)<-[:HAS_SYNONYM]-(mainTerm)
+            WITH COALESCE(mainTerm, o) AS mainTerm, o, COLLECT(DISTINCT o.FSN) AS mappedSyns
+            WITH mainTerm, FILTER(x IN COLLECT(DISTINCT o.FSN) WHERE x <> mainTerm.FSN) AS mappedSyns
+            
+            OPTIONAL MATCH (humanSyn)-[:HAS_SYNONYM]->(humanTerm:$ont {id: '$termID'})
+            WITH COALESCE(humanTerm, humanSyn) AS humanSyns, mainTerm, mappedSyns
+            OPTIONAL MATCH (humanSyn)<-[:HAS_SYNONYM]-(humanTerm:$ont {id: '$termID'})
+            WITH COALESCE(humanSyn, humanTerm) AS humanSyns, humanTerm, mainTerm, mappedSyns
+            WITH humanTerm, FILTER(x IN COLLECT(DISTINCT humanSyns.FSN) WHERE x <> humanTerm.FSN) AS humanSyns, mainTerm, mappedSyns
+            
+            RETURN DISTINCT humanSyns, mainTerm.id AS mappedID, mainTerm.FSN AS mappedLabel, mainTerm.ontology AS mappedOnt, 
+            mainTerm.gwas_total AS gwas, mappedSyns", []);
         $mappings = [];
         if ($result)
             foreach ($result as $row) {
