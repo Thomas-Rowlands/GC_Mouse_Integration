@@ -231,7 +231,7 @@ class Ontology
             $result = $this->neo->execute("
             OPTIONAL MATCH (n:MP {id: '$termID'})-[:SPECIES_MAPPING {relation: 'EXACT'}]->(directTerm:$ont)
             WITH directTerm
-            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExact".$ont."Mapping: TRUE})
             WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
