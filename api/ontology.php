@@ -197,7 +197,7 @@ class Ontology
             WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
-            OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:MP)
+            OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING]-(o:MP)
             WITH COALESCE(directTerm, o) AS o, directTerm
 
             OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
@@ -213,7 +213,7 @@ class Ontology
             WITH humanTerm, FILTER(x IN COLLECT(DISTINCT humanSyns.FSN) WHERE x <> humanTerm.FSN) AS humanSyns, mainTerm, mappedSyns
             
             RETURN DISTINCT humanSyns, mainTerm.id AS mappedID, mainTerm.FSN AS mappedLabel, mainTerm.ontology AS mappedOnt, 
-            mainTerm.gwas_total AS gwas, mappedSyns", []);
+            mainTerm.experiment_total AS experiments, mappedSyns", []);
         $mappings = [];
         if ($result)
             foreach ($result as $row) {
@@ -238,7 +238,7 @@ class Ontology
             WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
-            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING {relation: 'EXACT'}]-(o:$ont)
+            OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING]-(o:$ont)
             WITH COALESCE(directTerm, o) AS o, directTerm
 
             OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
