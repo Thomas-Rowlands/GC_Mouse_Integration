@@ -11,9 +11,9 @@ from BCBio import GFF
 from Bio import SeqIO
 
 db_connection = mysql.connector.connect(host="localhost", database="GC_browser", user="root",
-                                        password="Maggie7803GB!")
+                                        password="")
 db = db_connection.cursor()
-neo_db = Graph("bolt://localhost:7687", auth=("neo4j", "12345"))
+neo_db = Graph("bolt://localhost:7687", auth=("neo4j", ""))
 
 
 class AssemblyFastaEditor:
@@ -21,7 +21,7 @@ class AssemblyFastaEditor:
                        "18", "19", "20", "21", "22", "x", "y", "m"]
 
     def remove_unwanted_contigs(self):
-        with open("../../api/JBrowseData/hg19.fa", "r") as fin, open("../../api/JBrowseData/hg19_fixed.fa", "w") as fout:
+        with open("../../api/JBrowseData/hg19.fa", "r") as fin, open("../../api/JBrowseData/hg19_fixed.fa", "w+") as fout:
             records = SeqIO.parse(fin, "fasta")
             for record in records:
                 if record.id.lower() in self.desired_contigs:
@@ -31,17 +31,21 @@ class AssemblyFastaEditor:
 class IMPCGenes:
     def update_genes(self):
         with open("../../api/JBrowseData/IMPC_Genes.gff3", "r") as fin, \
-                open("../../api/JBrowseData/IMPC_Genes_testing.gff3", "w") as fout:
+                open("../../api/JBrowseData/IMPC_Genes_testing.gff3", "w+") as fout:
             for rec in GFF.parse(fin):
                 new_rec = rec
+                flagged_features = []
                 for feature in new_rec.features:
                     gene_assocs = self.get_gene_associations(feature.qualifiers["Name"][0])
-                    if gene_assocs:
+                    if not gene_assocs:
+                        flagged_features.append(feature)
+                    else:
                         feature.qualifiers["IMPC"] = gene_assocs["mouse_gene"]
                         feature.qualifiers["GWAS Central"] = gene_assocs["human_gene"]
                         feature.qualifiers[
-                            "Ensembl"] = F"<a class='jbrowse-feature-btn' href=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])};r=1:1173880-1197936\" target='_blank'>{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</a></br>"
+                            "Ensembl"] = F"<div class='jbrowse-feature-btn' data-link=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])}\">{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</div></br>"
                         feature.qualifiers["Associated Phenotypes"] = gene_assocs["phenotypes"]
+                new_rec.features = [x for x in new_rec.features if x not in flagged_features]
                 GFF.write([new_rec], fout)
 
     @staticmethod
@@ -50,7 +54,7 @@ class IMPCGenes:
         cmd = F"""
 SELECT DISTINCT hg.gene_symbol AS "Gene", mg.gene_symbol AS "Mouse Gene", 
 mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
-			mptl.term_name AS `top_level_term_name`, mp.term_name AS `term_name`
+			mptl.term_name AS `top_level_term_name`, mp.term_name AS `term_name`, mm.marker_accession_id AS `MGI`
             FROM experiments AS e
             INNER JOIN experiment_top_level_phenotypes AS etp ON etp.experiment_id = e.experiments_id
             INNER JOIN experiment_phenotypes AS ep ON ep.experiment_id = e.experiments_id
@@ -67,12 +71,12 @@ mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
             WHERE hg.gene_symbol = "{gene}" AND ROUND(LOG((CONVERT(e.p_value, DECIMAL(30, 30)) + 0)) * -1, 3) > 0;
         """
         results = db.execute(cmd, multi=True)
-        return_dict = {"phenotypes": "", "mouse_gene": "", "human_gene": ""}
+        return_dict = {"phenotypes": "", "mouse_gene": "", "human_gene": "", "MGI": ""}
         for result in results:
             records = result.fetchall()
             for record in records:
                 return_dict[
-                    "mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/search?term={urllib.parse.quote(record[1])}&type=gene\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
+                    "mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/genes/{urllib.parse.quote(record[6])}\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
                 return_dict[
                     "human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
                 return_dict[
@@ -172,10 +176,12 @@ def get_variant_list():
 
 def get_gene_list(gene_list):
     cmd = F"""
-        SELECT DISTINCT gc_mouse.mg.gene_symbol
+        SELECT DISTINCT gc_mouse.hg.gene_symbol
             FROM gc_mouse.experiments AS ex
             INNER JOIN gc_mouse.mouse_markers AS mm ON mm.mouse_marker_id = ex.mouse_marker_id
-            INNER JOIN gc_mouse.mouse_genes AS mg ON mg.id = mm.mouse_gene_id;
+            INNER JOIN gc_mouse.mouse_genes AS mg ON mg.id = mm.mouse_gene_id
+            INNER JOIN gc_mouse.homologs AS h ON h.mouse_gene_id = mg.id
+            INNER JOIN gc_mouse.human_genes AS hg ON hg.id = h.human_gene_id;
     """
     results = db.execute(cmd, multi=True)
     for result in results:
@@ -200,10 +206,10 @@ def filter_ensemble_variants():
 
 
 def filter_ensemble_genes():
-    gff_in = "../api/JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3"
-    gff_out = "../api/JBrowseData/IMPC_Genes.gff3"
+    gff_in = "../../api/JBrowseData/Homo_sapiens.GRCh37.87.chr_sorted.gff3"
+    gff_out = "../../api/JBrowseData/IMPC_Genes.gff3"
     gene_list = get_gene_list([])
-    with open(gff_out, "w") as fout:
+    with open(gff_out, 'w+') as fout:
         for feature in DataIterator(gff_in):
             if feature.featuretype != "gene":
                 continue
@@ -243,8 +249,9 @@ def update_impc_data():
     # subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
 
 
+filter_ensemble_genes()
+update_impc_data()
 # filter_ensemble_variants()
-# filter_ensemble_genes()
 # update_gc_data()
-# update_impc_data()
-AssemblyFastaEditor().remove_unwanted_contigs()
+
+# AssemblyFastaEditor().remove_unwanted_contigs()
