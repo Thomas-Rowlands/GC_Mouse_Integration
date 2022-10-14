@@ -298,6 +298,19 @@ class PhenotypeSearch extends React.Component {
         return ont;
     }
 
+    appendExampleTerm = (e) => {
+        let selectedTerms = this.state.exactTermList;
+        let newTerm = {"FSN":e.target.dataset["label"], "id":e.target.dataset["ontId"]};
+        if (!selectedTerms.some(x => x.id === newTerm.id)) {
+            selectedTerms.push(newTerm);
+            this.setState({
+                termLimitReached: selectedTerms.length > 3,
+                exactTermList: selectedTerms,
+                isSearchExact: selectedTerms.length > 0
+            });
+        }
+    }
+
     loadingHandler = (status) => {
         this.setState({dialogLoading: status});
     }
@@ -322,6 +335,14 @@ class PhenotypeSearch extends React.Component {
                                             title={"Phenotype Search"}
                                             contentText={this.getSearchInfoContent()}/></Typography>
                                         <br/>
+                                        <RadioGroup row className={classes.radio} name="speciesRadio"
+                                                    value={this.state.selectedSpecies}
+                                                    onChange={this.speciesRadioChanged}>
+                                            <FormControlLabel value="Human" label="Human" control={<Radio/>}
+                                                              id="human-radio"/>
+                                            <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>}
+                                                              id="mouse-radio"/>
+                                        </RadioGroup>
                                         <Autocomplete
                                             freeSolo
                                             className={classes.autoComplete}
@@ -422,15 +443,20 @@ class PhenotypeSearch extends React.Component {
                                                         {this.formatOntology(option.ontology)}
                                                     </div>
                                                 </div>}/>
+(e.g.
+                                            {
+                                                this.state.selectedSpecies !== "Mouse" ? <ul className={"phenotype-example-list"}>
+                                                    <li data-label={"Nervous System"} data-ont-id={"D009420"} onClick={this.appendExampleTerm}> Nervous System,</li>
+                                            <li data-label={"Lipids"} data-ont-id={"D008055"} onClick={this.appendExampleTerm}>Lipids</li></ul>
+                                                    : <ul className={"phenotype-example-list"}>
+                                                    <li data-label={"nervous system phenotype"} data-ont-id={"MP:0003631"} onClick={this.appendExampleTerm}> nervous system phenotype,</li>
+                                            <li data-label={"abnormal lipid level"} data-ont-id={"MP:0001547"} onClick={this.appendExampleTerm}>abnormal lipid level</li></ul>
+
+                                            }
+)
+                                        <br/>
+
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
-                                        <RadioGroup row className={classes.radio} name="speciesRadio"
-                                                    value={this.state.selectedSpecies}
-                                                    onChange={this.speciesRadioChanged}>
-                                            <FormControlLabel value="Human" label="Human" control={<Radio/>}
-                                                              id="human-radio"/>
-                                            <FormControlLabel value="Mouse" label="Mouse" control={<Radio/>}
-                                                              id="mouse-radio"/>
-                                        </RadioGroup>
 
                                         <FormControl className={classes.formControl} onChange={this.humanPValChanged}>
                                             <InputLabel shrink>Human P-value</InputLabel>
@@ -470,9 +496,6 @@ class PhenotypeSearch extends React.Component {
                                         <div className="input-group-inline">
                                             <Button size="large" color="primary" variant="contained" id="search_btn"
                                                     onClick={this.searchClick}>Search</Button>&nbsp;
-                                            <Button size="large" color="primary"
-                                                    variant="outlined" id="examples_btn"
-                                                    onClick={this.getExamples}>Examples</Button>
                                         </div>
                                     </div>
                                     <div className="table-container">
