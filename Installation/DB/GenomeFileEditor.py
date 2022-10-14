@@ -40,11 +40,11 @@ class IMPCGenes:
                     if not gene_assocs:
                         flagged_features.append(feature)
                     else:
-                        feature.qualifiers["IMPC"] = gene_assocs["mouse_gene"]
-                        feature.qualifiers["GWAS Central"] = gene_assocs["human_gene"]
+                        feature.qualifiers["IMPC Gene"] = gene_assocs["mouse_gene"]
+                        feature.qualifiers["GWAS Central Gene"] = gene_assocs["human_gene"]
                         feature.qualifiers[
                             "Ensembl"] = F"<div class='jbrowse-feature-btn' data-link=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])}\">{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</div></br>"
-                        feature.qualifiers["Associated Phenotypes"] = gene_assocs["phenotypes"]
+                        feature.qualifiers["IMPC Associated Phenotypes"] = gene_assocs["phenotypes"]
                 new_rec.features = [x for x in new_rec.features if x not in flagged_features]
                 GFF.write([new_rec], fout)
 
@@ -80,9 +80,9 @@ mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
                 return_dict[
                     "human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
                 return_dict[
-                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
                 return_dict[
-                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/MP_term_id{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
         if return_dict["phenotypes"]:
             return return_dict
         else:
@@ -95,7 +95,7 @@ class GCVariant(_Record):
         self.LINKS = None
         self.remove_unwanted_attributes()
         self.INFO[
-            "GWAS Central"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
+            "Markers"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
         self.INFO[
             "dbSNP"] = F"<a class='jbrowse-feature-btn' href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
         self.INFO["Associated Phenotypes"] = None
@@ -122,7 +122,7 @@ class GCVariant(_Record):
                 phenotypes_string = ""
                 if phenotypes:
                     for phenotype in phenotypes:
-                        phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={urllib.parse.quote(phenotype)}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
+                        phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={phenotype}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
                     self.INFO["Associated Phenotypes"] = phenotypes_string[:-2]
 
     @staticmethod
@@ -163,7 +163,7 @@ def get_variant_list():
         cmd = F"""
         SELECT DISTINCT ms.Marker_Accession 
             FROM GC_browser.marker_significances_chr{chrom} AS ms
-            INNER JOIN all_markers AS am ON am.Accession = ms.Marker_Accession
+            INNER JOIN GC_browser.all_markers AS am ON am.Accession = ms.Marker_Accession
             WHERE ms.SignificanceList0 != "" AND am.Status = "active";
         """
         results = db.execute(cmd, multi=True)
@@ -249,9 +249,9 @@ def update_impc_data():
     # subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
 
 
-filter_ensemble_genes()
-update_impc_data()
-# filter_ensemble_variants()
-# update_gc_data()
+# filter_ensemble_genes()
+# update_impc_data()
+filter_ensemble_variants()
+update_gc_data()
 
 # AssemblyFastaEditor().remove_unwanted_contigs()
