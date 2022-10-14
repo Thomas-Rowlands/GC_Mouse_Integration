@@ -192,12 +192,15 @@ class Ontology
         $ont = str_contains($termID, "HP:") ? "HPO" : "MESH";
         $result = $this->neo->execute("
             OPTIONAL MATCH (n:$ont {id: '$termID'})-[:SPECIES_MAPPING {relation: 'EXACT'}]->(directTerm:MP)
+            WHERE directTerm.hasMouseData = TRUE
             WITH directTerm
             OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {hasExactMPMapping: TRUE})
+            WHERE m.hasMouseData = TRUE
             WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
             OPTIONAL MATCH (n:$ont {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING]-(o:MP)
+            WHERE o.hasMouseData = TRUE
             WITH COALESCE(directTerm, o) AS o, directTerm
 
             OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
@@ -233,12 +236,15 @@ class Ontology
         foreach ($targetOnt as $ont) {
             $result = $this->neo->execute("
             OPTIONAL MATCH (n:MP {id: '$termID'})-[:SPECIES_MAPPING {relation: 'EXACT'}]->(directTerm:$ont)
+            WHERE directTerm.hasHumanData = TRUE
             WITH directTerm
             OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {hasExact".$ont."Mapping: TRUE})
+            WHERE m.hasHumanData = TRUE
             WITH m.rootLength AS length, directTerm
             ORDER BY length ASC
             LIMIT 1
             OPTIONAL MATCH (n:MP {id: '$termID'})<-[:ISA*0..]-(m {rootLength: length})-[:SPECIES_MAPPING]-(o:$ont)
+            WHERE o.hasHumanData = TRUE
             WITH COALESCE(directTerm, o) AS o, directTerm
 
             OPTIONAL MATCH (o)-[:HAS_SYNONYM]->(mainTerm)
