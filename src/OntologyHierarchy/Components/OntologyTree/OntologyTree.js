@@ -72,9 +72,10 @@ class OntologyTree extends React.Component {
     getNodeButton = (node) => {
         const {classes} = this.props;
         let backgroundColorValue = node.hasExactMapping ? "#e4e1fd" : "#ffffff";
+        let clickFunc = node.hasExactMapping ? this.props.onMappingClick : this.props.onBtnClick;
 
         if (node.hasHumanData && node.hasMouseData) {
-            return <Button className={classes.btn} size="small" onClick={() => this.props.onMappingClick(node.id)}
+            return <Button className={classes.btn} size="small" onClick={() => clickFunc(node.id)}
                            color="primary" variant="outlined" style={{backgroundColor: backgroundColorValue}} id={node.id}
             ><img alt="small icon of a man" width="20px" src={"/images/man.png"}/><img alt="small icon of a mouse"
                                                                                        width="20px"
@@ -82,7 +83,7 @@ class OntologyTree extends React.Component {
         }
 
         if (node.hasHumanData) {
-            return <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(node.id)}
+            return <Button className={classes.btn} size="small" onClick={() => clickFunc(node.id)}
                            color="primary" variant="outlined" style={{backgroundColor: backgroundColorValue}} id={node.id}
             ><img width="20px"
                   alt={"small icon of a man"}
@@ -90,7 +91,7 @@ class OntologyTree extends React.Component {
         }
 
         if (node.hasMouseData) {
-            return <Button className={classes.btn} size="small" onClick={() => this.props.onBtnClick(node.id)}
+            return <Button className={classes.btn} size="small" onClick={() => clickFunc(node.id)}
                            color="primary" variant="outlined" style={{backgroundColor: backgroundColorValue}} id={node.id}
             ><img width="20px"
                   alt={"small icon of a mouse"}
