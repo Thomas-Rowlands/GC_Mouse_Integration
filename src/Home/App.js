@@ -45,14 +45,14 @@ class App extends React.Component {
                                     <div>
                                         <div style={{width: "100%"}}>
                                             <a href="https://www.gwascentral.org/index">
-                                            <img src="https://www.gwascentral.org/images/gwas-central-logo.png"
-                                                 alt="logo"
-                                                 style={{
-                                                     verticalAlign: "bottom",
-                                                     position: "absolute",
-                                                     top: "20px",
-                                                     left: "70px"
-                                                 }}/></a>
+                                                <img src="https://www.gwascentral.org/images/gwas-central-logo.png"
+                                                     alt="logo"
+                                                     style={{
+                                                         verticalAlign: "bottom",
+                                                         position: "absolute",
+                                                         top: "20px",
+                                                         left: "70px"
+                                                     }}/></a>
                                             <div id="header_menulinks">
                                                 <div style={{
                                                     float: "left",
@@ -293,14 +293,18 @@ class App extends React.Component {
                                                     <Component
                                                         setLoading={this.setLoading}/>
                                                 </ThemeProvider>
-                                                <div id="footer_menulinks">
-                                                    <a href="https://www.gwascentral.org/info/about">About</a> &nbsp;&nbsp;
-                                                    <a href="https://www.gwascentral.org/info/about/disclaimer">Disclaimer</a>&nbsp;&nbsp;
-                                                    <a href="https://www.gwascentral.org/info/about/citations">Cite</a>&nbsp;&nbsp;
-                                                    <a href="https://www.gwascentral.org/info/about/contact">Contact us</a>&nbsp;&nbsp;
-                                                    ©&nbsp;GWAS Central
-                                                    <br/>
+                                                <div id="footer_container">
+                                                    <div id="footer_menulinks">
+                                                        <a href="https://www.gwascentral.org/info/about">About</a> &nbsp;&nbsp;
+                                                        <a href="https://www.gwascentral.org/info/about/disclaimer">Disclaimer</a>&nbsp;&nbsp;
+                                                        <a href="https://www.gwascentral.org/info/about/citations">Cite</a>&nbsp;&nbsp;
+                                                        <a href="https://www.gwascentral.org/info/about/contact">Contact
+                                                            us</a>&nbsp;&nbsp;
+                                                        ©&nbsp;GWAS Central
+                                                        <br/>
+                                                    </div>
                                                 </div>
+
                                             </div>
                                         </CSSTransition>
                                     )}

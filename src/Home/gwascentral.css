@@ -6,7 +6,6 @@
 /* site wide styles */
 html {
     font-size:100%;
-
 }
 
 /* keep IE happy */
@@ -450,17 +449,24 @@ div#header_menulinks, div#footer_menulinks {
 div#header_menulinks {
     padding-top: 5px;
     float:right;
-    width:100%;
 }
 div#footer_menulinks {
-	position: absolute;
 	padding-top: 3em;
 	padding-bottom: 3em;
-	left: 39vw;
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+	text-align: center;
+}
+#footer_container{
+	width:100%;
+	position: absolute;
 }
 div#menulinks a {
 	color: #0066dd;
 	font-size: 0.9em;
+	margin-left: auto;
+	margin-right: auto;
 }
 div#footer_w3c {
     float: left;
