@@ -657,7 +657,7 @@ class OntologyHierarchy extends React.Component {
                         <Grid container spacing={1}>
                             <Grid item xs>
                                 <Paper id="humanTreeWrapper" className={classes.paper}>
-                                    <InputLabel id="human-ont-input-label">Human Ontology</InputLabel>
+                                    <InputLabel id="human-ont-input-label">Human Phenotypes</InputLabel>
                                     <Select
                                         labelId="human-ont-input-label"
                                         id="human-ont-input-select"
@@ -727,8 +727,7 @@ class OntologyHierarchy extends React.Component {
                                                 </div>
                                             </div>}
                                     />
-                                    <div className={"center"}>Search for terms with mappings to the MP
-                                        ontology<InfoDialog title={"Ontology Hierarchy"}
+                                    <div className={"center"}><InfoDialog title={"Ontology Hierarchy"}
                                                             contentText={this.getInfoText()}/></div>
                                     <Button size="large" color="primary" variant="contained" id="search_btn"
                                             onClick={this.humanSearchBtnClick}>Search</Button>
@@ -771,6 +770,7 @@ class OntologyHierarchy extends React.Component {
                             <Grid item xs>
                                 <Paper id="mouseTreeWrapper" className={classes.paper}>
                                     <div className="ontologySearchWrapper">
+                                        <span>Mouse Phenotypes</span>
                                         <h3>Mammalian Phenotype Ontology</h3>
                                         <Autocomplete
                                             freeSolo
@@ -830,8 +830,7 @@ class OntologyHierarchy extends React.Component {
                                                     </div>
                                                 </div>}
                                         />
-                                        <div className={"center"}>Search for MP terms which map to the selected human
-                                            ontology.<InfoDialog title={"Ontology Hierarchy"}
+                                        <div className={"center"}><InfoDialog title={"Ontology Hierarchy"}
                                                                  contentText={this.getInfoText()}/></div>
                                         <Button size="large" color="primary" variant="contained" id="search_btn"
                                                 onClick={this.mouseSearchBtnClick}>Search</Button>
