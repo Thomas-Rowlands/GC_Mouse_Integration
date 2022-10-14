@@ -16,6 +16,8 @@ const useStyles = theme => ({
         marginLeft: 0,
         overflowY: "scroll",
         height: "75vh",
+        overflowX: "scroll",
+        width: "100%"
     },
     highlight: {
         backgroundColor: "#61aefd",

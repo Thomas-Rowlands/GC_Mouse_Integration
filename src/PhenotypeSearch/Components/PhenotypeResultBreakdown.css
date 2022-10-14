@@ -2,10 +2,6 @@
     font-size: 0.8em;
 }
 
-.phenotype-breakdown-container p {
-    margin-left: 1em;
-}
-
 .phenotype-breakdown-container li {
     list-style-type: disc;
 }
@@ -23,10 +19,6 @@
     text-align: center;
 }
 
-.phenotype-breakdown-container .highlight > p {
-    margin-left: 1em;
-}
-
 .phenotype-breakdown-container .subTabMenu > .MuiBox-root {
     padding-top: 0;
 }
@@ -37,7 +29,8 @@
     width: min-content;
 }
 .phenotype-breakdown-container .subTabMenu button{
-    font-size: 0.85em;
+    font-size: 0.6rem;
+    overflow-wrap: break-word;
 }
 .phenotype-breakdown-container .subTabMenu .tab-button{
     width: 18em;
@@ -54,16 +47,17 @@
 }
 
 .phenotype-breakdown-container {
-        min-height: 50vh;
+    min-height: 45vh;
+    max-height: 75.5vh;
 }
 
-.MuiTabs-centered {
-    width: min-content;
+.subTabMenu #full-width-tabpanel-0 {
+    overflow-y: scroll;
+    max-height: 62vh;
+    margin-left: -2vw;
+    margin-right: -2vw;
+    max-width: 120%;
 }
-
-/*.breakdown-loading-container {*/
-/*    min-height: 50vh;*/
-/*}*/
 
 svg {
     vertical-align: middle;

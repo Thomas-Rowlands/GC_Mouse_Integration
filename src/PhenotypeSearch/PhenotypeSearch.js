@@ -519,7 +519,8 @@ class PhenotypeSearch extends React.Component {
                                                 humanOntology={this.state.humanOntology}
                                                 breakdownData={this.state.breakdownData}
                                                 setLoading={this.loadingHandler}
-                                                genotypeHandler={this.genotypeHandler}/>
+                                                genotypeHandler={this.genotypeHandler}
+                                                parentComponent={"PhenotypeSearch"}/>
                                         </div>
                                     </DialogContent>
                                     <DialogActions>

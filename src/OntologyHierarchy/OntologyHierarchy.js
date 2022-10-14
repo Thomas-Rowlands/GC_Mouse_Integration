@@ -32,6 +32,8 @@ const useStyles = theme => ({
         padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.palette.text.secondary,
+        maxHeight: "70vh",
+        overflowY: "scroll"
     },
 });
 
@@ -652,7 +654,7 @@ class OntologyHierarchy extends React.Component {
                 {!this.state.karyotypeToggle ? (
                 <div className="pageContainer">
                     <ErrorBoundary>
-                        <Grid container spacing={2}>
+                        <Grid container spacing={1}>
                             <Grid item xs>
                                 <Paper id="humanTreeWrapper" className={classes.paper}>
                                     <InputLabel id="human-ont-input-label">Human Ontology</InputLabel>
@@ -761,7 +763,7 @@ class OntologyHierarchy extends React.Component {
                                     }
                                 </Paper>
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={4}>
                                 {
                                     this.state.isDataPresent ? this.getPhenotypeBreakdownComponent() : null
                                 }
@@ -769,7 +771,7 @@ class OntologyHierarchy extends React.Component {
                             <Grid item xs>
                                 <Paper id="mouseTreeWrapper" className={classes.paper}>
                                     <div className="ontologySearchWrapper">
-                                        <h3>Mammalian Phenotype</h3>
+                                        <h3>Mammalian Phenotype Ontology</h3>
                                         <Autocomplete
                                             freeSolo
                                             className={classes.autoComplete}

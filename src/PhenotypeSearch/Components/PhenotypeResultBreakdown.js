@@ -20,7 +20,6 @@ import api_server from "../../UtilityComponents/ConfigData";
 import {Graph} from "react-d3-graph";
 import _ from "lodash";
 import InfoDialog from "../../UtilityComponents/InfoDialog";
-import LoadingSpinner from "../../UtilityComponents/LoadingSpinner/LoadingSpinner";
 
 const useStyles = theme => ({
     formControl: {
@@ -235,7 +234,7 @@ class PhenotypeResultBreakdown extends React.Component {
                             this.props.setLoading(false));
                     }
                 }
-                if (this.props.setLoading)
+                if (this.props.parentComponent === "PhenotypeSearch")
                     this.props.setLoading(false);
             })
             .catch((error) => {
@@ -422,14 +421,14 @@ class PhenotypeResultBreakdown extends React.Component {
                                 </Tabs>
                             </AppBar>
                             <TabPanel value={tabValue} index={0} className="subTabMenu">
-                                <AppBar position="static" color="default">
+                                <AppBar position="static" color="default" style={{maxWidth:"100%", overflowX: "scroll"}}>
                                     <Tabs
                                         value={dataTabValue}
                                         onChange={(e, val) => val > 1 ? e.preventDefault() : this.setState({dataTabValue: val})}
                                         indicatorColor="primary"
                                         textColor="primary"
                                         aria-label="full width tabs example"
-                                        variant="fullWidth"
+                                        style={{width: "auto"}}
                                         centered
                                     >
                                         <Tab
