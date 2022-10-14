@@ -9,8 +9,8 @@ from py2neo.wiring import Wire, WireError
 class CacheBuilder:
 
     def __init__(self):
-        self.db_connection = mysql.connector.connect(host="localhost", database="gc_mouse", user="lampuser",
-                                                     password="changeme")
+        self.db_connection = mysql.connector.connect(host="localhost", database="gc_mouse", user="root",
+                                                     password="")
         self.db = self.db_connection.cursor()
         self.neo = Graph(scheme="bolt", host="localhost", password="12345", port="7687")
 
@@ -118,13 +118,19 @@ class CacheBuilder:
         else:
             return None
 
-    def set_neo_gwas_count(self, term, gwas_count):
-        cmd = F""" MATCH (n)
-        WHERE n.id = "{term}"
-        SET n.gwas_total = {gwas_count}
+    def set_neo_gwas_count(self):
+        cmd = F""" MATCH (n:Term)
+        WHERE n:MESH OR n:HPO
+        RETURN DISTINCT n.id
         """
         try:
-            self.neo.run(cmd)
+            results = self.neo.run(cmd)
+            for term in results:
+                cmd = F"""MATCH (s:Study)-[:containsGWASResult]->(g:Result)<-[:hasGWASResult]-(n {{id: {term}}})
+                    WITH DISTINCT s.id AS id, s.Name AS name, MAX(g.value) AS p_value, n
+                    WITH COUNT(p_value) AS test, n
+                    SET n.gwas_total = test"""
+                self.neo.run(cmd)
         except WireError:
             print("Connection was closed prematurely, reconnecting...")
             self.neo = Graph(scheme="bolt", host="localhost", password="12345", port="7687")
@@ -166,12 +172,18 @@ class CacheBuilder:
             return 0
 
     def set_neo_experiment_count(self, term, experiment_count):
-        cmd = F""" MATCH (n)
-        WHERE n.id = "{term}"
-        SET n.experiment_total = {experiment_count}
+        cmd = F""" MATCH (n:Term)
+        WHERE n:MP
+        RETURN DISTINCT n.id
         """
         try:
-            self.neo.run(cmd)
+            results = self.neo.run(cmd)
+            for term in results:
+                cmd = F"""MATCH (s:Study)-[:containsExperimentResult]->(g:Result)<-[:hasExperimentResult]-(n {{id: {term}}})
+                    WITH DISTINCT s.id AS id, s.Name AS name, MAX(g.value) AS p_value, n
+                    WITH COUNT(p_value) AS test, n
+                    SET n.experiment_total = test"""
+                self.neo.run(cmd)
         except WireError:
             print("Connection was closed prematurely, reconnecting...")
             self.neo = Graph(scheme="bolt", host="localhost", password="12345", port="7687")
@@ -405,12 +417,13 @@ def main():
     print("Connections established...")
     # cache_builder.clear_node_counts()
     # cache_builder.clear_study_cache()
-    set_study_counts(cache_builder)
+    # set_study_counts(cache_builder)
     # build_study_cache()
     print("Cache generated.")
     # cache_builder.close_connection()
     # test = cache_builder.get_term_GWAS_count(["D005227", "D013229", "D005231", "D015777", "D001095", "D016718", "D015118", "D005229", "D009829", "D019301", "D015525", "D017962", "D004281", "D015118", "D044242", "D005228", "D008041", "D001095", "D016718", "D008042", "D017962", "D017965", "D043371", "D008041", "D017965", "D010169", "D019308", "D005232", "D000085", "D002087", "D058610", "D006885", "D020155"])
-    # test = cache_builder.get_term_experiment_count()
+    # cache_builder.set_neo_experiment_count()
+    cache_builder.set_neo_gwas_count()
     # print(test)
 
 
