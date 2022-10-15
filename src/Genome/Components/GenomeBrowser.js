@@ -6,6 +6,7 @@ import {
 } from '@jbrowse/react-linear-genome-view';
 import {api_server} from "../../UtilityComponents/ConfigData";
 import './GenomeBrowser.css';
+import InfoDialog from "../../UtilityComponents/InfoDialog";
 
 function forceLoadTracks() {
 
@@ -367,15 +368,20 @@ class GenomeBrowser extends React.Component {
 
     componentDidMount() {
         forceLoadTracks();
+        // this.nv.addEventListener("click", (e) => {
+        //     console.log(e);
+        // });
     }
 
     navTo = (loc) => {
         this.viewState.session.view.zoomTo(loc);
-
     }
+    
 
     render() {
-        return < JBrowseLinearGenomeView viewState={this.viewState}/>;
+        return <div>
+            <JBrowseLinearGenomeView ref={elem => this.nv = elem} viewState={this.viewState}/>
+        </div>;
     }
 }
 

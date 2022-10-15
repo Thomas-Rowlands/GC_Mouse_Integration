@@ -425,6 +425,12 @@ class OntologyHierarchy extends React.Component {
             });
     }
 
+        getInfoText = () => {
+        return <div>
+            Use the human genome browser to explore GWAS Central markers and IMPC mouse gene knockouts (human gene orthologs are displayed).  See our <a target="_blank" href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help page</a> for further details.
+        </div>
+    }
+
     genotypeHandler = () => {
         this.setState({
             karyotypeToggle: true
@@ -578,7 +584,6 @@ class OntologyHierarchy extends React.Component {
     }
 
 
-
     getPhenotypeBreakdownComponent = () => {
         switch (this.state.breakdownType) {
             case 0:
@@ -606,15 +611,12 @@ class OntologyHierarchy extends React.Component {
         }
     }
 
-    getInfoText = () => {
-        return `
-        Search for terms including your text input or via the navigable trees.
-        
-        Terms with associated GWAS records are marked by a purple button, IMPC gene knockout experiments by a green button and included ontology mappings with a red/blue button, which can be used to retrieve said data. 
-        
-        Use the drop down selection labelled "Human Ontology" to switch between MeSH and HPO ontologies for the left-side ontology tree. 
-        
-        `;
+    getInfoText = (isGenome=false) => {
+        return isGenome ? <div>
+            Use the human genome browser to explore GWAS Central markers and IMPC mouse gene knockouts (human gene orthologs are displayed).  See our <a target="_blank" href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help page</a> for further details.
+        </div> : <div>
+Search for ontology terms or browse the ontology trees.  Human phenotypes can be searched using either MeSH or HPO. Selecting or searching an ontology term will display GWAS and mouse knockout genes associated with the phenotype. See our <a target="_blank" href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help page</a> for further details.
+</div>;
     }
     tempExpandedhumanIds = [];
     liveCancelToken = null;
@@ -652,132 +654,29 @@ class OntologyHierarchy extends React.Component {
                 addEndListener={(node, done) => node.addEventListener("transitionend", done, false)}
                 classNames='fade'>
                 {!this.state.karyotypeToggle ? (
-                <div className="pageContainer">
-                    <ErrorBoundary>
-                        <Grid container spacing={1}>
-                            <Grid item xs>
-                                <Paper id="humanTreeWrapper" className={classes.paper}>
-                                    <InputLabel id="human-ont-input-label">Human Phenotypes</InputLabel>
-                                    <Select
-                                        labelId="human-ont-input-label"
-                                        id="human-ont-input-select"
-                                        value={this.state.humanOntology}
-                                        onChange={this.changeHumanOntology}
-                                        label="Age"
-                                    >
-                                        <MenuItem value={"HPO"}>Human Phenotype Ontology</MenuItem>
-                                        <MenuItem value={"MESH"}>Medical Subject Headings</MenuItem>
-                                    </Select>
-                                    <br/><br/>
-                                    <Autocomplete
-                                        freeSolo
-                                        id="humanSearchInput"
-                                        className={classes.autoComplete}
-                                        onInputChange={this.retrieveLiveSearch}
-                                        defaultValue={humanSearchInput}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Term search"
-                                                variant="outlined"
-                                                InputProps={{
-                                                    ...params.InputProps,
-                                                    endAdornment: (
-                                                        <React.Fragment>
-                                                            {humanLiveLoading ?
-                                                                <CircularProgress color="inherit"
-                                                                                  size={20}/> : null}
-                                                            {params.InputProps.endAdornment}
-                                                        </React.Fragment>
-                                                    ),
-                                                }}
-                                                onKeyDown={e => {
-                                                    if (e.keyCode === 13) {
-                                                        e.stopPropagation();
-                                                        this.humanSearchBtnClick();
-                                                    }
-                                                }}
-                                            />
-                                        )}
-                                        options={humanLiveSearchResults}
-                                        getOptionLabel={(option) => {
-                                            if (option) {
-                                                if (option.term)
-                                                    return option.term;
-                                                else
-                                                    return option.FSN;
-                                            }
-                                            return this.state.humanSearchInput;
-                                        }}
-                                        renderOption={(option) =>
-                                            <div style={{width: "100%"}}>
-                                                <div style={{
-                                                    display: "inline-block",
-                                                    maxWidth: "30ch",
-                                                    overflow: "hidden"
-                                                }}>
-                                                    {option.term}
-                                                </div>
-                                                <div style={{
-                                                    display: "inline-block",
-                                                    float: "right",
-                                                    fontWeight: "bold"
-                                                }}>
-                                                    {this.formatOntology(option.ontology)}
-                                                </div>
-                                            </div>}
-                                    />
-                                    <div className={"center"}><InfoDialog title={"Ontology Hierarchy"}
-                                                            contentText={this.getInfoText()}/></div>
-                                    <Button size="large" color="primary" variant="contained" id="search_btn"
-                                            onClick={this.humanSearchBtnClick}>Search</Button>
-                                    <Button style={{marginLeft: "1em"}} size="large" color="primary"
-                                            onClick={this.resetHumanBtnClick} variant="contained">Collapse</Button>
-                                    {this.state.humanSearchFailed ?
-                                        <p style={{color: "red"}}>No match found.</p> : null}
-                                    {
-                                        !humanTree ? null :
-                                            <OntologyTree treeID="humanTree"
-                                                          selectedPhenotypeLabel={mappedHumanPhenotype}
-                                                          onMappingClick={this.humanTreeBtnClick}
-                                                          expanded={expandedHumanNodes}
-                                                          onBtnClick={this.getHumanPhenotypeBreakdown}
-                                                          selected={selectedHumanNodes}
-                                                          onSelect={(e, val) => {
-                                                              this.handleHumanSelect(e, val);
-                                                              if (e.target.dataset["hasChildren"]) {
-                                                                  let newVals = this.state.expandedHumanNodes;
-                                                                  if (newVals.includes(val))
-                                                                      newVals = newVals.filter(elem => elem !== val);
-                                                                  else
-                                                                      newVals.push(val);
-                                                                  this.handleHumanToggle(e, newVals);
-                                                              }
-
-                                                          }}
-                                                          onToggle={this.handleHumanToggle}
-                                                          treeData={humanTree}
-                                                          sourceOntology={this.state.humanOntology}
-                                                          mappingOntology="MP"/>
-                                    }
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                {
-                                    this.state.isDataPresent ? this.getPhenotypeBreakdownComponent() : null
-                                }
-                            </Grid>
-                            <Grid item xs>
-                                <Paper id="mouseTreeWrapper" className={classes.paper}>
-                                    <div className="ontologySearchWrapper">
-                                        <span>Mouse Phenotypes</span>
-                                        <h3>Mammalian Phenotype Ontology</h3>
+                    <div className="pageContainer">
+                        <ErrorBoundary>
+                            <Grid container spacing={1}>
+                                <Grid item xs>
+                                    <Paper id="humanTreeWrapper" className={classes.paper}>
+                                        <InputLabel id="human-ont-input-label">Human Phenotypes</InputLabel>
+                                        <Select
+                                            labelId="human-ont-input-label"
+                                            id="human-ont-input-select"
+                                            value={this.state.humanOntology}
+                                            onChange={this.changeHumanOntology}
+                                            label="Age"
+                                        >
+                                            <MenuItem value={"HPO"}>Human Phenotype Ontology</MenuItem>
+                                            <MenuItem value={"MESH"}>Medical Subject Headings</MenuItem>
+                                        </Select>
+                                        <br/><br/>
                                         <Autocomplete
                                             freeSolo
+                                            id="humanSearchInput"
                                             className={classes.autoComplete}
-                                            id="mouseSearchInput"
-                                            defaultValue={mouseSearchInput}
                                             onInputChange={this.retrieveLiveSearch}
+                                            defaultValue={humanSearchInput}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -787,7 +686,7 @@ class OntologyHierarchy extends React.Component {
                                                         ...params.InputProps,
                                                         endAdornment: (
                                                             <React.Fragment>
-                                                                {mouseLiveLoading ?
+                                                                {humanLiveLoading ?
                                                                     <CircularProgress color="inherit"
                                                                                       size={20}/> : null}
                                                                 {params.InputProps.endAdornment}
@@ -797,12 +696,12 @@ class OntologyHierarchy extends React.Component {
                                                     onKeyDown={e => {
                                                         if (e.keyCode === 13) {
                                                             e.stopPropagation();
-                                                            this.mouseSearchBtnClick();
+                                                            this.humanSearchBtnClick();
                                                         }
                                                     }}
                                                 />
                                             )}
-                                            options={mouseLiveSearchResults}
+                                            options={humanLiveSearchResults}
                                             getOptionLabel={(option) => {
                                                 if (option) {
                                                     if (option.term)
@@ -810,7 +709,7 @@ class OntologyHierarchy extends React.Component {
                                                     else
                                                         return option.FSN;
                                                 }
-                                                return this.state.mouseSearchInput;
+                                                return this.state.humanSearchInput;
                                             }}
                                             renderOption={(option) =>
                                                 <div style={{width: "100%"}}>
@@ -829,49 +728,162 @@ class OntologyHierarchy extends React.Component {
                                                         {this.formatOntology(option.ontology)}
                                                     </div>
                                                 </div>}
+                                            style={{display: "inline-grid"}}
                                         />
-                                        <div className={"center"}><InfoDialog title={"Ontology Hierarchy"}
-                                                                 contentText={this.getInfoText()}/></div>
+                                        <div style={{display: "inline"}}><InfoDialog
+                                            title={"Ontology Hierarchy"}
+                                            contentText={this.getInfoText()}/></div>
+
                                         <Button size="large" color="primary" variant="contained" id="search_btn"
-                                                onClick={this.mouseSearchBtnClick}>Search</Button>
+                                                onClick={this.humanSearchBtnClick}>Search</Button>
                                         <Button style={{marginLeft: "1em"}} size="large" color="primary"
-                                                onClick={this.resetMouseBtnClick} variant="contained">Collapse</Button>
-                                        {this.state.mouseSearchFailed ?
+                                                onClick={this.resetHumanBtnClick} variant="contained">Collapse</Button>
+                                        {this.state.humanSearchFailed ?
                                             <p style={{color: "red"}}>No match found.</p> : null}
-                                    </div>
-                                    {!mouseTree ? null :
-                                        <OntologyTree treeID="mouseTree"
-                                                      selectedPhenotypeLabel={mappedMousePhenotype}
-                                                      onMappingClick={this.mouseTreeBtnClick}
-                                                      expanded={expandedMouseNodes}
-                                                      onBtnClick={this.getMousePhenotypeBreakdown}
-                                                      selected={selectedMouseNodes}
-                                                      onSelect={(e, val) => {
-                                                          this.handleMouseSelect(e, val);
-                                                          if (e.target.dataset["hasChildren"]) {
-                                                              let newVals = this.state.expandedMouseNodes;
-                                                              if (newVals.includes(val))
-                                                                  newVals = newVals.filter(elem => elem !== val);
-                                                              else
-                                                                  newVals.push(val);
-                                                              this.handleMouseToggle(e, newVals);
-                                                          }
-                                                      }}
-                                                      onToggle={this.handleMouseToggle} treeData={mouseTree}
-                                                      sourceOntology="MP" mappingOntology={this.state.humanOntology}/>}
-                                </Paper>
+                                        {
+                                            !humanTree ? null :
+                                                <OntologyTree treeID="humanTree"
+                                                              selectedPhenotypeLabel={mappedHumanPhenotype}
+                                                              onMappingClick={this.humanTreeBtnClick}
+                                                              expanded={expandedHumanNodes}
+                                                              onBtnClick={this.getHumanPhenotypeBreakdown}
+                                                              selected={selectedHumanNodes}
+                                                              onSelect={(e, val) => {
+                                                                  this.handleHumanSelect(e, val);
+                                                                  if (e.target.dataset["hasChildren"]) {
+                                                                      let newVals = this.state.expandedHumanNodes;
+                                                                      if (newVals.includes(val))
+                                                                          newVals = newVals.filter(elem => elem !== val);
+                                                                      else
+                                                                          newVals.push(val);
+                                                                      this.handleHumanToggle(e, newVals);
+                                                                  }
+
+                                                              }}
+                                                              onToggle={this.handleHumanToggle}
+                                                              treeData={humanTree}
+                                                              sourceOntology={this.state.humanOntology}
+                                                              mappingOntology="MP"/>
+                                        }
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    {
+                                        this.state.isDataPresent ? this.getPhenotypeBreakdownComponent() : null
+                                    }
+                                </Grid>
+                                <Grid item xs>
+                                    <Paper id="mouseTreeWrapper" className={classes.paper}>
+                                        <div className="ontologySearchWrapper">
+                                            <span>Mouse Phenotypes</span>
+                                            <h3>Mammalian Phenotype Ontology</h3>
+                                            <Autocomplete
+                                                freeSolo
+                                                className={classes.autoComplete}
+                                                id="mouseSearchInput"
+                                                defaultValue={mouseSearchInput}
+                                                onInputChange={this.retrieveLiveSearch}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Term search"
+                                                        variant="outlined"
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            endAdornment: (
+                                                                <React.Fragment>
+                                                                    {mouseLiveLoading ?
+                                                                        <CircularProgress color="inherit"
+                                                                                          size={20}/> : null}
+                                                                    {params.InputProps.endAdornment}
+                                                                </React.Fragment>
+                                                            ),
+                                                        }}
+                                                        onKeyDown={e => {
+                                                            if (e.keyCode === 13) {
+                                                                e.stopPropagation();
+                                                                this.mouseSearchBtnClick();
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                                options={mouseLiveSearchResults}
+                                                getOptionLabel={(option) => {
+                                                    if (option) {
+                                                        if (option.term)
+                                                            return option.term;
+                                                        else
+                                                            return option.FSN;
+                                                    }
+                                                    return this.state.mouseSearchInput;
+                                                }}
+                                                renderOption={(option) =>
+                                                    <div style={{width: "100%"}}>
+                                                        <div style={{
+                                                            display: "inline-block",
+                                                            maxWidth: "30ch",
+                                                            overflow: "hidden"
+                                                        }}>
+                                                            {option.term}
+                                                        </div>
+                                                        <div style={{
+                                                            display: "inline-block",
+                                                            float: "right",
+                                                            fontWeight: "bold"
+                                                        }}>
+                                                            {this.formatOntology(option.ontology)}
+                                                        </div>
+                                                    </div>}
+                                                style={{display: "inline-flex"}}
+                                            />
+                                            <div style={{display: "inline"}}><InfoDialog
+                                                title={"Ontology Hierarchy"}
+                                                contentText={this.getInfoText()}/></div>
+                                            <Button size="large" color="primary" variant="contained" id="search_btn"
+                                                    onClick={this.mouseSearchBtnClick}>Search</Button>
+                                            <Button style={{marginLeft: "1em"}} size="large" color="primary"
+                                                    onClick={this.resetMouseBtnClick}
+                                                    variant="contained">Collapse</Button>
+                                            {this.state.mouseSearchFailed ?
+                                                <p style={{color: "red"}}>No match found.</p> : null}
+                                        </div>
+                                        {!mouseTree ? null :
+                                            <OntologyTree treeID="mouseTree"
+                                                          selectedPhenotypeLabel={mappedMousePhenotype}
+                                                          onMappingClick={this.mouseTreeBtnClick}
+                                                          expanded={expandedMouseNodes}
+                                                          onBtnClick={this.getMousePhenotypeBreakdown}
+                                                          selected={selectedMouseNodes}
+                                                          onSelect={(e, val) => {
+                                                              this.handleMouseSelect(e, val);
+                                                              if (e.target.dataset["hasChildren"]) {
+                                                                  let newVals = this.state.expandedMouseNodes;
+                                                                  if (newVals.includes(val))
+                                                                      newVals = newVals.filter(elem => elem !== val);
+                                                                  else
+                                                                      newVals.push(val);
+                                                                  this.handleMouseToggle(e, newVals);
+                                                              }
+                                                          }}
+                                                          onToggle={this.handleMouseToggle} treeData={mouseTree}
+                                                          sourceOntology="MP"
+                                                          mappingOntology={this.state.humanOntology}/>}
+                                    </Paper>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </ErrorBoundary>
-                </div>) : <div>
-                <Button size="large" color="primary" variant="contained" onClick={(e) => {
-                    this.setState({ karyotypeToggle: false});
-                }}>Back</Button>
-                <Genome humanTermID={this.state.humanTermID}
-                        humanOntology={this.state.humanOntology}
-                        mouseOntology={"MP"}
-                        mouseTermID={this.state.mouseTermID}/>
-            </div>}
+                        </ErrorBoundary>
+                    </div>) : <div>
+                    <Button size="large" color="primary" variant="contained" onClick={(e) => {
+                        this.setState({karyotypeToggle: false});
+                    }}>Back</Button>
+            <div style={{display: "inline"}}><InfoDialog
+                title={"Genomic Region View"}
+                contentText={this.getInfoText(true)}/></div>
+                    <Genome humanTermID={this.state.humanTermID}
+                            humanOntology={this.state.humanOntology}
+                            mouseOntology={"MP"}
+                            mouseTermID={this.state.mouseTermID}/>
+                </div>}
             </CSSTransition>
         </SwitchTransition>);
     }

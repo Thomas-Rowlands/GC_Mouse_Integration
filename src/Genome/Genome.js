@@ -10,6 +10,7 @@ import {api_server} from "../UtilityComponents/ConfigData";
 import GenomeBrowser from "./Components/GenomeBrowser";
 import Typography from "@material-ui/core/Typography";
 import {Link} from "react-router-dom";
+import InfoDialog from "../UtilityComponents/InfoDialog";
 
 
 class Genome extends React.Component {
@@ -405,7 +406,11 @@ class Genome extends React.Component {
             console.log(error);
         });
     }
-
+        getInfoText = () => {
+        return <div>
+Use the human genome browser to explore GWAS Central markers and IMPC mouse gene knockouts (human gene orthologs are displayed).  See our help page for further details. See our <a target="_blank" href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help page</a> for further details.
+</div>;
+    }
     render() {
         let {loading, tabValue, markerData, marker_avg, knockout_avg} = this.state;
         let {humanOntology, humanTermID, mouseTermID} = this.props;
@@ -446,7 +451,9 @@ class Genome extends React.Component {
                     </TabPanel>
                 </div>
             ) : <div><Link to="/"><Button size="large" color="primary"
-                                          variant="contained">Back</Button></Link><GenomeBrowser/></div>;
+                                          variant="contained">Back</Button></Link>                                <div style={{display: "inline"}}><InfoDialog
+                                    title={"Genomic Region View"}
+                                    contentText={this.getInfoText()}/></div><GenomeBrowser/></div>;
     }
 }
 

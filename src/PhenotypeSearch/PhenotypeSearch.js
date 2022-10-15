@@ -276,13 +276,13 @@ class PhenotypeSearch extends React.Component {
     }
 
     getSearchInfoContent = () => {
-        return `
-        By inputting partial or exact ontology terms/synonyms, this search will return matching records along with their 
-        associated GWAS studies and IMPC gene knockout experiments. 
-        
-        Each returned record can be further expanded for further
-        information using the icon buttons on the right-hand side for a breakdown and karyotype/genotype view respectively.
-        `;
+        return <div>
+            MeSH, HPO (human) and MPO (mouse) terms that match your search term will be suggested as you type. Up to
+            four terms can be submitted in a single search. GWAS and mouse knockout genes matching your search will be
+            displayed. See our <a target="_blank"
+                                  href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help
+            page</a> for further details.
+        </div>;
     }
 
     formatOntology = (ont) => {
@@ -300,7 +300,7 @@ class PhenotypeSearch extends React.Component {
 
     appendExampleTerm = (e) => {
         let selectedTerms = this.state.exactTermList;
-        let newTerm = {"FSN":e.target.dataset["label"], "id":e.target.dataset["ontId"]};
+        let newTerm = {"FSN": e.target.dataset["label"], "id": e.target.dataset["ontId"]};
         if (!selectedTerms.some(x => x.id === newTerm.id)) {
             selectedTerms.push(newTerm);
             this.setState({
@@ -313,6 +313,12 @@ class PhenotypeSearch extends React.Component {
 
     loadingHandler = (status) => {
         this.setState({dialogLoading: status});
+    }
+
+        getInfoText = () => {
+        return <div>
+Use the human genome browser to explore GWAS Central markers and IMPC mouse gene knockouts (human gene orthologs are displayed).  See our help page for further details. See our <a target="_blank" href="https://help.gwascentral.org/how-to-guides/how-to-use-the-homology-interfaces/">help page</a> for further details.
+</div>;
     }
 
     render() {
@@ -443,17 +449,28 @@ class PhenotypeSearch extends React.Component {
                                                         {this.formatOntology(option.ontology)}
                                                     </div>
                                                 </div>}/>
-(e.g.
-                                            {
-                                                this.state.selectedSpecies !== "Mouse" ? <ul className={"phenotype-example-list"}>
-                                                    <li data-label={"Nervous System"} data-ont-id={"D009420"} onClick={this.appendExampleTerm}> Nervous System,</li>
-                                            <li data-label={"Lipids"} data-ont-id={"D008055"} onClick={this.appendExampleTerm}>Lipids</li></ul>
-                                                    : <ul className={"phenotype-example-list"}>
-                                                    <li data-label={"nervous system phenotype"} data-ont-id={"MP:0003631"} onClick={this.appendExampleTerm}> nervous system phenotype,</li>
-                                            <li data-label={"abnormal lipid level"} data-ont-id={"MP:0001547"} onClick={this.appendExampleTerm}>abnormal lipid level</li></ul>
+                                        (e.g.
+                                        {
+                                            this.state.selectedSpecies !== "Mouse" ?
+                                                <ul className={"phenotype-example-list"}>
+                                                    <li data-label={"Nervous System"} data-ont-id={"D009420"}
+                                                        onClick={this.appendExampleTerm}> Nervous System,
+                                                    </li>
+                                                    <li data-label={"Lipids"} data-ont-id={"D008055"}
+                                                        onClick={this.appendExampleTerm}>Lipids
+                                                    </li>
+                                                </ul>
+                                                : <ul className={"phenotype-example-list"}>
+                                                    <li data-label={"nervous system phenotype"} data-ont-id={"MP:0003631"}
+                                                        onClick={this.appendExampleTerm}> nervous system phenotype,
+                                                    </li>
+                                                    <li data-label={"abnormal lipid level"} data-ont-id={"MP:0001547"}
+                                                        onClick={this.appendExampleTerm}>abnormal lipid level
+                                                    </li>
+                                                </ul>
 
-                                            }
-)
+                                        }
+                                        )
                                         <br/>
 
                                         {this.state.displayError ? <span style={{color: "red"}}>Search term too broad, please use more characters.</span> : null}
@@ -534,7 +551,11 @@ class PhenotypeSearch extends React.Component {
                                 <Button size="large" color="primary" variant="contained" onClick={() => this.setState({
                                     humanTermID: null,
                                     mouseTermID: null
-                                })}>Back</Button><br/>
+                                })}>Back</Button>
+                                <div style={{display: "inline"}}><InfoDialog
+                                    title={"Genomic Region View"}
+                                    contentText={this.getInfoText()}/></div>
+                                <br/>
                                 <Genome humanTermID={this.state.humanTermID}
                                         humanOntology={this.state.humanOntology}
                                         mouseTermID={this.state.mouseTermID}
