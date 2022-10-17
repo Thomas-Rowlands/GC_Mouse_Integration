@@ -132,9 +132,9 @@ class GenomeBrowser extends React.Component {
                     },
                     "index": {
                         "location": {
-                            "uri": this.state.configData.api_server + "JBrowseData/IMPC_Genes.gff3.gz.tbi"
+                            "uri": this.state.configData.api_server + "JBrowseData/IMPC_Genes.gff3.gz.csi"
                         },
-                        "indexType": "TBI"
+                        "indexType": "CSI"
                     },
                     "renderer": {
                         "type": "SvgFeatureRenderer"
@@ -222,9 +222,9 @@ class GenomeBrowser extends React.Component {
                         "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants.vcf.gz"
                     },
                     "index": {
-                        "indexType": "TBI",
+                        "indexType": "CSI",
                         "location": {
-                            "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants.vcf.gz.tbi"
+                            "uri": this.state.configData.api_server + "JBrowseData/GC_only_variants.vcf.gz.csi"
                         }
                     }
                 },
@@ -376,7 +376,7 @@ class GenomeBrowser extends React.Component {
     navTo = (loc) => {
         this.viewState.session.view.zoomTo(loc);
     }
-    
+
 
     render() {
         return <div>
