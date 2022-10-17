@@ -1,4 +1,3 @@
-import subprocess
 import urllib.parse
 
 import vcf  # PyVCF3
@@ -21,7 +20,8 @@ class AssemblyFastaEditor:
                        "18", "19", "20", "21", "22", "x", "y", "m"]
 
     def remove_unwanted_contigs(self):
-        with open("../../api/JBrowseData/hg19.fa", "r") as fin, open("../../api/JBrowseData/hg19_fixed.fa", "w+") as fout:
+        with open("../../api/JBrowseData/hg19.fa", "r") as fin, open("../../api/JBrowseData/hg19_fixed.fa",
+                                                                     "w+") as fout:
             records = SeqIO.parse(fin, "fasta")
             for record in records:
                 if record.id.lower() in self.desired_contigs:
@@ -43,7 +43,7 @@ class IMPCGenes:
                         feature.qualifiers["IMPC Gene"] = gene_assocs["mouse_gene"]
                         feature.qualifiers["GWAS Central Gene"] = gene_assocs["human_gene"]
                         feature.qualifiers[
-                            "Ensembl"] = F"<div class='jbrowse-feature-btn' data-link=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])}\">{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</div></br>"
+                            "Ensembl"] = F"<a class='jbrowse-feature-btn' target='_blank' href=\"https://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={urllib.parse.quote(feature.qualifiers['gene_id'][0])}\">{urllib.parse.quote(feature.qualifiers['gene_id'][0])}</a><br/>"
                         feature.qualifiers["IMPC Associated Phenotypes"] = gene_assocs["phenotypes"]
                 new_rec.features = [x for x in new_rec.features if x not in flagged_features]
                 GFF.write([new_rec], fout)
@@ -76,13 +76,13 @@ mptl.mp_term_id AS `top_level_term_id`, mp.mp_term_id AS `term_id`,
             records = result.fetchall()
             for record in records:
                 return_dict[
-                    "mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/genes/{urllib.parse.quote(record[6])}\" target='_blank'>{urllib.parse.quote(record[1])}</a></br>"
+                    "mouse_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/genes/{urllib.parse.quote(record[6].replace(' ', '+'))}\" target='_blank'>{urllib.parse.quote(record[1])}</a><br/>"
                 return_dict[
-                    "human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0])}\" target='_blank'>{urllib.parse.quote(record[0])}</a></br>"
+                    "human_gene"] = F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/generegion/phenotypes?q={urllib.parse.quote(record[0].replace(' ', '+'))}\" target='_blank'>{urllib.parse.quote(record[0])}</a><br/>"
                 return_dict[
-                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[2])}&type=gene\" target='_blank'>{record[4]}</a></br>"
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[2].replace(' ', '+'))}\" target='_blank'>{urllib.parse.quote(record[4])}</a><br/>"
                 return_dict[
-                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[3])}&type=gene\" target='_blank'>{record[5]}</a></br>"
+                    "phenotypes"] += F"<a class='jbrowse-feature-btn' href=\"https://www.mousephenotype.org/data/phenotypes/{urllib.parse.quote(record[3].replace(' ', '+'))}\" target='_blank'>{urllib.parse.quote(record[5])}</a><br/>"
         if return_dict["phenotypes"]:
             return return_dict
         else:
@@ -95,10 +95,10 @@ class GCVariant(_Record):
         self.LINKS = None
         self.remove_unwanted_attributes()
         self.INFO[
-            "Markers"] = F"<a class='jbrowse-feature-btn' href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
+            "Markers"] = F"<a%20class='jbrowse-feature-btn'%20href='https://www.gwascentral.org/markers?q={self.ID}'>{self.ID}</a>;"
         self.INFO[
-            "dbSNP"] = F"<a class='jbrowse-feature-btn' href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
-        self.INFO["Associated Phenotypes"] = None
+            "dbSNP"] = F"<a%20class='jbrowse-feature-btn'%20href='https://www.ncbi.nlm.nih.gov/snp/{self.ID}'>{self.ID}</a>;"
+        self.INFO["Associated_Phenotypes"] = None
         self.get_variant_phenotypes()
 
     def remove_unwanted_attributes(self):
@@ -122,8 +122,8 @@ class GCVariant(_Record):
                 phenotypes_string = ""
                 if phenotypes:
                     for phenotype in phenotypes:
-                        phenotypes_string += F"<a class='jbrowse-feature-btn' href=\"https://www.gwascentral.org/phenotypes/term?q={phenotype}\" target='_blank'>{urllib.parse.quote(phenotype)}</a></br>, "
-                    self.INFO["Associated Phenotypes"] = phenotypes_string[:-2]
+                        phenotypes_string += F"<a%20class='jbrowse-feature-btn'%20href=\"https://www.gwascentral.org/phenotypes/term?q={urllib.parse.quote(phenotype.replace(' ', '+'))}\"%20target='_blank'>{urllib.parse.quote(phenotype)}</a><br/>,"
+                    self.INFO["Associated_Phenotypes"] = phenotypes_string[:-2]
 
     @staticmethod
     def get_phenotype_names(descriptors):
@@ -237,9 +237,9 @@ def update_gc_data():
         except Exception as e:
             print(e)
     vcf_out.close()
-    subprocess.run("bgzip -c ../../api/JBrowseData/GC_only_variants_testing.vcf > "
-                   "../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
-    subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+    # subprocess.run("bgzip -c ../../api/JBrowseData/GC_only_variants_testing.vcf > "
+    #                "../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
+    # subprocess.run("tabix -p vcf ../../api/JBrowseData/GC_only_variants_testing.vcf.gz", shell=True, check=True)
 
 
 def update_impc_data():
@@ -251,7 +251,6 @@ def update_impc_data():
 
 # filter_ensemble_genes()
 # update_impc_data()
-filter_ensemble_variants()
+# filter_ensemble_variants()
 update_gc_data()
-
 # AssemblyFastaEditor().remove_unwanted_contigs()
