@@ -1,14 +1,14 @@
 
 <?php
 header('Content-Type: application/json');
-// ini_set('display_errors', '0');
+ ini_set('display_errors', '0');
 include 'database.php';
 
 if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
     $cmd = "";
-    $ont = strtolower($_GET["ontology"]);
+    $ont = strtoupper($_GET["ontology"]);
     $entry = strtolower($_GET["entry"]);
-    if ($ont != "mp")
+    if ($ont == "HUMAN")
         $cmd = "MATCH (n:MESH)
                 USING INDEX n:MESH(lowerFSN)
                 WHERE n.lowerFSN = {entry} AND n.hasHumanData = TRUE
@@ -49,8 +49,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
                 LIMIT 20
         ;";
     else
-        $cmd = "MATCH (n:MP)
-                USING INDEX n:MP(lowerFSN)
+        $cmd = "MATCH (n:$ont)
+                USING INDEX n:$ont(lowerFSN)
                 WHERE n.lowerFSN = {entry} AND n.hasMouseData = TRUE
                 OPTIONAL MATCH (m)-[:HAS_SYNONYM]->(n)
                 RETURN COALESCE(m.id, n.id) AS id, COALESCE(m.FSN, n.FSN) AS FSN, COALESCE(m.originalType, 
@@ -59,8 +59,8 @@ if (isset($_GET["entry"]) && isset($_GET["ontology"])) {
                 
                 UNION 
                 
-                MATCH (n:MP)
-                USING INDEX n:MP(lowerFSN)
+                MATCH (n:$ont)
+                USING INDEX n:$ont(lowerFSN)
                 WHERE n.lowerFSN STARTS WITH {entry} AND n.hasMouseData = TRUE
                 WITH n
                 
