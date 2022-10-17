@@ -51,12 +51,16 @@
     max-height: 75.5vh;
 }
 
-.subTabMenu #full-width-tabpanel-0 {
+.subTabMenu #full-width-tabpanel-0, .subTabMenu #full-width-tabpanel-1, .phenotype-breakdown-container #full-width-tabpanel-1{
     overflow-y: scroll;
     max-height: 62vh;
     margin-left: -2vw;
     margin-right: -2vw;
     max-width: 120%;
+}
+
+#graph-id-graph-wrapper {
+    overflow: scroll;
 }
 
 svg {
